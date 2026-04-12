@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36717.8 d17.14
+VisualStudioVersion = 17.14.36717.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncroCloudApi", "SyncroCloudApi\SyncroCloudApi.csproj", "{60CC3ABB-E16B-438A-BC65-4BB377A122C4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncroApplicationLayer", "SyncroApplicationLayer\SyncroApplicationLayer.csproj", "{6EB3238D-57FE-49AF-BD5D-71AF673803D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncroInfraLayer", "SyncroInfraLayer\SyncroInfraLayer.csproj", "{50A845F6-0B74-417C-9B3F-001873B732A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{60CC3ABB-E16B-438A-BC65-4BB377A122C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60CC3ABB-E16B-438A-BC65-4BB377A122C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60CC3ABB-E16B-438A-BC65-4BB377A122C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EB3238D-57FE-49AF-BD5D-71AF673803D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EB3238D-57FE-49AF-BD5D-71AF673803D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EB3238D-57FE-49AF-BD5D-71AF673803D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EB3238D-57FE-49AF-BD5D-71AF673803D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50A845F6-0B74-417C-9B3F-001873B732A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50A845F6-0B74-417C-9B3F-001873B732A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50A845F6-0B74-417C-9B3F-001873B732A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50A845F6-0B74-417C-9B3F-001873B732A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

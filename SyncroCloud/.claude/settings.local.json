@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet restore:*)",
+      "Bash(dotnet sln:*)",
+      "Bash(Remove-Item -Recurse -Force SyncroCloudApi/obj, SyncroApplicationLayer/obj, SyncroInfraLayer/obj -ErrorAction SilentlyContinue)",
+      "Bash(dotnet build:*)"
+    ]
+  }
+}
