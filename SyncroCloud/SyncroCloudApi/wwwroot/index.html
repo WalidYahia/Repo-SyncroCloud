@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Syncro-Cloud API</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0d1117;
+      --surface:   #161b22;
+      --border:    #30363d;
+      --accent:    #238636;
+      --accent-h:  #2ea043;
+      --blue:      #1f6feb;
+      --blue-h:    #388bfd;
+      --text:      #e6edf3;
+      --muted:     #8b949e;
+      --radius:    10px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HEADER ── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 10;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .logo-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: inline-block;
+    }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-left: 1.5rem;
+      transition: color 0.15s;
+    }
+    nav a:hover { color: var(--text); }
+
+    /* ── HERO ── */
+    .hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 5rem 2rem 3rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      border: 1px solid var(--border);
+      border-radius: 2rem;
+      padding: 0.3rem 0.9rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 1.8rem;
+    }
+
+    .badge-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.2rem;
+    }
+
+    h1 span { color: var(--blue-h); }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 520px;
+      line-height: 1.6;
+      margin-bottom: 2.5rem;
+    }
+
+    .cta-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.6rem 1.35rem;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: 1px solid var(--accent);
+    }
+    .btn-primary:hover { background: var(--accent-h); }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: var(--surface); }
+
+    /* ── CARDS ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      max-width: 860px;
+      width: 100%;
+      margin: 4rem auto 0;
+      padding: 0 2rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.4rem 1.5rem;
+    }
+
+    .card-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .card h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .card p {
+      font-size: 0.83rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ── ENDPOINTS SECTION ── */
+    .endpoints {
+      max-width: 860px;
+      width: 100%;
+      margin: 3rem auto;
+      padding: 0 2rem;
+    }
+
+    .section-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .endpoint-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .method {
+      font-weight: 700;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 5px;
+      min-width: 48px;
+      text-align: center;
+    }
+    .get  { background: #0d419d33; color: #58a6ff; border: 1px solid #1f6feb55; }
+    .post { background: #2ea04333; color: #3fb950; border: 1px solid #2ea04355; }
+
+    .path { font-family: ui-monospace, "Cascadia Code", monospace; color: var(--text); }
+    .desc { color: var(--muted); margin-left: auto; font-size: 0.8rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <span class="logo-dot"></span>
+      Syncro-Cloud API
+    </div>
+    <nav>
+      <a href="/swagger" target="_blank">Swagger UI</a>
+      <a href="/swagger/v1/swagger.json" target="_blank">OpenAPI</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="badge">
+      <span class="badge-dot"></span>
+      Live &amp; Running
+    </div>
+
+    <h1>Welcome to<br /><span>Syncro-Cloud API</span></h1>
+
+    <p class="subtitle">
+      A fast, reliable REST API built with ASP.NET Core 8.
+      Explore endpoints, inspect the schema, and start integrating.
+    </p>
+
+    <div class="cta-group">
+      <a class="btn btn-primary" href="/swagger">
+        &#9654; Explore Swagger UI
+      </a>
+      <a class="btn btn-secondary" href="/swagger/v1/swagger.json">
+        &#x7B;&#x7D; OpenAPI JSON
+      </a>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <div class="card-icon">&#9889;</div>
+        <h3>ASP.NET Core 8</h3>
+        <p>Built on the latest .NET runtime for high performance and minimal overhead.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">&#128196;</div>
+        <h3>OpenAPI / Swagger</h3>
+        <p>Auto-generated interactive docs via Swashbuckle. Try endpoints right in the browser.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">&#128274;</div>
+        <h3>HTTPS Ready</h3>
+        <p>Enforced HTTPS redirection keeps data in transit safe and production-ready.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="endpoints">
+    <div class="section-title">Available Endpoints</div>
+
+    <div class="endpoint-row">
+      <span class="method get">GET</span>
+      <span class="path">/WeatherForecast</span>
+      <span class="desc">Returns a 5-day weather forecast</span>
+    </div>
+    <div class="endpoint-row">
+      <span class="method get">GET</span>
+      <span class="path">/swagger</span>
+      <span class="desc">Interactive API documentation</span>
+    </div>
+    <div class="endpoint-row">
+      <span class="method get">GET</span>
+      <span class="path">/swagger/v1/swagger.json</span>
+      <span class="desc">Raw OpenAPI specification</span>
+    </div>
+  </div>
+
+  <footer>
+    SyncroCloud API &mdash; powered by ASP.NET Core 8 &amp; Swashbuckle
+  </footer>
+
+</body>
+</html>

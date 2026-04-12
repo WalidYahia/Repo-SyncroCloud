@@ -1,0 +1,6 @@
+@SyncroCloudApi_HostAddress = http://localhost:5298
+
+GET {{SyncroCloudApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
