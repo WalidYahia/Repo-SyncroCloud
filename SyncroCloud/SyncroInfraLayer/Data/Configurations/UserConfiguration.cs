@@ -29,11 +29,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired()
             .HasDefaultValue(true);
 
-        builder.HasIndex(u => new { u.TenantId, u.Email }).IsUnique();
-
-        builder.HasOne(u => u.Tenant)
-            .WithMany(t => t.Users)
-            .HasForeignKey(u => u.TenantId)
-            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasIndex(u => u.Email).IsUnique();
     }
 }

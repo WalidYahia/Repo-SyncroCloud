@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SyncroInfraLayer.Entities;
+using SyncroInfraLayer.Enums;
 
 namespace SyncroInfraLayer.Data.Configurations;
 
@@ -9,6 +10,12 @@ public class DeviceConfiguration : IEntityTypeConfiguration<Device>
     public void Configure(EntityTypeBuilder<Device> builder)
     {
         builder.HasKey(d => d.Id);
+
+        builder.Property(d => d.DeviceId)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.HasIndex(d => d.DeviceId).IsUnique();
 
         builder.Property(d => d.Name)
             .IsRequired()
@@ -38,12 +45,18 @@ public class DeviceConfiguration : IEntityTypeConfiguration<Device>
 
         builder.HasOne(d => d.User)
             .WithMany(u => u.Devices)
-            .HasForeignKey(d => d.UserId)
+            .HasForeignKey(d => d.CreatedByUser)
             .OnDelete(DeleteBehavior.SetNull);
+
+        builder.Property(d => d.Longitude)
+            .HasColumnType("double precision");
+
+        builder.Property(d => d.Latitude)
+            .HasColumnType("double precision");
 
         builder.HasOne(d => d.City)
             .WithMany(c => c.Devices)
             .HasForeignKey(d => d.CityId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

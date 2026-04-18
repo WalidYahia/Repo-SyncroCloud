@@ -7,6 +7,6 @@ public class Tenant
     public DateTime CreatedAt { get; set; }
     public bool IsActive { get; set; }
 
-    public ICollection<User> Users { get; set; } = [];
+    public ICollection<TenantUser> TenantUsers { get; set; } = [];
     public ICollection<Device> Devices { get; set; } = [];
 }

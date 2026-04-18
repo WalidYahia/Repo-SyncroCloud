@@ -10,6 +10,7 @@ public class SyncroDbContext : DbContext
 
     public DbSet<Tenant> Tenants => Set<Tenant>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<TenantUser> TenantUsers => Set<TenantUser>();
     public DbSet<Country> Countries => Set<Country>();
     public DbSet<City> Cities => Set<City>();
     public DbSet<Device> Devices => Set<Device>();
@@ -17,6 +18,7 @@ public class SyncroDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new TenantConfiguration());
+        modelBuilder.ApplyConfiguration(new TenantUserConfiguration());
         modelBuilder.ApplyConfiguration(new CountryConfiguration());
         modelBuilder.ApplyConfiguration(new CityConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
