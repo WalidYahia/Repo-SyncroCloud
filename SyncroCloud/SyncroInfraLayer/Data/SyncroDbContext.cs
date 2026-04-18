@@ -14,6 +14,9 @@ public class SyncroDbContext : DbContext
     public DbSet<Country> Countries => Set<Country>();
     public DbSet<City> Cities => Set<City>();
     public DbSet<Device> Devices => Set<Device>();
+    public DbSet<Sensor> Sensors => Set<Sensor>();
+    public DbSet<DeviceSensor> DeviceSensors => Set<DeviceSensor>();
+    public DbSet<AlarmLookup> AlarmLookups => Set<AlarmLookup>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -23,5 +26,8 @@ public class SyncroDbContext : DbContext
         modelBuilder.ApplyConfiguration(new CityConfiguration());
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new DeviceConfiguration());
+        modelBuilder.ApplyConfiguration(new SensorConfiguration());
+        modelBuilder.ApplyConfiguration(new DeviceSensorConfiguration());
+        modelBuilder.ApplyConfiguration(new AlarmLookupConfiguration());
     }
 }

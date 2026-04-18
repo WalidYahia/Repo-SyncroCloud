@@ -22,4 +22,5 @@ public class Device
     public Tenant Tenant { get; set; } = null!;
     public User? User { get; set; }
     public City City { get; set; } = null!;
+    public ICollection<DeviceSensor> DeviceSensors { get; set; } = [];
 }
