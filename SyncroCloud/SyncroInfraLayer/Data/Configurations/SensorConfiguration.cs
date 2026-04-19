@@ -25,5 +25,11 @@ public class SensorConfiguration : IEntityTypeConfiguration<Sensor>
         builder.Property(s => s.ConnectionProtocol)
             .IsRequired()
             .HasConversion<string>();
+
+        builder.HasIndex(s => s.Name)
+            .IsUnique();
+
+        builder.HasIndex(s => new { s.UnitType, s.Type })
+            .IsUnique();
     }
 }

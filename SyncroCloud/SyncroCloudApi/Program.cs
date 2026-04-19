@@ -1,12 +1,21 @@
 using Microsoft.EntityFrameworkCore;
+using SyncroApplicationLayer.Interfaces;
+using SyncroApplicationLayer.Services;
 using SyncroInfraLayer.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddDbContext<SyncroDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<ITenantService, TenantService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ILocationService, LocationService>();
+builder.Services.AddScoped<IDeviceService, DeviceService>();
+builder.Services.AddScoped<ISensorService, SensorService>();
+builder.Services.AddScoped<IDeviceSensorService, DeviceSensorService>();
+builder.Services.AddScoped<IDeviceReadingService, DeviceReadingService>();
+builder.Services.AddScoped<IAlarmLookupService, AlarmLookupService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
