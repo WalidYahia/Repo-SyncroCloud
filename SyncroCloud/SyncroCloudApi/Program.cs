@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using SyncroApplicationLayer.Extensions;
 using SyncroApplicationLayer.Interfaces;
 using SyncroApplicationLayer.Services;
 using SyncroInfraLayer.Data;
@@ -16,6 +17,8 @@ builder.Services.AddScoped<ISensorService, SensorService>();
 builder.Services.AddScoped<IDeviceSensorService, DeviceSensorService>();
 builder.Services.AddScoped<IDeviceReadingService, DeviceReadingService>();
 builder.Services.AddScoped<IAlarmLookupService, AlarmLookupService>();
+
+builder.Services.AddMqttService();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -1,12 +1,36 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncrocloudapi\\controllers\\alarmlookupscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|solutionrelative:syncrocloudapi\\controllers\\alarmlookupscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 1,
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
+        {
+          "DockedHeight": 136,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AlarmLookupsController.cs",
+              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\AlarmLookupsController.cs",
+              "RelativeDocumentMoniker": "SyncroCloudApi\\Controllers\\AlarmLookupsController.cs",
+              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\AlarmLookupsController.cs",
+              "RelativeToolTip": "SyncroCloudApi\\Controllers\\AlarmLookupsController.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAAwB4AAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-19T05:28:29.052Z",
+              "EditorCaption": ""
+            }
+          ]
+        },
         {
           "DockedHeight": 136,
           "SelectedChildIndex": -1,
