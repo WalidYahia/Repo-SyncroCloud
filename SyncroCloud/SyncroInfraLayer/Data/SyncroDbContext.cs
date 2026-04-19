@@ -16,6 +16,7 @@ public class SyncroDbContext : DbContext
     public DbSet<Device> Devices => Set<Device>();
     public DbSet<Sensor> Sensors => Set<Sensor>();
     public DbSet<DeviceSensor> DeviceSensors => Set<DeviceSensor>();
+    public DbSet<DeviceReading> DeviceReadings => Set<DeviceReading>();
     public DbSet<AlarmLookup> AlarmLookups => Set<AlarmLookup>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -28,6 +29,7 @@ public class SyncroDbContext : DbContext
         modelBuilder.ApplyConfiguration(new DeviceConfiguration());
         modelBuilder.ApplyConfiguration(new SensorConfiguration());
         modelBuilder.ApplyConfiguration(new DeviceSensorConfiguration());
+        modelBuilder.ApplyConfiguration(new DeviceReadingConfiguration());
         modelBuilder.ApplyConfiguration(new AlarmLookupConfiguration());
     }
 }

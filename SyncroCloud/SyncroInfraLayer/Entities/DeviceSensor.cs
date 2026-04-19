@@ -21,7 +21,9 @@ public class DeviceSensor
 
     public bool IsActive { get; set; }
     public string? Notes { get; set; }
+    public string? LastReading { get; set; }
     public Device Device { get; set; } = null!;
     public Sensor Sensor { get; set; } = null!;
     public User? InstalledBy { get; set; }
+    public ICollection<DeviceReading> Readings { get; set; } = [];
 }

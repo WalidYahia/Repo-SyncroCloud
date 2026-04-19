@@ -46,6 +46,9 @@ public class DeviceSensorConfiguration : IEntityTypeConfiguration<DeviceSensor>
         builder.Property(ds => ds.Notes)
             .HasMaxLength(500);
 
+        builder.Property(ds => ds.LastReading)
+            .HasColumnType("jsonb");
+
         builder.HasOne(ds => ds.Device)
             .WithMany(d => d.DeviceSensors)
             .HasForeignKey(ds => ds.DeviceId)
