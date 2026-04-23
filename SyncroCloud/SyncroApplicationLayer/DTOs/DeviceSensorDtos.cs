@@ -8,6 +8,7 @@ public record DeviceSensorDto(
     int? Address, int? Port,
     string DisplayName, string Url,
     UnitType UnitType, SensorType SensorType, int Protocol,
+    int? SyncPeriodicity, bool EventChangeSync, double? EventChangeDelta,
     DateTime InstalledAt, bool IsActive,
     string? Notes, string? LastReading);
 
@@ -17,6 +18,7 @@ public record CreateDeviceSensorDto(
     int? Address, int? Port,
     string DisplayName, string Url,
     UnitType UnitType, SensorType SensorType, int Protocol,
+    int? SyncPeriodicity, bool EventChangeSync, double? EventChangeDelta,
     Guid? InstalledById);
 
 public record UpdateDeviceSensorDto(
@@ -24,4 +26,5 @@ public record UpdateDeviceSensorDto(
     int? Address, int? Port,
     string DisplayName, string Url,
     UnitType UnitType, SensorType SensorType, int Protocol,
+    int? SyncPeriodicity, bool EventChangeSync, double? EventChangeDelta,
     bool IsActive, string? Notes);

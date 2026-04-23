@@ -19,6 +19,10 @@ public class DeviceSensor
     public int Protocol { get; set; }
     public DateTime InstalledAt { get; set; }
 
+    public int? SyncPeriodicity { get; set; }
+    public bool EventChangeSync { get; set; }
+    public double? EventChangeDelta { get; set; }
+
     public bool IsActive { get; set; }
     public string? Notes { get; set; }
     public string? LastReading { get; set; }

@@ -32,6 +32,9 @@ public class DeviceSensorService(SyncroDbContext db) : IDeviceSensorService
             UnitType = dto.UnitType,
             SensorType = dto.SensorType,
             Protocol = dto.Protocol,
+            SyncPeriodicity = dto.SyncPeriodicity,
+            EventChangeSync = dto.EventChangeSync,
+            EventChangeDelta = dto.EventChangeDelta,
             InstalledById = dto.InstalledById,
             InstalledAt = DateTime.UtcNow,
             IsActive = true
@@ -54,6 +57,9 @@ public class DeviceSensorService(SyncroDbContext db) : IDeviceSensorService
         ds.UnitType = dto.UnitType;
         ds.SensorType = dto.SensorType;
         ds.Protocol = dto.Protocol;
+        ds.SyncPeriodicity = dto.SyncPeriodicity;
+        ds.EventChangeSync = dto.EventChangeSync;
+        ds.EventChangeDelta = dto.EventChangeDelta;
         ds.IsActive = dto.IsActive;
         ds.Notes = dto.Notes;
         await db.SaveChangesAsync();
@@ -81,5 +87,6 @@ public class DeviceSensorService(SyncroDbContext db) : IDeviceSensorService
     private static DeviceSensorDto ToDto(DeviceSensor ds) =>
         new(ds.DeviceId, ds.SensorId, ds.SwitchNo, ds.UnitId, ds.Address, ds.Port,
             ds.DisplayName, ds.Url, ds.UnitType, ds.SensorType, ds.Protocol,
+            ds.SyncPeriodicity, ds.EventChangeSync, ds.EventChangeDelta,
             ds.InstalledAt, ds.IsActive, ds.Notes, ds.LastReading);
 }

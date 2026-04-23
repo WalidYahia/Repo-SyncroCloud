@@ -17,6 +17,7 @@ builder.Services.AddScoped<ISensorService, SensorService>();
 builder.Services.AddScoped<IDeviceSensorService, DeviceSensorService>();
 builder.Services.AddScoped<IDeviceReadingService, DeviceReadingService>();
 builder.Services.AddScoped<IAlarmLookupService, AlarmLookupService>();
+builder.Services.AddScoped<IDeviceScenarioService, DeviceScenarioService>();
 
 builder.Services.AddMqttService();
 

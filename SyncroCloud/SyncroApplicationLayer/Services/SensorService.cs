@@ -19,7 +19,7 @@ public class SensorService(SyncroDbContext db) : ISensorService
 
     public async Task<SensorDto> CreateAsync(CreateSensorDto dto)
     {
-        var sensor = new Sensor { SensorId = Guid.NewGuid(), Name = dto.Name, UnitType = dto.UnitType, Type = dto.Type, ConnectionProtocol = dto.ConnectionProtocol };
+        var sensor = new Sensor { SensorId = Guid.NewGuid(), Name = dto.Name, UnitType = dto.UnitType, Type = dto.Type, ConnectionProtocol = dto.ConnectionProtocol, SyncPeriodicity = dto.SyncPeriodicity, EventChangeSync = dto.EventChangeSync, EventChangeDelta = dto.EventChangeDelta };
         db.Sensors.Add(sensor);
         await db.SaveChangesAsync();
         return ToDto(sensor);
@@ -33,6 +33,9 @@ public class SensorService(SyncroDbContext db) : ISensorService
         sensor.UnitType = dto.UnitType;
         sensor.Type = dto.Type;
         sensor.ConnectionProtocol = dto.ConnectionProtocol;
+        sensor.SyncPeriodicity = dto.SyncPeriodicity;
+        sensor.EventChangeSync = dto.EventChangeSync;
+        sensor.EventChangeDelta = dto.EventChangeDelta;
         await db.SaveChangesAsync();
         return ToDto(sensor);
     }
@@ -46,5 +49,5 @@ public class SensorService(SyncroDbContext db) : ISensorService
         return true;
     }
 
-    private static SensorDto ToDto(Sensor s) => new(s.SensorId, s.Name, s.UnitType, s.Type, s.ConnectionProtocol);
+    private static SensorDto ToDto(Sensor s) => new(s.SensorId, s.Name, s.UnitType, s.Type, s.ConnectionProtocol, s.SyncPeriodicity, s.EventChangeSync, s.EventChangeDelta);
 }

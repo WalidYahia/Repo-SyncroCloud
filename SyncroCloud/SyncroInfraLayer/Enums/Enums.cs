@@ -77,3 +77,33 @@ public enum ConnectionProtocol
     LoRa,
     RS485
 }
+
+// ── Scenario ──────────────────────────────────────────────
+public enum SwitchOutletStatus
+{
+    Off = 0,
+    On = 1
+}
+
+public enum ScenarioCondition
+{
+    Duration = 0,
+    OnTime = 1,
+    OnOtherSensorValue = 2
+}
+
+public enum ScenarioOperator
+{
+    Equals,
+    NotEquals,
+    GreaterThan,
+    LessThan,
+    GreaterOrEqual,
+    LessOrEqual
+}
+
+public enum ScenarioLogic
+{
+    And,
+    Or
+}
