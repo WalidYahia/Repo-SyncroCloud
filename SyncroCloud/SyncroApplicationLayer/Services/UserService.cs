@@ -1,39 +1,50 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SyncroApplicationLayer.DTOs;
 using SyncroApplicationLayer.Interfaces;
 using SyncroInfraLayer.Data;
 using SyncroInfraLayer.Entities;
+using SyncroInfraLayer.Identity;
 
 namespace SyncroApplicationLayer.Services;
 
-public class UserService(SyncroDbContext db) : IUserService
+public class UserService(UserManager<AppUser> userManager, SyncroDbContext db) : IUserService
 {
     public async Task<List<UserDto>> GetAllAsync() =>
-        await db.Users.Select(u => ToDto(u)).ToListAsync();
+        await userManager.Users.Select(u => ToDto(u)).ToListAsync();
 
     public async Task<UserDto?> GetByIdAsync(Guid id)
     {
-        var u = await db.Users.FindAsync(id);
+        var u = await userManager.FindByIdAsync(id.ToString());
         return u is null ? null : ToDto(u);
     }
 
     public async Task<UserDto> CreateAsync(CreateUserDto dto)
     {
-        var user = new User { Id = Guid.NewGuid(), Email = dto.Email, FirstName = dto.FirstName, LastName = dto.LastName, CreatedAt = DateTime.UtcNow, IsActive = true };
-        db.Users.Add(user);
-        await db.SaveChangesAsync();
+        var user = new AppUser
+        {
+            Id = Guid.NewGuid(),
+            UserName = dto.Email,
+            Email = dto.Email,
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            CreatedAt = DateTime.UtcNow,
+            IsActive = true
+        };
+        await userManager.CreateAsync(user);
         return ToDto(user);
     }
 
     public async Task<UserDto?> UpdateAsync(Guid id, UpdateUserDto dto)
     {
-        var user = await db.Users.FindAsync(id);
+        var user = await userManager.FindByIdAsync(id.ToString());
         if (user is null) return null;
         user.Email = dto.Email;
+        user.UserName = dto.Email;
         user.FirstName = dto.FirstName;
         user.LastName = dto.LastName;
         user.IsActive = dto.IsActive;
-        await db.SaveChangesAsync();
+        await userManager.UpdateAsync(user);
         return ToDto(user);
     }
 
@@ -63,12 +74,12 @@ public class UserService(SyncroDbContext db) : IUserService
 
     public async Task<bool> DeleteAsync(Guid id)
     {
-        var user = await db.Users.FindAsync(id);
+        var user = await userManager.FindByIdAsync(id.ToString());
         if (user is null) return false;
-        db.Users.Remove(user);
-        await db.SaveChangesAsync();
+        await userManager.DeleteAsync(user);
         return true;
     }
 
-    private static UserDto ToDto(User u) => new(u.Id, u.Email, u.FirstName, u.LastName, u.CreatedAt, u.IsActive);
+    private static UserDto ToDto(AppUser u) =>
+        new(u.Id, u.Email!, u.FirstName, u.LastName, u.CreatedAt, u.IsActive);
 }

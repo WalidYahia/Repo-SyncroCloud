@@ -1,19 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SyncroInfraLayer.Entities;
+using SyncroInfraLayer.Identity;
 
-namespace SyncroInfraLayer.Data.Configurations;
+namespace SyncroInfraLayer.Identity.Configurations;
 
-public class UserConfiguration : IEntityTypeConfiguration<User>
+public class AppUserConfiguration : IEntityTypeConfiguration<AppUser>
 {
-    public void Configure(EntityTypeBuilder<User> builder)
+    public void Configure(EntityTypeBuilder<AppUser> builder)
     {
-        builder.HasKey(u => u.Id);
-
-        builder.Property(u => u.Email)
-            .IsRequired()
-            .HasMaxLength(256);
-
         builder.Property(u => u.FirstName)
             .IsRequired()
             .HasMaxLength(100);
@@ -29,6 +23,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired()
             .HasDefaultValue(true);
 
-        builder.HasIndex(u => u.Email).IsUnique();
+        // phone number is optional but must be unique when provided
+        builder.HasIndex(u => u.PhoneNumber)
+            .IsUnique()
+            .HasFilter("\"PhoneNumber\" IS NOT NULL");
     }
 }

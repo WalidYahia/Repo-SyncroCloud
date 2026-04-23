@@ -1,3 +1,5 @@
+using SyncroInfraLayer.Identity;
+
 namespace SyncroInfraLayer.Entities;
 
 public class TenantUser
@@ -7,5 +9,5 @@ public class TenantUser
     public DateTime JoinedAt { get; set; }
 
     public Tenant Tenant { get; set; } = null!;
-    public User User { get; set; } = null!;
+    public AppUser User { get; set; } = null!;
 }

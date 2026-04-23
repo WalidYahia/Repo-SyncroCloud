@@ -1,4 +1,5 @@
 using SyncroInfraLayer.Enums;
+using SyncroInfraLayer.Identity;
 
 namespace SyncroInfraLayer.Entities;
 
@@ -20,7 +21,7 @@ public class Device
     public DateTime? LastSeenAt { get; set; }
 
     public Tenant Tenant { get; set; } = null!;
-    public User? User { get; set; }
+    public AppUser? User { get; set; }
     public City City { get; set; } = null!;
     public ICollection<DeviceSensor> DeviceSensors { get; set; } = [];
 }
