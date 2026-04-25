@@ -9,3 +9,5 @@ public record CityDto(int Id, int CountryId, string Name, double Latitude, doubl
 public record CreateCityDto(int CountryId, string Name, double Latitude, double Longitude);
 
 public record UpdateCityDto(string Name, double Latitude, double Longitude);
+
+public record SyncResultDto(int CountriesSynced, int CitiesSynced);

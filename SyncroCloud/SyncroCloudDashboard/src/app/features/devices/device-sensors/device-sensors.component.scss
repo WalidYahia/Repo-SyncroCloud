@@ -1,0 +1,9 @@
+.page-header  { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; div { display: flex; align-items: center; } }
+.form-card    { margin-bottom: 16px; }
+.form-grid    { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.toggle-row   { grid-column: 1 / -1; }
+.form-actions { grid-column: 1 / -1; display: flex; gap: 8px; }
+.sensor-info  { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; padding: 4px 0 8px; flex-wrap: wrap; }
+.info-label   { font-size: 13px; color: var(--mat-sys-on-surface-variant, #5f6368); white-space: nowrap; }
+.full-width   { width: 100%; }
+code { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }

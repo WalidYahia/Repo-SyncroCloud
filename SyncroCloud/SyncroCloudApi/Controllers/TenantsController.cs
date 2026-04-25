@@ -6,37 +6,37 @@ namespace SyncroCloudApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class TenantsController(ITenantService service) : ControllerBase
+public class TenantsController(ITenantService service) : ApiControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<TenantDto>>> GetAll() =>
+    public async Task<IActionResult> GetAll() =>
         Ok(await service.GetAllAsync());
 
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<TenantDto>> GetById(Guid id)
+    public async Task<IActionResult> GetById(Guid id)
     {
         var result = await service.GetByIdAsync(id);
-        return result is null ? NotFound() : Ok(result);
+        return result is null ? ResourceNotFound("Tenant", id) : Ok(result);
     }
 
     [HttpPost]
-    public async Task<ActionResult<TenantDto>> Create(CreateTenantDto dto)
+    public async Task<IActionResult> Create(CreateTenantDto dto)
     {
         var result = await service.CreateAsync(dto);
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<ActionResult<TenantDto>> Update(Guid id, UpdateTenantDto dto)
+    public async Task<IActionResult> Update(Guid id, UpdateTenantDto dto)
     {
         var result = await service.UpdateAsync(id, dto);
-        return result is null ? NotFound() : Ok(result);
+        return result is null ? ResourceNotFound("Tenant", id) : Ok(result);
     }
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {
         var deleted = await service.DeleteAsync(id);
-        return deleted ? NoContent() : NotFound();
+        return deleted ? NoContent() : ResourceNotFound("Tenant", id);
     }
 }

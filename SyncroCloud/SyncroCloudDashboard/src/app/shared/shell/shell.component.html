@@ -1,0 +1,32 @@
+<mat-sidenav-container class="app-container">
+  <mat-sidenav mode="side" opened class="sidenav">
+    <div class="brand">
+      <mat-icon>cloud</mat-icon>
+      <span>Syncro-Dashboard</span>
+    </div>
+    <mat-nav-list>
+      @for (item of navItems; track item.path) {
+        <a mat-list-item
+           [routerLink]="item.path"
+           routerLinkActive="active-link"
+           [routerLinkActiveOptions]="{ exact: true }">
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          <span matListItemTitle>{{ item.label }}</span>
+        </a>
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar color="primary" class="toolbar">
+      <span class="toolbar-title">{{ activeLabel }}</span>
+      <span class="spacer"></span>
+      <button mat-icon-button (click)="auth.logout()" matTooltip="Logout">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </mat-toolbar>
+    <main class="page-content">
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

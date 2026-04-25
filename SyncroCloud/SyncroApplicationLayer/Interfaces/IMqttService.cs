@@ -2,6 +2,7 @@ namespace SyncroApplicationLayer.Interfaces;
 
 public interface IMqttService
 {
-    Task PublishCommandAsync(Guid deviceId, string action, object payload, CancellationToken ct = default);
     bool IsConnected { get; }
+    Task PublishAsync(string topic, object payload, bool retainFlag, CancellationToken ct = default);
+    Task PublishCommandAsync(Guid deviceId, string action, object payload, CancellationToken ct = default);
 }

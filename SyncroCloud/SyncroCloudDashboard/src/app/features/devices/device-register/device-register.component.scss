@@ -1,0 +1,3 @@
+.page-header  { margin-bottom: 16px; }
+.form-grid    { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.form-actions { grid-column: 1 / -1; display: flex; gap: 8px; margin-top: 8px; }

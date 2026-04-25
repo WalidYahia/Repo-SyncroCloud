@@ -4,6 +4,7 @@ namespace SyncroInfraLayer.Entities;
 
 public class DeviceSensor
 {
+    public long Id { get; set; }
     public Guid DeviceId { get; set; }
     public Guid SensorId { get; set; }
     public Guid? InstalledById { get; set; }

@@ -306,6 +306,9 @@ namespace SyncroInfraLayer.Migrations
                     b.Property<Guid>("DeviceId")
                         .HasColumnType("uuid");
 
+                    b.Property<long>("DeviceSensorId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("Payload")
                         .IsRequired()
                         .HasColumnType("jsonb");
@@ -320,6 +323,8 @@ namespace SyncroInfraLayer.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeviceSensorId");
 
                     b.HasIndex("RecordedAt");
 
@@ -353,14 +358,17 @@ namespace SyncroInfraLayer.Migrations
 
             modelBuilder.Entity("SyncroInfraLayer.Entities.DeviceSensor", b =>
                 {
-                    b.Property<Guid>("DeviceId")
-                        .HasColumnType("uuid");
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
 
-                    b.Property<Guid>("SensorId")
-                        .HasColumnType("uuid");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<int?>("Address")
                         .HasColumnType("integer");
+
+                    b.Property<Guid>("DeviceId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("DisplayName")
                         .IsRequired()
@@ -397,6 +405,9 @@ namespace SyncroInfraLayer.Migrations
                     b.Property<int>("Protocol")
                         .HasColumnType("integer");
 
+                    b.Property<Guid>("SensorId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("SensorType")
                         .IsRequired()
                         .HasColumnType("text");
@@ -422,11 +433,15 @@ namespace SyncroInfraLayer.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.HasKey("DeviceId", "SensorId");
+                    b.HasKey("Id");
 
                     b.HasIndex("InstalledById");
 
                     b.HasIndex("SensorId");
+
+                    b.HasIndex("DeviceId", "SensorId", "SwitchNo", "UnitId", "Address", "Port")
+                        .IsUnique()
+                        .HasDatabaseName("IX_DeviceSensors_Unique");
 
                     b.ToTable("DeviceSensors");
                 });
@@ -802,7 +817,7 @@ namespace SyncroInfraLayer.Migrations
                 {
                     b.HasOne("SyncroInfraLayer.Entities.DeviceSensor", "DeviceSensor")
                         .WithMany("Readings")
-                        .HasForeignKey("DeviceId", "SensorId")
+                        .HasForeignKey("DeviceSensorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

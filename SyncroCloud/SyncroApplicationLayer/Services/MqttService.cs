@@ -127,6 +127,26 @@ public class MqttService(
         }
     }
 
+    public async Task PublishAsync(string topic, object payload, bool retainFlag, CancellationToken ct = default)
+    {
+        if (!_client.IsConnected)
+        {
+            logger.LogWarning("Cannot publish to {Topic} — MQTT client not connected", topic);
+            return;
+        }
+
+        var json    = JsonSerializer.Serialize(payload);
+        var message = new MqttApplicationMessageBuilder()
+            .WithTopic(topic)
+            .WithPayload(json)
+            .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
+            .WithRetainFlag(true)
+            .Build();
+
+        await _client.PublishAsync(message, ct);
+        logger.LogDebug("Published to {Topic}", topic);
+    }
+
     public async Task PublishCommandAsync(Guid deviceId, string action, object payload, CancellationToken ct = default)
     {
         if (!_client.IsConnected)
@@ -135,7 +155,7 @@ public class MqttService(
             return;
         }
 
-        var json = JsonSerializer.Serialize(payload);
+        var json    = JsonSerializer.Serialize(payload);
         var message = new MqttApplicationMessageBuilder()
             .WithTopic($"syncro/{deviceId}/commands/{action}")
             .WithPayload(json)

@@ -8,7 +8,12 @@ public class DeviceSensorConfiguration : IEntityTypeConfiguration<DeviceSensor>
 {
     public void Configure(EntityTypeBuilder<DeviceSensor> builder)
     {
-        builder.HasKey(ds => new { ds.DeviceId, ds.SensorId });
+        builder.HasKey(ds => ds.Id);
+        builder.Property(ds => ds.Id).ValueGeneratedOnAdd();
+
+        builder.HasIndex(ds => new { ds.DeviceId, ds.SensorId, ds.SwitchNo, ds.UnitId, ds.Address, ds.Port })
+            .IsUnique()
+            .HasDatabaseName("IX_DeviceSensors_Unique");
 
         builder.Property(ds => ds.SwitchNo)
             .IsRequired()

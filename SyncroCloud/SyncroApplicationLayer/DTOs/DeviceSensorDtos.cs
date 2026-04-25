@@ -3,7 +3,7 @@ using SyncroInfraLayer.Enums;
 namespace SyncroApplicationLayer.DTOs;
 
 public record DeviceSensorDto(
-    Guid DeviceId, Guid SensorId,
+    long Id, Guid DeviceId, Guid SensorId,
     SwitchNo SwitchNo, string UnitId,
     int? Address, int? Port,
     string DisplayName, string Url,

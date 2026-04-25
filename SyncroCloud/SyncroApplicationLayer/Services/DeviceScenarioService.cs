@@ -6,7 +6,7 @@ using SyncroInfraLayer.Entities;
 
 namespace SyncroApplicationLayer.Services;
 
-public class DeviceScenarioService(SyncroDbContext db) : IDeviceScenarioService
+public class DeviceScenarioService(SyncroDbContext db, IMqttService mqtt) : IDeviceScenarioService
 {
     public async Task<List<DeviceScenarioDto>> GetByDeviceAsync(Guid deviceId) =>
         await db.DeviceScenarios
@@ -27,20 +27,21 @@ public class DeviceScenarioService(SyncroDbContext db) : IDeviceScenarioService
         {
             existing = new DeviceScenario
             {
-                Id = scenarioId,
-                DeviceId = dto.DeviceId,
-                Payload = dto.Payload,
+                Id        = scenarioId,
+                DeviceId  = dto.DeviceId,
+                Payload   = dto.Payload,
                 UpdatedAt = DateTime.UtcNow
             };
             db.DeviceScenarios.Add(existing);
         }
         else
         {
-            existing.Payload = dto.Payload;
+            existing.Payload   = dto.Payload;
             existing.UpdatedAt = DateTime.UtcNow;
         }
 
         await db.SaveChangesAsync();
+        await PublishScenariosAsync(existing.DeviceId);
         return ToDto(existing);
     }
 
@@ -50,14 +51,36 @@ public class DeviceScenarioService(SyncroDbContext db) : IDeviceScenarioService
         if (s is null || s.DeviceId != deviceId) return false;
         db.DeviceScenarios.Remove(s);
         await db.SaveChangesAsync();
+        await PublishScenariosAsync(deviceId);
         return true;
     }
 
     public async Task<int> DeleteAllByDeviceAsync(Guid deviceId)
     {
-        return await db.DeviceScenarios
+        var count = await db.DeviceScenarios
             .Where(s => s.DeviceId == deviceId)
             .ExecuteDeleteAsync();
+
+        if (count > 0)
+            await PublishScenariosAsync(deviceId);
+
+        return count;
+    }
+
+    private async Task PublishScenariosAsync(Guid devicePk)
+    {
+        var deviceId = await db.Devices
+            .Where(d => d.Id == devicePk)
+            .Select(d => d.DeviceId)
+            .FirstOrDefaultAsync();
+        if (deviceId is null) return;
+
+        var scenarios = await db.DeviceScenarios
+            .Where(s => s.DeviceId == devicePk)
+            .Select(s => ToDto(s))
+            .ToListAsync();
+
+        await mqtt.PublishAsync($"syncro/{deviceId}/userScenarios", scenarios, retainFlag: true);
     }
 
     private static DeviceScenarioDto ToDto(DeviceScenario s) =>

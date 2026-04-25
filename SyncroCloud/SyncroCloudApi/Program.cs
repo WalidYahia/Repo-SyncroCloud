@@ -4,6 +4,7 @@ using SyncroApplicationLayer.Interfaces;
 using SyncroApplicationLayer.Services;
 using SyncroCloudApi.Auth.Extensions;
 using SyncroCloudApi.Auth.Middleware;
+using SyncroCloudApi.Exceptions;
 using SyncroInfraLayer.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +20,7 @@ builder.Services.AddAuthModule(builder.Configuration);
 builder.Services.AddScoped<ITenantService, TenantService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILocationService, LocationService>();
+builder.Services.AddHttpClient<ILocationSyncService, LocationSyncService>();
 builder.Services.AddScoped<IDeviceService, DeviceService>();
 builder.Services.AddScoped<ISensorService, SensorService>();
 builder.Services.AddScoped<IDeviceSensorService, DeviceSensorService>();
@@ -29,7 +31,22 @@ builder.Services.AddScoped<IDeviceScenarioService, DeviceScenarioService>();
 // MQTT background service
 builder.Services.AddMqttService();
 
-builder.Services.AddControllers();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Angular", policy =>
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials());
+});
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.Converters.Add(
+            new System.Text.Json.Serialization.JsonStringEnumConverter()));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -79,7 +96,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+app.UseExceptionHandler();
+
+app.UseCors("Angular");
+
+if (!app.Environment.IsDevelopment()) app.UseHttpsRedirection();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 

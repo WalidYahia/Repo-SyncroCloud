@@ -6,44 +6,37 @@ namespace SyncroCloudApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class DeviceSensorsController(IDeviceSensorService service) : ControllerBase
+public class DeviceSensorsController(IDeviceSensorService service) : ApiControllerBase
 {
     [HttpGet("device/{deviceId:guid}")]
-    public async Task<ActionResult<List<DeviceSensorDto>>> GetByDevice(Guid deviceId) =>
+    public async Task<IActionResult> GetByDevice(Guid deviceId) =>
         Ok(await service.GetByDeviceAsync(deviceId));
 
-    [HttpGet("device/{deviceId:guid}/sensor/{sensorId:guid}")]
-    public async Task<ActionResult<DeviceSensorDto>> GetById(Guid deviceId, Guid sensorId)
+    [HttpGet("{id:long}")]
+    public async Task<IActionResult> GetById(long id)
     {
-        var result = await service.GetByIdAsync(deviceId, sensorId);
-        return result is null ? NotFound() : Ok(result);
+        var result = await service.GetByIdAsync(id);
+        return result is null ? ResourceNotFound("DeviceSensor", id) : Ok(result);
     }
 
     [HttpPost]
-    public async Task<ActionResult<DeviceSensorDto>> Install(CreateDeviceSensorDto dto)
+    public async Task<IActionResult> Install(CreateDeviceSensorDto dto)
     {
         var result = await service.InstallAsync(dto);
-        return CreatedAtAction(nameof(GetById), new { deviceId = result.DeviceId, sensorId = result.SensorId }, result);
+        return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
     }
 
-    [HttpPut("device/{deviceId:guid}/sensor/{sensorId:guid}")]
-    public async Task<ActionResult<DeviceSensorDto>> Update(Guid deviceId, Guid sensorId, UpdateDeviceSensorDto dto)
+    [HttpPut("{id:long}")]
+    public async Task<IActionResult> Update(long id, UpdateDeviceSensorDto dto)
     {
-        var result = await service.UpdateAsync(deviceId, sensorId, dto);
-        return result is null ? NotFound() : Ok(result);
+        var result = await service.UpdateAsync(id, dto);
+        return result is null ? ResourceNotFound("DeviceSensor", id) : Ok(result);
     }
 
-    [HttpPatch("device/{deviceId:guid}/sensor/{sensorId:guid}/last-reading")]
-    public async Task<IActionResult> UpdateLastReading(Guid deviceId, Guid sensorId, [FromBody] string json)
+    [HttpDelete("{id:long}")]
+    public async Task<IActionResult> Uninstall(long id)
     {
-        var updated = await service.UpdateLastReadingAsync(deviceId, sensorId, json);
-        return updated ? NoContent() : NotFound();
-    }
-
-    [HttpDelete("device/{deviceId:guid}/sensor/{sensorId:guid}")]
-    public async Task<IActionResult> Uninstall(Guid deviceId, Guid sensorId)
-    {
-        var removed = await service.UninstallAsync(deviceId, sensorId);
-        return removed ? NoContent() : NotFound();
+        var removed = await service.UninstallAsync(id);
+        return removed ? NoContent() : ResourceNotFound("DeviceSensor", id);
     }
 }

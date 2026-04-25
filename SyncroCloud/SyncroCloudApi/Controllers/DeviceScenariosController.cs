@@ -6,21 +6,21 @@ namespace SyncroCloudApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class DeviceScenariosController(IDeviceScenarioService service) : ControllerBase
+public class DeviceScenariosController(IDeviceScenarioService service) : ApiControllerBase
 {
     [HttpGet("device/{deviceId:guid}")]
-    public async Task<ActionResult<List<DeviceScenarioDto>>> GetByDevice(Guid deviceId) =>
+    public async Task<IActionResult> GetByDevice(Guid deviceId) =>
         Ok(await service.GetByDeviceAsync(deviceId));
 
     [HttpGet("device/{deviceId:guid}/{scenarioId:guid}")]
-    public async Task<ActionResult<DeviceScenarioDto>> GetById(Guid deviceId, Guid scenarioId)
+    public async Task<IActionResult> GetById(Guid deviceId, Guid scenarioId)
     {
         var result = await service.GetByIdAsync(deviceId, scenarioId);
-        return result is null ? NotFound() : Ok(result);
+        return result is null ? ResourceNotFound("Scenario", scenarioId) : Ok(result);
     }
 
     [HttpPut("{scenarioId:guid}")]
-    public async Task<ActionResult<DeviceScenarioDto>> Upsert(Guid scenarioId, UpsertDeviceScenarioDto dto)
+    public async Task<IActionResult> Upsert(Guid scenarioId, UpsertDeviceScenarioDto dto)
     {
         var result = await service.UpsertAsync(scenarioId, dto);
         return Ok(result);
@@ -30,13 +30,13 @@ public class DeviceScenariosController(IDeviceScenarioService service) : Control
     public async Task<IActionResult> Delete(Guid deviceId, Guid scenarioId)
     {
         var deleted = await service.DeleteAsync(deviceId, scenarioId);
-        return deleted ? NoContent() : NotFound();
+        return deleted ? NoContent() : ResourceNotFound("Scenario", scenarioId);
     }
 
     [HttpDelete("device/{deviceId:guid}")]
     public async Task<IActionResult> DeleteAll(Guid deviceId)
     {
         var count = await service.DeleteAllByDeviceAsync(deviceId);
-        return Ok(new { deleted = count });
+        return Ok(new { deleted = count, message = $"{count} scenario(s) deleted." });
     }
 }

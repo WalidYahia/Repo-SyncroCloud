@@ -18,14 +18,20 @@ public class DeviceReadingService(SyncroDbContext db) : IDeviceReadingService
 
     public async Task<DeviceReadingDto> AddAsync(CreateDeviceReadingDto dto)
     {
+        var deviceSensor = await db.DeviceSensors
+            .Where(ds => ds.DeviceId == dto.DeviceId && ds.SensorId == dto.SensorId && ds.IsActive)
+            .OrderByDescending(ds => ds.InstalledAt)
+            .FirstOrDefaultAsync();
+
         var reading = new DeviceReading
         {
-            Id = Guid.NewGuid(),
-            DeviceId = dto.DeviceId,
-            SensorId = dto.SensorId,
-            RecordedAt = dto.RecordedAt,
-            ReceivedAt = DateTime.UtcNow,
-            Payload = dto.Payload
+            Id             = Guid.NewGuid(),
+            DeviceSensorId = deviceSensor?.Id ?? 0,
+            DeviceId       = dto.DeviceId,
+            SensorId       = dto.SensorId,
+            RecordedAt     = dto.RecordedAt,
+            ReceivedAt     = DateTime.UtcNow,
+            Payload        = dto.Payload
         };
         db.DeviceReadings.Add(reading);
         await db.SaveChangesAsync();

@@ -12,7 +12,6 @@ public record DeviceDto(
 public record CreateDeviceDto(
     string DeviceId, Guid TenantId, int CityId,
     string Name, string SerialNumber,
-    double? Longitude, double? Latitude,
     DeviceType Type);
 
 public record UpdateDeviceDto(

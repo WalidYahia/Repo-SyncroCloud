@@ -1,0 +1,34 @@
+<div class="login-wrapper">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title>SyncroCloud</mat-card-title>
+      <mat-card-subtitle>Sign in to continue</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email or Phone</mat-label>
+          <input matInput formControlName="emailOrPhone" autocomplete="username" />
+          <mat-icon matSuffix>person</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput [type]="hidePassword() ? 'password' : 'text'" formControlName="password" autocomplete="current-password" />
+          <button mat-icon-button matSuffix type="button" (click)="hidePassword.set(!hidePassword())">
+            <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </mat-form-field>
+
+        @if (error()) {
+          <p class="error-msg">{{ error() }}</p>
+        }
+
+        <button mat-raised-button color="primary" class="full-width" type="submit" [disabled]="loading()">
+          @if (loading()) { <mat-spinner diameter="20" /> } @else { Sign In }
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

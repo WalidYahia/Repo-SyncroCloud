@@ -7,44 +7,48 @@ namespace SyncroCloudApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class DevicesController(IDeviceService service) : ControllerBase
+public class DevicesController(IDeviceService service) : ApiControllerBase
 {
+    [HttpGet]
+    public async Task<IActionResult> GetAll() =>
+        Ok(await service.GetAllAsync());
+
     [HttpGet("tenant/{tenantId:guid}")]
-    public async Task<ActionResult<List<DeviceDto>>> GetByTenant(Guid tenantId) =>
+    public async Task<IActionResult> GetByTenant(Guid tenantId) =>
         Ok(await service.GetByTenantAsync(tenantId));
 
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<DeviceDto>> GetById(Guid id)
+    public async Task<IActionResult> GetById(Guid id)
     {
         var result = await service.GetByIdAsync(id);
-        return result is null ? NotFound() : Ok(result);
+        return result is null ? ResourceNotFound("Device", id) : Ok(result);
     }
 
     [HttpPost]
-    public async Task<ActionResult<DeviceDto>> Create(CreateDeviceDto dto)
+    public async Task<IActionResult> Create(CreateDeviceDto dto)
     {
         var result = await service.CreateAsync(dto);
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<ActionResult<DeviceDto>> Update(Guid id, UpdateDeviceDto dto)
+    public async Task<IActionResult> Update(Guid id, UpdateDeviceDto dto)
     {
         var result = await service.UpdateAsync(id, dto);
-        return result is null ? NotFound() : Ok(result);
+        return result is null ? ResourceNotFound("Device", id) : Ok(result);
     }
 
     [HttpPatch("{id:guid}/status")]
     public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] DeviceStatus status)
     {
         var updated = await service.UpdateStatusAsync(id, status);
-        return updated ? NoContent() : NotFound();
+        return updated ? NoContent() : ResourceNotFound("Device", id);
     }
 
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {
         var deleted = await service.DeleteAsync(id);
-        return deleted ? NoContent() : NotFound();
+        return deleted ? NoContent() : ResourceNotFound("Device", id);
     }
 }

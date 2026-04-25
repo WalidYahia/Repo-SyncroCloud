@@ -1,0 +1,47 @@
+<div class="page-header">
+  <h2>Geo Data Sync</h2>
+</div>
+
+<mat-card class="sync-card">
+  <mat-card-header>
+    <mat-icon mat-card-avatar>public</mat-icon>
+    <mat-card-title>Countries &amp; Cities</mat-card-title>
+    <mat-card-subtitle>Fetch from GeoNames via OpenDataSoft — cities with population &gt; 15,000</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <p class="info-text">
+      This will download all countries and major cities (population &gt; 15,000) with their
+      GPS coordinates and save them to the database. Existing records are skipped.
+    </p>
+
+    @if (syncing()) {
+      <div class="syncing-state">
+        <mat-spinner diameter="48"></mat-spinner>
+        <p>Syncing… this may take up to a minute.</p>
+      </div>
+    }
+
+    @if (result(); as r) {
+      <div class="result-grid">
+        <div class="result-item">
+          <mat-icon color="primary">flag</mat-icon>
+          <span class="result-value">{{ r.countriesSynced }}</span>
+          <span class="result-label">Countries added</span>
+        </div>
+        <div class="result-item">
+          <mat-icon color="primary">location_city</mat-icon>
+          <span class="result-value">{{ r.citiesSynced }}</span>
+          <span class="result-label">Cities added</span>
+        </div>
+      </div>
+    }
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button mat-raised-button color="primary" [disabled]="syncing()" (click)="sync()">
+      <mat-icon>sync</mat-icon>
+      {{ syncing() ? 'Syncing…' : 'Sync Now' }}
+    </button>
+  </mat-card-actions>
+</mat-card>

@@ -1,0 +1,57 @@
+<div class="page-header">
+  <div class="back-title">
+    <button mat-icon-button routerLink="/devices"><mat-icon>arrow_back</mat-icon></button>
+    <h2>Device Scenarios</h2>
+  </div>
+  <button mat-raised-button color="primary" (click)="startNew()">
+    <mat-icon>add</mat-icon> New Scenario
+  </button>
+</div>
+
+@if (showForm) {
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>{{ editingId ? 'Edit' : 'New' }} Scenario (JSON)</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Scenario JSON Payload</mat-label>
+          <textarea matInput formControlName="payload" rows="12" class="json-editor"></textarea>
+        </mat-form-field>
+        <div class="form-actions">
+          <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Save</button>
+          <button mat-button type="button" (click)="showForm = false">Cancel</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+}
+
+<table mat-table [dataSource]="scenarios" class="mat-elevation-z2 full-width">
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef>Name</th>
+    <td mat-cell *matCellDef="let s">{{ parsedScenario(s.payload).Name }}</td>
+  </ng-container>
+  <ng-container matColumnDef="action">
+    <th mat-header-cell *matHeaderCellDef>Action</th>
+    <td mat-cell *matCellDef="let s">{{ parsedScenario(s.payload).Action }}</td>
+  </ng-container>
+  <ng-container matColumnDef="conditions">
+    <th mat-header-cell *matHeaderCellDef>Conditions</th>
+    <td mat-cell *matCellDef="let s">{{ parsedScenario(s.payload).Conditions?.length ?? 0 }} condition(s)</td>
+  </ng-container>
+  <ng-container matColumnDef="updatedAt">
+    <th mat-header-cell *matHeaderCellDef>Updated</th>
+    <td mat-cell *matCellDef="let s">{{ s.updatedAt | date:'short' }}</td>
+  </ng-container>
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let s">
+      <button mat-icon-button matTooltip="Edit" (click)="edit(s)"><mat-icon>edit</mat-icon></button>
+      <button mat-icon-button color="warn" matTooltip="Delete" (click)="delete(s.id)"><mat-icon>delete</mat-icon></button>
+    </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="columns"></tr>
+  <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+</table>

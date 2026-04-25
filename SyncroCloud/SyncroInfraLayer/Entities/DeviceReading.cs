@@ -3,6 +3,7 @@ namespace SyncroInfraLayer.Entities;
 public class DeviceReading
 {
     public Guid Id { get; set; }
+    public long DeviceSensorId { get; set; }
     public Guid DeviceId { get; set; }
     public Guid SensorId { get; set; }
 

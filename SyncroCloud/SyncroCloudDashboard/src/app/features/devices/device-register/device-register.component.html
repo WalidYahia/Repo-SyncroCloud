@@ -1,0 +1,72 @@
+<div class="page-header">
+  <h2>Register Device</h2>
+</div>
+
+<mat-card>
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="save()" class="form-grid">
+
+      <mat-form-field appearance="outline">
+        <mat-label>Device ID</mat-label>
+        <input matInput formControlName="deviceId" placeholder="e.g. 10016ca843" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Serial Number</mat-label>
+        <input matInput formControlName="serialNumber" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Tenant</mat-label>
+        <mat-select formControlName="tenantId">
+          @for (t of tenants; track t.id) {
+            <mat-option [value]="t.id">{{ t.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="type">
+          @for (t of deviceTypes; track t) {
+            <mat-option [value]="t">{{ t }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Country</mat-label>
+        <mat-select formControlName="countryId" (selectionChange)="onCountryChange($event.value)">
+          @for (c of countries; track c.id) {
+            <mat-option [value]="c.id">{{ c.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>City</mat-label>
+        <mat-select formControlName="cityId" [disabled]="cities.length === 0">
+          @for (c of cities; track c.id) {
+            <mat-option [value]="c.id">{{ c.name }}</mat-option>
+          }
+        </mat-select>
+        @if (form.value.countryId && cities.length === 0) {
+          <mat-hint>No cities found — run Geo Sync first.</mat-hint>
+        }
+      </mat-form-field>
+
+      <div class="form-actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+          Register &amp; Assign Sensors
+        </button>
+        <button mat-button type="button" routerLink="/devices">Cancel</button>
+      </div>
+
+    </form>
+  </mat-card-content>
+</mat-card>

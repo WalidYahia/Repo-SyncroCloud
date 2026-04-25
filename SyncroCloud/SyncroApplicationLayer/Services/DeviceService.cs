@@ -9,6 +9,9 @@ namespace SyncroApplicationLayer.Services;
 
 public class DeviceService(SyncroDbContext db) : IDeviceService
 {
+    public async Task<List<DeviceDto>> GetAllAsync() =>
+        await db.Devices.Select(d => ToDto(d)).ToListAsync();
+
     public async Task<List<DeviceDto>> GetByTenantAsync(Guid tenantId) =>
         await db.Devices.Where(d => d.TenantId == tenantId).Select(d => ToDto(d)).ToListAsync();
 
@@ -20,6 +23,7 @@ public class DeviceService(SyncroDbContext db) : IDeviceService
 
     public async Task<DeviceDto> CreateAsync(CreateDeviceDto dto)
     {
+        var city = await db.Cities.FindAsync(dto.CityId);
         var device = new Device
         {
             Id = Guid.NewGuid(),
@@ -28,8 +32,8 @@ public class DeviceService(SyncroDbContext db) : IDeviceService
             CityId = dto.CityId,
             Name = dto.Name,
             SerialNumber = dto.SerialNumber,
-            Longitude = dto.Longitude,
-            Latitude = dto.Latitude,
+            Longitude = city?.Longitude,
+            Latitude  = city?.Latitude,
             Type = dto.Type,
             Status = DeviceStatus.Offline,
             RegisteredAt = DateTime.UtcNow
