@@ -107,3 +107,51 @@ public enum ScenarioLogic
     And,
     Or
 }
+
+public enum MqttTopics
+{
+    /// <summary>
+    /// Publish from Cloud
+    /// </summary>
+    CloudSensorConfig,
+
+    /// <summary>
+    /// Publish from Device
+    /// </summary>
+    DeviceSensorConfig,
+
+    /// <summary>
+    /// Publish from Cloud
+    /// </summary>
+    CloudUserScenario,
+
+    /// <summary>
+    /// Publish from Device
+    /// </summary>
+    UserScenario,
+
+    /// <summary>
+    /// Publish from Device
+    /// </summary>
+    DeviceData,
+
+    /// <summary>
+    /// Publish from Cloud
+    /// </summary>
+    RemoteAction,
+
+    /// <summary>
+    /// Publish from Device
+    /// </summary>
+    RemoteAction_Ack,
+
+    /// <summary>
+    /// Publish from Cloud
+    /// </summary>
+    RemoteUpdate,
+
+    /// <summary>
+    /// Publish from Device
+    /// </summary>
+    RemoteUpdate_Ack,
+}

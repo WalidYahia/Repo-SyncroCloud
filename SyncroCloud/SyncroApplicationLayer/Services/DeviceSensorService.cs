@@ -3,6 +3,8 @@ using SyncroApplicationLayer.DTOs;
 using SyncroApplicationLayer.Interfaces;
 using SyncroInfraLayer.Data;
 using SyncroInfraLayer.Entities;
+using SyncroInfraLayer.Enums;
+using SyncroInfraLayer.Helpers;
 
 namespace SyncroApplicationLayer.Services;
 
@@ -103,7 +105,7 @@ public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDevic
             .Where(ds => ds.DeviceId == devicePk)
             .Select(ds => ToDto(ds))
             .ToListAsync();
-        await mqtt.PublishAsync($"syncro/{deviceId}/sensorConfig", sensors, retainFlag: true);
+        await mqtt.PublishAsync(MqttHelper.GetMqttTopic(MqttTopics.CloudSensorConfig, deviceId), sensors, retainFlag: true);
     }
 
     private static DeviceSensorDto ToDto(DeviceSensor ds) =>

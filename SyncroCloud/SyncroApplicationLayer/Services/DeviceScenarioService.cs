@@ -3,6 +3,8 @@ using SyncroApplicationLayer.DTOs;
 using SyncroApplicationLayer.Interfaces;
 using SyncroInfraLayer.Data;
 using SyncroInfraLayer.Entities;
+using SyncroInfraLayer.Enums;
+using SyncroInfraLayer.Helpers;
 
 namespace SyncroApplicationLayer.Services;
 
@@ -80,7 +82,7 @@ public class DeviceScenarioService(SyncroDbContext db, IMqttService mqtt) : IDev
             .Select(s => ToDto(s))
             .ToListAsync();
 
-        await mqtt.PublishAsync($"syncro/{deviceId}/userScenarios", scenarios, retainFlag: true);
+        await mqtt.PublishAsync(MqttHelper.GetMqttTopic(MqttTopics.CloudUserScenario, deviceId), scenarios, retainFlag: true);
     }
 
     private static DeviceScenarioDto ToDto(DeviceScenario s) =>
