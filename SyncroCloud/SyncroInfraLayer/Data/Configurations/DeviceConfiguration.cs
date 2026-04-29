@@ -9,13 +9,11 @@ public class DeviceConfiguration : IEntityTypeConfiguration<Device>
 {
     public void Configure(EntityTypeBuilder<Device> builder)
     {
-        builder.HasKey(d => d.Id);
+        builder.HasKey(d => d.DeviceId);
 
         builder.Property(d => d.DeviceId)
             .IsRequired()
             .HasMaxLength(100);
-
-        builder.HasIndex(d => d.DeviceId).IsUnique();
 
         builder.Property(d => d.Name)
             .IsRequired()

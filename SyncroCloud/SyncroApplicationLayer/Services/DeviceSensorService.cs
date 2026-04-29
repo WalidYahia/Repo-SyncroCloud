@@ -10,10 +10,10 @@ namespace SyncroApplicationLayer.Services;
 
 public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDeviceSensorService
 {
-    public async Task<List<DeviceSensorDto>> GetByDeviceAsync(Guid deviceId) =>
+    public async Task<List<DeviceSensorDto>> GetByDeviceAsync(string deviceId) =>
         await db.DeviceSensors.Where(ds => ds.DeviceId == deviceId).Select(ds => ToDto(ds)).ToListAsync();
 
-    public async Task<DeviceSensorDto?> GetByIdAsync(long id)
+    public async Task<DeviceSensorDto?> GetByIdAsync(string id)
     {
         var ds = await db.DeviceSensors.FindAsync(id);
         return ds is null ? null : ToDto(ds);
@@ -23,6 +23,7 @@ public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDevic
     {
         var ds = new DeviceSensor
         {
+            Id               = DeviceSensor.ComputeId(dto.DeviceId, dto.SensorType, dto.UnitType, dto.UnitId, dto.SwitchNo, dto.Address, dto.Port),
             DeviceId         = dto.DeviceId,
             SensorId         = dto.SensorId,
             SwitchNo         = dto.SwitchNo,
@@ -34,10 +35,12 @@ public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDevic
             UnitType         = dto.UnitType,
             SensorType       = dto.SensorType,
             Protocol         = dto.Protocol,
-            SyncPeriodicity  = dto.SyncPeriodicity,
-            EventChangeSync  = dto.EventChangeSync,
-            EventChangeDelta = dto.EventChangeDelta,
-            InstalledById    = dto.InstalledById,
+            SyncPeriodicity      = dto.SyncPeriodicity,
+            EventChangeSync      = dto.EventChangeSync,
+            EventChangeDelta     = dto.EventChangeDelta,
+            IsInInchingMode      = dto.IsInInchingMode,
+            InchingModeWidthInMs = dto.InchingModeWidthInMs,
+            InstalledById        = dto.InstalledById,
             InstalledAt      = DateTime.UtcNow,
             IsActive         = true
         };
@@ -47,7 +50,7 @@ public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDevic
         return ToDto(ds);
     }
 
-    public async Task<DeviceSensorDto?> UpdateAsync(long id, UpdateDeviceSensorDto dto)
+    public async Task<DeviceSensorDto?> UpdateAsync(string id, UpdateDeviceSensorDto dto)
     {
         var ds = await db.DeviceSensors.FindAsync(id);
         if (ds is null) return null;
@@ -60,29 +63,31 @@ public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDevic
         ds.UnitType         = dto.UnitType;
         ds.SensorType       = dto.SensorType;
         ds.Protocol         = dto.Protocol;
-        ds.SyncPeriodicity  = dto.SyncPeriodicity;
-        ds.EventChangeSync  = dto.EventChangeSync;
-        ds.EventChangeDelta = dto.EventChangeDelta;
-        ds.IsActive         = dto.IsActive;
-        ds.Notes            = dto.Notes;
+        ds.SyncPeriodicity      = dto.SyncPeriodicity;
+        ds.EventChangeSync      = dto.EventChangeSync;
+        ds.EventChangeDelta     = dto.EventChangeDelta;
+        ds.IsInInchingMode      = dto.IsInInchingMode;
+        ds.InchingModeWidthInMs = dto.InchingModeWidthInMs;
+        ds.IsActive             = dto.IsActive;
+        ds.Notes                = dto.Notes;
         await db.SaveChangesAsync();
         await PublishSensorConfigAsync(ds.DeviceId);
         return ToDto(ds);
     }
 
-    public async Task<bool> UpdateLastReadingAsync(Guid deviceId, Guid sensorId, string json)
+    public async Task<bool> UpdateLastReadingAsync(string deviceId, Guid sensorId, string json)
     {
         var ds = await db.DeviceSensors
             .Where(ds => ds.DeviceId == deviceId && ds.SensorId == sensorId && ds.IsActive)
             .OrderByDescending(ds => ds.InstalledAt)
             .FirstOrDefaultAsync();
         if (ds is null) return false;
-        ds.LastReading = json;
+        db.Entry(ds).Property<string?>("LastReading").CurrentValue = json;
         await db.SaveChangesAsync();
         return true;
     }
 
-    public async Task<bool> UninstallAsync(long id)
+    public async Task<bool> UninstallAsync(string id)
     {
         var ds = await db.DeviceSensors.FindAsync(id);
         if (ds is null) return false;
@@ -93,16 +98,11 @@ public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDevic
         return true;
     }
 
-    private async Task PublishSensorConfigAsync(Guid devicePk)
+    // DeviceId IS the PK now — no extra lookup needed
+    private async Task PublishSensorConfigAsync(string deviceId)
     {
-        var deviceId = await db.Devices
-            .Where(d => d.Id == devicePk)
-            .Select(d => d.DeviceId)
-            .FirstOrDefaultAsync();
-        if (deviceId is null) return;
-
         var sensors = await db.DeviceSensors
-            .Where(ds => ds.DeviceId == devicePk)
+            .Where(ds => ds.DeviceId == deviceId)
             .Select(ds => ToDto(ds))
             .ToListAsync();
         await mqtt.PublishAsync(MqttHelper.GetMqttTopic(MqttTopics.CloudSensorConfig, deviceId), sensors, retainFlag: true);
@@ -112,5 +112,7 @@ public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDevic
         new(ds.Id, ds.DeviceId, ds.SensorId, ds.SwitchNo, ds.UnitId, ds.Address, ds.Port,
             ds.DisplayName, ds.Url, ds.UnitType, ds.SensorType, ds.Protocol,
             ds.SyncPeriodicity, ds.EventChangeSync, ds.EventChangeDelta,
-            ds.InstalledAt, ds.IsActive, ds.Notes, ds.LastReading);
+            ds.IsInInchingMode, ds.InchingModeWidthInMs,
+            ds.InstalledAt, ds.IsActive, ds.Notes,
+            EF.Property<string?>(ds, "LastReading"));
 }

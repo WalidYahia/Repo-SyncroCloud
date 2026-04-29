@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SyncroInfraLayer.Data;
@@ -11,9 +12,11 @@ using SyncroInfraLayer.Data;
 namespace SyncroInfraLayer.Migrations
 {
     [DbContext(typeof(SyncroDbContext))]
-    partial class SyncroDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260426071142_DeviceStringPrimaryKeys")]
+    partial class DeviceStringPrimaryKeys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -375,9 +378,6 @@ namespace SyncroInfraLayer.Migrations
                     b.Property<bool>("EventChangeSync")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("InchingModeWidthInMs")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("InstalledAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -388,9 +388,6 @@ namespace SyncroInfraLayer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
                         .HasDefaultValue(true);
-
-                    b.Property<bool>("IsInInchingMode")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("LastReading")
                         .HasColumnType("jsonb");

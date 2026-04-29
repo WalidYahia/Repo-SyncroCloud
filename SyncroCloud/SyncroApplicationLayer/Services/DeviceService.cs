@@ -15,7 +15,7 @@ public class DeviceService(SyncroDbContext db) : IDeviceService
     public async Task<List<DeviceDto>> GetByTenantAsync(Guid tenantId) =>
         await db.Devices.Where(d => d.TenantId == tenantId).Select(d => ToDto(d)).ToListAsync();
 
-    public async Task<DeviceDto?> GetByIdAsync(Guid id)
+    public async Task<DeviceDto?> GetByIdAsync(string id)
     {
         var d = await db.Devices.FindAsync(id);
         return d is null ? null : ToDto(d);
@@ -26,16 +26,15 @@ public class DeviceService(SyncroDbContext db) : IDeviceService
         var city = await db.Cities.FindAsync(dto.CityId);
         var device = new Device
         {
-            Id = Guid.NewGuid(),
-            DeviceId = dto.DeviceId,
-            TenantId = dto.TenantId,
-            CityId = dto.CityId,
-            Name = dto.Name,
+            DeviceId     = dto.DeviceId,
+            TenantId     = dto.TenantId,
+            CityId       = dto.CityId,
+            Name         = dto.Name,
             SerialNumber = dto.SerialNumber,
-            Longitude = city?.Longitude,
-            Latitude  = city?.Latitude,
-            Type = dto.Type,
-            Status = DeviceStatus.Offline,
+            Longitude    = city?.Longitude,
+            Latitude     = city?.Latitude,
+            Type         = dto.Type,
+            Status       = DeviceStatus.Offline,
             RegisteredAt = DateTime.UtcNow
         };
         db.Devices.Add(device);
@@ -43,30 +42,30 @@ public class DeviceService(SyncroDbContext db) : IDeviceService
         return ToDto(device);
     }
 
-    public async Task<DeviceDto?> UpdateAsync(Guid id, UpdateDeviceDto dto)
+    public async Task<DeviceDto?> UpdateAsync(string id, UpdateDeviceDto dto)
     {
         var device = await db.Devices.FindAsync(id);
         if (device is null) return null;
-        device.Name = dto.Name;
-        device.CityId = dto.CityId;
+        device.Name      = dto.Name;
+        device.CityId    = dto.CityId;
         device.Longitude = dto.Longitude;
-        device.Latitude = dto.Latitude;
-        device.Status = dto.Status;
+        device.Latitude  = dto.Latitude;
+        device.Status    = dto.Status;
         await db.SaveChangesAsync();
         return ToDto(device);
     }
 
-    public async Task<bool> UpdateStatusAsync(Guid id, DeviceStatus status)
+    public async Task<bool> UpdateStatusAsync(string id, DeviceStatus status)
     {
         var device = await db.Devices.FindAsync(id);
         if (device is null) return false;
-        device.Status = status;
+        device.Status    = status;
         device.LastSeenAt = status == DeviceStatus.Online ? DateTime.UtcNow : device.LastSeenAt;
         await db.SaveChangesAsync();
         return true;
     }
 
-    public async Task<bool> DeleteAsync(Guid id)
+    public async Task<bool> DeleteAsync(string id)
     {
         var device = await db.Devices.FindAsync(id);
         if (device is null) return false;
@@ -76,5 +75,5 @@ public class DeviceService(SyncroDbContext db) : IDeviceService
     }
 
     private static DeviceDto ToDto(Device d) =>
-        new(d.Id, d.DeviceId, d.TenantId, d.CityId, d.Name, d.SerialNumber, d.Longitude, d.Latitude, d.Type, d.Status, d.RegisteredAt, d.LastSeenAt);
+        new(d.DeviceId, d.TenantId, d.CityId, d.Name, d.SerialNumber, d.Longitude, d.Latitude, d.Type, d.Status, d.RegisteredAt, d.LastSeenAt);
 }

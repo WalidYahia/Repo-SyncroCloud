@@ -3,8 +3,8 @@ namespace SyncroInfraLayer.Entities;
 public class DeviceReading
 {
     public Guid Id { get; set; }
-    public long DeviceSensorId { get; set; }
-    public Guid DeviceId { get; set; }
+    public string DeviceSensorId { get; set; } = string.Empty;
+    public string DeviceId { get; set; } = string.Empty;
     public Guid SensorId { get; set; }
 
     /// <summary>Timestamp reported by the device.</summary>

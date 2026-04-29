@@ -4,7 +4,7 @@ namespace SyncroApplicationLayer.Auth.Interfaces;
 
 public interface IApiKeyService
 {
-    Task<GenerateApiKeyResponseDto> GenerateAsync(Guid deviceId);
-    Task<Guid?> ValidateAsync(string apiKey);
-    Task<bool> RevokeAsync(Guid deviceId);
+    Task<GenerateApiKeyResponseDto> GenerateAsync(string deviceId);
+    Task<string?> ValidateAsync(string apiKey);
+    Task<bool> RevokeAsync(string deviceId);
 }

@@ -9,7 +9,10 @@ public class DeviceSensorConfiguration : IEntityTypeConfiguration<DeviceSensor>
     public void Configure(EntityTypeBuilder<DeviceSensor> builder)
     {
         builder.HasKey(ds => ds.Id);
-        builder.Property(ds => ds.Id).ValueGeneratedOnAdd();
+
+        builder.Property(ds => ds.Id)
+            .IsRequired()
+            .HasMaxLength(500);
 
         builder.HasIndex(ds => new { ds.DeviceId, ds.SensorId, ds.SwitchNo, ds.UnitId, ds.Address, ds.Port })
             .IsUnique()
@@ -51,7 +54,7 @@ public class DeviceSensorConfiguration : IEntityTypeConfiguration<DeviceSensor>
         builder.Property(ds => ds.Notes)
             .HasMaxLength(500);
 
-        builder.Property(ds => ds.LastReading)
+        builder.Property<string?>("LastReading")
             .HasColumnType("jsonb");
 
         builder.HasOne(ds => ds.Device)

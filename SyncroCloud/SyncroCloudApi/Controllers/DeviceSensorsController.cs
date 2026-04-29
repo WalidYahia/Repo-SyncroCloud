@@ -8,12 +8,12 @@ namespace SyncroCloudApi.Controllers;
 [Route("api/[controller]")]
 public class DeviceSensorsController(IDeviceSensorService service) : ApiControllerBase
 {
-    [HttpGet("device/{deviceId:guid}")]
-    public async Task<IActionResult> GetByDevice(Guid deviceId) =>
+    [HttpGet("device/{deviceId}")]
+    public async Task<IActionResult> GetByDevice(string deviceId) =>
         Ok(await service.GetByDeviceAsync(deviceId));
 
-    [HttpGet("{id:long}")]
-    public async Task<IActionResult> GetById(long id)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(string id)
     {
         var result = await service.GetByIdAsync(id);
         return result is null ? ResourceNotFound("DeviceSensor", id) : Ok(result);
@@ -26,15 +26,15 @@ public class DeviceSensorsController(IDeviceSensorService service) : ApiControll
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
     }
 
-    [HttpPut("{id:long}")]
-    public async Task<IActionResult> Update(long id, UpdateDeviceSensorDto dto)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(string id, UpdateDeviceSensorDto dto)
     {
         var result = await service.UpdateAsync(id, dto);
         return result is null ? ResourceNotFound("DeviceSensor", id) : Ok(result);
     }
 
-    [HttpDelete("{id:long}")]
-    public async Task<IActionResult> Uninstall(long id)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Uninstall(string id)
     {
         var removed = await service.UninstallAsync(id);
         return removed ? NoContent() : ResourceNotFound("DeviceSensor", id);

@@ -8,12 +8,12 @@ namespace SyncroCloudApi.Controllers;
 [Route("api/[controller]")]
 public class DeviceScenariosController(IDeviceScenarioService service) : ApiControllerBase
 {
-    [HttpGet("device/{deviceId:guid}")]
-    public async Task<IActionResult> GetByDevice(Guid deviceId) =>
+    [HttpGet("device/{deviceId}")]
+    public async Task<IActionResult> GetByDevice(string deviceId) =>
         Ok(await service.GetByDeviceAsync(deviceId));
 
-    [HttpGet("device/{deviceId:guid}/{scenarioId:guid}")]
-    public async Task<IActionResult> GetById(Guid deviceId, Guid scenarioId)
+    [HttpGet("device/{deviceId}/{scenarioId:guid}")]
+    public async Task<IActionResult> GetById(string deviceId, Guid scenarioId)
     {
         var result = await service.GetByIdAsync(deviceId, scenarioId);
         return result is null ? ResourceNotFound("Scenario", scenarioId) : Ok(result);
@@ -26,15 +26,15 @@ public class DeviceScenariosController(IDeviceScenarioService service) : ApiCont
         return Ok(result);
     }
 
-    [HttpDelete("device/{deviceId:guid}/{scenarioId:guid}")]
-    public async Task<IActionResult> Delete(Guid deviceId, Guid scenarioId)
+    [HttpDelete("device/{deviceId}/{scenarioId:guid}")]
+    public async Task<IActionResult> Delete(string deviceId, Guid scenarioId)
     {
         var deleted = await service.DeleteAsync(deviceId, scenarioId);
         return deleted ? NoContent() : ResourceNotFound("Scenario", scenarioId);
     }
 
-    [HttpDelete("device/{deviceId:guid}")]
-    public async Task<IActionResult> DeleteAll(Guid deviceId)
+    [HttpDelete("device/{deviceId}")]
+    public async Task<IActionResult> DeleteAll(string deviceId)
     {
         var count = await service.DeleteAllByDeviceAsync(deviceId);
         return Ok(new { deleted = count, message = $"{count} scenario(s) deleted." });

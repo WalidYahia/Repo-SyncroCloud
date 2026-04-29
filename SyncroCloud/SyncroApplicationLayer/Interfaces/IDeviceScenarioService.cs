@@ -4,9 +4,9 @@ namespace SyncroApplicationLayer.Interfaces;
 
 public interface IDeviceScenarioService
 {
-    Task<List<DeviceScenarioDto>> GetByDeviceAsync(Guid deviceId);
-    Task<DeviceScenarioDto?> GetByIdAsync(Guid deviceId, Guid scenarioId);
+    Task<List<DeviceScenarioDto>> GetByDeviceAsync(string deviceId);
+    Task<DeviceScenarioDto?> GetByIdAsync(string deviceId, Guid scenarioId);
     Task<DeviceScenarioDto> UpsertAsync(Guid scenarioId, UpsertDeviceScenarioDto dto);
-    Task<bool> DeleteAsync(Guid deviceId, Guid scenarioId);
-    Task<int> DeleteAllByDeviceAsync(Guid deviceId);
+    Task<bool> DeleteAsync(string deviceId, Guid scenarioId);
+    Task<int> DeleteAllByDeviceAsync(string deviceId);
 }

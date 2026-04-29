@@ -1,5 +1,4 @@
 export interface DeviceDto {
-  id: string;
   deviceId: string;
   tenantId: string;
   cityId: number;
@@ -23,7 +22,7 @@ export interface CreateDeviceDto {
 }
 
 export interface DeviceSensorDto {
-  id: number;
+  id: string;
   deviceId: string;
   sensorId: string;
   switchNo: string;

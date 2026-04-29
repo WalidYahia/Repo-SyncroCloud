@@ -3,7 +3,7 @@ namespace SyncroInfraLayer.Entities;
 public class DeviceScenario
 {
     public Guid Id { get; set; }
-    public Guid DeviceId { get; set; }
+    public string DeviceId { get; set; } = string.Empty;
     public string Payload { get; set; } = "{}";  // jsonb — full UserScenario object
     public DateTime UpdatedAt { get; set; }
 

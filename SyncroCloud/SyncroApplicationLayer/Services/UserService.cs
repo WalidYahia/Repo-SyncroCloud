@@ -31,7 +31,10 @@ public class UserService(UserManager<AppUser> userManager, SyncroDbContext db) :
             CreatedAt = DateTime.UtcNow,
             IsActive = true
         };
-        await userManager.CreateAsync(user);
+        var result = await userManager.CreateAsync(user, dto.Password);
+        if (!result.Succeeded)
+            throw new InvalidOperationException(string.Join("; ", result.Errors.Select(e => e.Description)));
+
         return ToDto(user);
     }
 

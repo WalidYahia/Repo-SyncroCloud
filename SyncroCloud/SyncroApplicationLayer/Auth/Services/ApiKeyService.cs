@@ -10,25 +10,24 @@ namespace SyncroApplicationLayer.Auth.Services;
 
 public class ApiKeyService(SyncroDbContext db) : IApiKeyService
 {
-    public async Task<GenerateApiKeyResponseDto> GenerateAsync(Guid deviceId)
+    public async Task<GenerateApiKeyResponseDto> GenerateAsync(string deviceId)
     {
-        // revoke existing key if any
         var existing = await db.DeviceApiKeys.FirstOrDefaultAsync(k => k.DeviceId == deviceId);
         if (existing is not null)
             db.DeviceApiKeys.Remove(existing);
 
         var rawKey = GenerateRawKey(deviceId);
         var prefix = rawKey[..8];
-        var hash = HashKey(rawKey);
+        var hash   = HashKey(rawKey);
 
         var apiKey = new DeviceApiKey
         {
-            Id = Guid.NewGuid(),
-            DeviceId = deviceId,
-            KeyHash = hash,
-            Prefix = prefix,
+            Id        = Guid.NewGuid(),
+            DeviceId  = deviceId,
+            KeyHash   = hash,
+            Prefix    = prefix,
             CreatedAt = DateTime.UtcNow,
-            IsActive = true
+            IsActive  = true
         };
 
         db.DeviceApiKeys.Add(apiKey);
@@ -37,9 +36,9 @@ public class ApiKeyService(SyncroDbContext db) : IApiKeyService
         return new GenerateApiKeyResponseDto(rawKey, prefix, apiKey.CreatedAt);
     }
 
-    public async Task<Guid?> ValidateAsync(string apiKey)
+    public async Task<string?> ValidateAsync(string apiKey)
     {
-        var hash = HashKey(apiKey);
+        var hash   = HashKey(apiKey);
         var record = await db.DeviceApiKeys
             .FirstOrDefaultAsync(k => k.KeyHash == hash && k.IsActive);
 
@@ -49,7 +48,7 @@ public class ApiKeyService(SyncroDbContext db) : IApiKeyService
         return record.DeviceId;
     }
 
-    public async Task<bool> RevokeAsync(Guid deviceId)
+    public async Task<bool> RevokeAsync(string deviceId)
     {
         var key = await db.DeviceApiKeys.FirstOrDefaultAsync(k => k.DeviceId == deviceId);
         if (key is null) return false;
@@ -58,10 +57,10 @@ public class ApiKeyService(SyncroDbContext db) : IApiKeyService
         return true;
     }
 
-    private static string GenerateRawKey(Guid deviceId)
+    private static string GenerateRawKey(string deviceId)
     {
         var random = RandomNumberGenerator.GetBytes(32);
-        return $"sk_{deviceId:N}_{Convert.ToHexString(random).ToLower()}";
+        return $"sk_{deviceId}_{Convert.ToHexString(random).ToLower()}";
     }
 
     private static string HashKey(string key)

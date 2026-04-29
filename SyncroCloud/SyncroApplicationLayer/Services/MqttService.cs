@@ -92,7 +92,8 @@ public class MqttService(
             // syncro/{deviceId}/sensors/{sensorId}/data
             if (parts.Length == 5 && parts[0] == "syncro" && parts[2] == "sensors" && parts[4] == "data")
             {
-                if (!Guid.TryParse(parts[1], out var deviceId) || !Guid.TryParse(parts[3], out var sensorId))
+                var deviceId = parts[1];
+                if (!Guid.TryParse(parts[3], out var sensorId))
                     return;
 
                 var readingService = scope.ServiceProvider.GetRequiredService<IDeviceReadingService>();
@@ -106,7 +107,7 @@ public class MqttService(
             // syncro/{deviceId}/status
             else if (parts.Length == 3 && parts[0] == "syncro" && parts[2] == "status")
             {
-                if (!Guid.TryParse(parts[1], out var deviceId)) return;
+                var deviceId = parts[1];
 
                 var deviceService = scope.ServiceProvider.GetRequiredService<IDeviceService>();
                 var status = payload.Trim('"').Equals("online", StringComparison.OrdinalIgnoreCase)
@@ -147,7 +148,7 @@ public class MqttService(
         logger.LogDebug("Published to {Topic}", topic);
     }
 
-    public async Task PublishCommandAsync(Guid deviceId, string action, object payload, CancellationToken ct = default)
+    public async Task PublishCommandAsync(string deviceId, string action, object payload, CancellationToken ct = default)
     {
         if (!_client.IsConnected)
         {

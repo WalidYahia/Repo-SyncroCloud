@@ -10,13 +10,13 @@ namespace SyncroApplicationLayer.Services;
 
 public class DeviceScenarioService(SyncroDbContext db, IMqttService mqtt) : IDeviceScenarioService
 {
-    public async Task<List<DeviceScenarioDto>> GetByDeviceAsync(Guid deviceId) =>
+    public async Task<List<DeviceScenarioDto>> GetByDeviceAsync(string deviceId) =>
         await db.DeviceScenarios
             .Where(s => s.DeviceId == deviceId)
             .Select(s => ToDto(s))
             .ToListAsync();
 
-    public async Task<DeviceScenarioDto?> GetByIdAsync(Guid deviceId, Guid scenarioId)
+    public async Task<DeviceScenarioDto?> GetByIdAsync(string deviceId, Guid scenarioId)
     {
         var s = await db.DeviceScenarios.FindAsync(scenarioId);
         return s is null || s.DeviceId != deviceId ? null : ToDto(s);
@@ -47,7 +47,7 @@ public class DeviceScenarioService(SyncroDbContext db, IMqttService mqtt) : IDev
         return ToDto(existing);
     }
 
-    public async Task<bool> DeleteAsync(Guid deviceId, Guid scenarioId)
+    public async Task<bool> DeleteAsync(string deviceId, Guid scenarioId)
     {
         var s = await db.DeviceScenarios.FindAsync(scenarioId);
         if (s is null || s.DeviceId != deviceId) return false;
@@ -57,7 +57,7 @@ public class DeviceScenarioService(SyncroDbContext db, IMqttService mqtt) : IDev
         return true;
     }
 
-    public async Task<int> DeleteAllByDeviceAsync(Guid deviceId)
+    public async Task<int> DeleteAllByDeviceAsync(string deviceId)
     {
         var count = await db.DeviceScenarios
             .Where(s => s.DeviceId == deviceId)
@@ -69,16 +69,11 @@ public class DeviceScenarioService(SyncroDbContext db, IMqttService mqtt) : IDev
         return count;
     }
 
-    private async Task PublishScenariosAsync(Guid devicePk)
+    // DeviceId IS the PK now — no extra lookup needed
+    private async Task PublishScenariosAsync(string deviceId)
     {
-        var deviceId = await db.Devices
-            .Where(d => d.Id == devicePk)
-            .Select(d => d.DeviceId)
-            .FirstOrDefaultAsync();
-        if (deviceId is null) return;
-
         var scenarios = await db.DeviceScenarios
-            .Where(s => s.DeviceId == devicePk)
+            .Where(s => s.DeviceId == deviceId)
             .Select(s => ToDto(s))
             .ToListAsync();
 

@@ -60,7 +60,7 @@ export class DeviceRegisterComponent implements OnInit {
     if (this.form.invalid) return;
     const { countryId, ...dto } = this.form.value;
     this.deviceService.create(dto as any).subscribe(device => {
-      this.router.navigate(['/devices', device.id, 'sensors']);
+      this.router.navigate(['/devices', device.deviceId, 'sensors']);
     });
   }
 }

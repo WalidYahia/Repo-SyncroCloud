@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -29,6 +29,7 @@ export class DeviceSensorsComponent implements OnInit {
   private deviceService = inject(DeviceService);
   private sensorService = inject(SensorService);
   private fb            = inject(FormBuilder);
+  private cdr           = inject(ChangeDetectorRef);
 
   deviceId!: string;
   installed:        DeviceSensorDto[] = [];
@@ -54,9 +55,13 @@ export class DeviceSensorsComponent implements OnInit {
     forkJoin([
       this.deviceService.getSensors(this.deviceId),
       this.sensorService.getAll()
-    ]).subscribe(([installed, sensors]) => {
-      this.installed        = installed;
-      this.availableSensors = sensors;
+    ]).subscribe({
+      next: ([installed, sensors]) => {
+        this.installed        = installed;
+        this.availableSensors = sensors;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Failed to load sensors page data', err)
     });
   }
 
@@ -93,7 +98,7 @@ export class DeviceSensorsComponent implements OnInit {
     });
   }
 
-  uninstall(id: number) {
+  uninstall(id: string) {
     if (confirm('Uninstall this sensor?')) {
       this.deviceService.uninstallSensor(id).subscribe(() => {
         this.installed = this.installed.filter(s => s.id !== id);

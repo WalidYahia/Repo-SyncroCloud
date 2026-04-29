@@ -7,9 +7,9 @@ public interface IDeviceService
 {
     Task<List<DeviceDto>> GetAllAsync();
     Task<List<DeviceDto>> GetByTenantAsync(Guid tenantId);
-    Task<DeviceDto?> GetByIdAsync(Guid id);
+    Task<DeviceDto?> GetByIdAsync(string id);
     Task<DeviceDto> CreateAsync(CreateDeviceDto dto);
-    Task<DeviceDto?> UpdateAsync(Guid id, UpdateDeviceDto dto);
-    Task<bool> UpdateStatusAsync(Guid id, DeviceStatus status);
-    Task<bool> DeleteAsync(Guid id);
+    Task<DeviceDto?> UpdateAsync(string id, UpdateDeviceDto dto);
+    Task<bool> UpdateStatusAsync(string id, DeviceStatus status);
+    Task<bool> DeleteAsync(string id);
 }

@@ -23,7 +23,7 @@ public class ApiKeyMiddleware(RequestDelegate next)
             return;
         }
 
-        context.Items[DeviceIdKey] = deviceId.Value;
+        context.Items[DeviceIdKey] = deviceId;
         await next(context);
     }
 }

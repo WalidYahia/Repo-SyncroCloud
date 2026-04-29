@@ -5,7 +5,6 @@ namespace SyncroInfraLayer.Entities;
 
 public class Device
 {
-    public Guid Id { get; set; }
     public string DeviceId { get; set; } = string.Empty;
     public Guid TenantId { get; set; }
     public Guid? CreatedByUser { get; set; }

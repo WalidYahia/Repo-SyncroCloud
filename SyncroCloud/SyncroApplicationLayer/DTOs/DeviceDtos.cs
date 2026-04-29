@@ -3,7 +3,7 @@ using SyncroInfraLayer.Enums;
 namespace SyncroApplicationLayer.DTOs;
 
 public record DeviceDto(
-    Guid Id, string DeviceId, Guid TenantId, int CityId,
+    string DeviceId, Guid TenantId, int CityId,
     string Name, string SerialNumber,
     double? Longitude, double? Latitude,
     DeviceType Type, DeviceStatus Status,

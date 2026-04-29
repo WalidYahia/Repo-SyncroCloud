@@ -18,7 +18,7 @@ export class DeviceService {
   // Device Sensors
   getSensors(deviceId: string)        { return this.http.get<DeviceSensorDto[]>(`${environment.apiUrl}/devicesensors/device/${deviceId}`); }
   installSensor(dto: CreateDeviceSensorDto) { return this.http.post<DeviceSensorDto>(`${environment.apiUrl}/devicesensors`, dto); }
-  uninstallSensor(id: number) { return this.http.delete(`${environment.apiUrl}/devicesensors/${id}`); }
+  uninstallSensor(id: string) { return this.http.delete(`${environment.apiUrl}/devicesensors/${id}`); }
 
   // Device Scenarios
   getScenarios(deviceId: string)      { return this.http.get<DeviceScenarioDto[]>(`${environment.apiUrl}/devicescenarios/device/${deviceId}`); }

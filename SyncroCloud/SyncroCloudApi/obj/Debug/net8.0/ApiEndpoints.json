@@ -188,7 +188,7 @@
     "Parameters": [
       {
         "Name": "deviceId",
-        "Type": "System.Guid",
+        "Type": "System.String",
         "IsRequired": false
       },
       {
@@ -261,7 +261,7 @@
     "Parameters": [
       {
         "Name": "deviceId",
-        "Type": "System.Guid",
+        "Type": "System.String",
         "IsRequired": true
       }
     ],
@@ -287,7 +287,7 @@
     "Parameters": [
       {
         "Name": "deviceId",
-        "Type": "System.Guid",
+        "Type": "System.String",
         "IsRequired": true
       }
     ],
@@ -303,7 +303,7 @@
     "Parameters": [
       {
         "Name": "id",
-        "Type": "System.Guid",
+        "Type": "System.String",
         "IsRequired": true
       }
     ],
@@ -319,7 +319,7 @@
     "Parameters": [
       {
         "Name": "id",
-        "Type": "System.Guid",
+        "Type": "System.String",
         "IsRequired": true
       },
       {
@@ -340,7 +340,7 @@
     "Parameters": [
       {
         "Name": "id",
-        "Type": "System.Guid",
+        "Type": "System.String",
         "IsRequired": true
       }
     ],
@@ -356,7 +356,7 @@
     "Parameters": [
       {
         "Name": "id",
-        "Type": "System.Guid",
+        "Type": "System.String",
         "IsRequired": true
       },
       {
@@ -414,7 +414,7 @@
     "Parameters": [
       {
         "Name": "deviceId",
-        "Type": "System.Guid",
+        "Type": "System.String",
         "IsRequired": true
       }
     ],
@@ -430,7 +430,7 @@
     "Parameters": [
       {
         "Name": "deviceId",
-        "Type": "System.Guid",
+        "Type": "System.String",
         "IsRequired": true
       }
     ],
@@ -446,7 +446,7 @@
     "Parameters": [
       {
         "Name": "deviceId",
-        "Type": "System.Guid",
+        "Type": "System.String",
         "IsRequired": true
       },
       {
@@ -467,7 +467,7 @@
     "Parameters": [
       {
         "Name": "deviceId",
-        "Type": "System.Guid",
+        "Type": "System.String",
         "IsRequired": true
       },
       {
@@ -504,7 +504,7 @@
     "Parameters": [
       {
         "Name": "id",
-        "Type": "System.Int64",
+        "Type": "System.String",
         "IsRequired": true
       }
     ],
@@ -520,7 +520,7 @@
     "Parameters": [
       {
         "Name": "id",
-        "Type": "System.Int64",
+        "Type": "System.String",
         "IsRequired": true
       },
       {
@@ -541,7 +541,7 @@
     "Parameters": [
       {
         "Name": "id",
-        "Type": "System.Int64",
+        "Type": "System.String",
         "IsRequired": true
       }
     ],
@@ -557,7 +557,7 @@
     "Parameters": [
       {
         "Name": "deviceId",
-        "Type": "System.Guid",
+        "Type": "System.String",
         "IsRequired": true
       }
     ],

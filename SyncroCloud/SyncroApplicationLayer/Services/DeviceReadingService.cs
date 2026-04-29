@@ -8,7 +8,7 @@ namespace SyncroApplicationLayer.Services;
 
 public class DeviceReadingService(SyncroDbContext db) : IDeviceReadingService
 {
-    public async Task<List<DeviceReadingDto>> GetAsync(Guid deviceId, Guid sensorId, DateTime? from, DateTime? to)
+    public async Task<List<DeviceReadingDto>> GetAsync(string deviceId, Guid sensorId, DateTime? from, DateTime? to)
     {
         var query = db.DeviceReadings.Where(r => r.DeviceId == deviceId && r.SensorId == sensorId);
         if (from.HasValue) query = query.Where(r => r.RecordedAt >= from.Value);
@@ -26,7 +26,7 @@ public class DeviceReadingService(SyncroDbContext db) : IDeviceReadingService
         var reading = new DeviceReading
         {
             Id             = Guid.NewGuid(),
-            DeviceSensorId = deviceSensor?.Id ?? 0,
+            DeviceSensorId = deviceSensor?.Id ?? string.Empty,
             DeviceId       = dto.DeviceId,
             SensorId       = dto.SensorId,
             RecordedAt     = dto.RecordedAt,
