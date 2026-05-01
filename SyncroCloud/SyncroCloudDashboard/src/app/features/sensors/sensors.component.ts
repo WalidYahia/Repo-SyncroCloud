@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { finalize } from 'rxjs';
 import { SensorService } from '../../core/services/sensor.service';
 import { SensorDto } from '../../core/models/sensor.models';
@@ -16,7 +17,7 @@ import { SensorDto } from '../../core/models/sensor.models';
 @Component({
   selector: 'app-sensors',
   standalone: true,
-  imports: [ReactiveFormsModule, MatTableModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatSlideToggleModule, MatCardModule, MatProgressSpinnerModule],
+  imports: [ReactiveFormsModule, MatTableModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatSlideToggleModule, MatCardModule, MatProgressSpinnerModule, MatTooltipModule],
   templateUrl: './sensors.component.html',
   styleUrl: './sensors.component.scss'
 })
@@ -25,19 +26,22 @@ export class SensorsComponent implements OnInit {
   private fb = inject(FormBuilder);
 
   sensors: SensorDto[] = [];
-  columns = ['name', 'type', 'unitType', 'protocol', 'syncPeriodicity', 'eventSync', 'actions'];
+  columns = ['name', 'type', 'protocol', 'baseUrl', 'syncPeriodicity', 'eventSync', 'actions'];
   showForm = false;
   loading = signal(true);
 
-  sensorTypes = ['Swich','Temperature','Humidity','Pressure','Motion','Gas','Light','Vibration','Current','Voltage'];
-  unitTypes   = ['Unknown','SonoffMiniR3','SonoffMiniR4M'];
-  protocols   = ['MQTT','HTTP','CoAP','Modbus','Zigbee','ZWave','BLE','LoRa','RS485'];
+  sensorTypes  = ['Unknown', 'SonOffMiniR3Swich', 'Temperature', 'Humidity', 'Pressure', 'Motion', 'Gas', 'Light', 'Vibration', 'Current', 'Voltage'];
+  protocols    = ['MQTT', 'HTTP', 'CoAP', 'Modbus', 'Zigbee', 'ZWave', 'BLE', 'LoRa', 'RS485'];
 
   form = this.fb.group({
     name:               ['', Validators.required],
     type:               ['', Validators.required],
-    unitType:           ['', Validators.required],
     connectionProtocol: ['', Validators.required],
+    baseUrl:            [''],
+    portNo:             [''],
+    dataPath:           [''],
+    infoPath:           [''],
+    inchingPath:        [''],
     syncPeriodicity:    [null as number | null],
     eventChangeSync:    [false],
     eventChangeDelta:   [null as number | null]

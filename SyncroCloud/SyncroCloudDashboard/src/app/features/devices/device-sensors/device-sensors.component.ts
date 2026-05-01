@@ -45,10 +45,14 @@ export class DeviceSensorsComponent implements OnInit {
     switchNo:    ['Non'],
     unitId:      ['', Validators.required],
     displayName: ['', Validators.required],
-    url:         [''],
     address:     [null as number | null],
     port:        [null as number | null],
   });
+
+  get computedUrl(): string {
+    if (!this.selectedSensor) return '';
+    return `${this.selectedSensor.baseUrl}${this.form.value.unitId ?? ''}:${this.selectedSensor.portNo}`;
+  }
 
   ngOnInit() {
     this.deviceId = this.route.snapshot.paramMap.get('id')!;
@@ -80,10 +84,15 @@ export class DeviceSensorsComponent implements OnInit {
     if (this.form.invalid || !this.selectedSensor) return;
     const dto = {
       ...this.form.value,
+      url:              this.computedUrl,
       deviceId:         this.deviceId,
       sensorType:       this.selectedSensor.type,
-      unitType:         this.selectedSensor.unitType,
       protocol:         0,
+      baseUrl:          this.selectedSensor.baseUrl,
+      portNo:           this.selectedSensor.portNo,
+      dataPath:         this.selectedSensor.dataPath,
+      infoPath:         this.selectedSensor.infoPath,
+      inchingPath:      this.selectedSensor.inchingPath,
       syncPeriodicity:  this.selectedSensor.syncPeriodicity,
       eventChangeSync:  this.selectedSensor.eventChangeSync,
       eventChangeDelta: this.selectedSensor.eventChangeDelta,

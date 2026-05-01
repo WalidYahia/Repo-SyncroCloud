@@ -1832,15 +1832,32 @@
             "type": "string",
             "nullable": true
           },
-          "unitType": {
-            "$ref": "#/components/schemas/UnitType"
-          },
           "sensorType": {
             "$ref": "#/components/schemas/SensorType"
           },
           "protocol": {
             "type": "integer",
             "format": "int32"
+          },
+          "baseUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "portNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "dataPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "infoPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "inchingPath": {
+            "type": "string",
+            "nullable": true
           },
           "syncPeriodicity": {
             "type": "integer",
@@ -1854,6 +1871,13 @@
             "type": "number",
             "format": "double",
             "nullable": true
+          },
+          "isInInchingMode": {
+            "type": "boolean"
+          },
+          "inchingModeWidthInMs": {
+            "type": "integer",
+            "format": "int32"
           },
           "installedById": {
             "type": "string",
@@ -1870,14 +1894,31 @@
             "type": "string",
             "nullable": true
           },
-          "unitType": {
-            "$ref": "#/components/schemas/UnitType"
-          },
           "type": {
             "$ref": "#/components/schemas/SensorType"
           },
           "connectionProtocol": {
             "$ref": "#/components/schemas/ConnectionProtocol"
+          },
+          "baseUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "portNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "dataPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "infoPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "inchingPath": {
+            "type": "string",
+            "nullable": true
           },
           "syncPeriodicity": {
             "type": "integer",
@@ -2016,7 +2057,8 @@
       },
       "SensorType": {
         "enum": [
-          "Swich",
+          "Unknown",
+          "SonOffMiniR3Swich",
           "Temperature",
           "Humidity",
           "Pressure",
@@ -2060,14 +2102,6 @@
           }
         },
         "additionalProperties": false
-      },
-      "UnitType": {
-        "enum": [
-          "SonoffMiniR3",
-          "SonoffMiniR4M",
-          "Unknown"
-        ],
-        "type": "string"
       },
       "UpdateAlarmLookupDto": {
         "type": "object",
@@ -2170,15 +2204,32 @@
             "type": "string",
             "nullable": true
           },
-          "unitType": {
-            "$ref": "#/components/schemas/UnitType"
-          },
           "sensorType": {
             "$ref": "#/components/schemas/SensorType"
           },
           "protocol": {
             "type": "integer",
             "format": "int32"
+          },
+          "baseUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "portNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "dataPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "infoPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "inchingPath": {
+            "type": "string",
+            "nullable": true
           },
           "syncPeriodicity": {
             "type": "integer",
@@ -2192,6 +2243,13 @@
             "type": "number",
             "format": "double",
             "nullable": true
+          },
+          "isInInchingMode": {
+            "type": "boolean"
+          },
+          "inchingModeWidthInMs": {
+            "type": "integer",
+            "format": "int32"
           },
           "isActive": {
             "type": "boolean"
@@ -2210,14 +2268,31 @@
             "type": "string",
             "nullable": true
           },
-          "unitType": {
-            "$ref": "#/components/schemas/UnitType"
-          },
           "type": {
             "$ref": "#/components/schemas/SensorType"
           },
           "connectionProtocol": {
             "$ref": "#/components/schemas/ConnectionProtocol"
+          },
+          "baseUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "portNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "dataPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "infoPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "inchingPath": {
+            "type": "string",
+            "nullable": true
           },
           "syncPeriodicity": {
             "type": "integer",

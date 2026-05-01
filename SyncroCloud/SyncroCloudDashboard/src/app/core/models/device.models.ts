@@ -31,12 +31,18 @@ export interface DeviceSensorDto {
   port: number | null;
   displayName: string;
   url: string;
-  unitType: string;
   sensorType: string;
   protocol: number;
+  baseUrl: string;
+  portNo: string;
+  dataPath: string;
+  infoPath: string;
+  inchingPath: string;
   syncPeriodicity: number | null;
   eventChangeSync: boolean;
   eventChangeDelta: number | null;
+  isInInchingMode: boolean;
+  inchingModeWidthInMs: number;
   installedAt: string;
   isActive: boolean;
   notes: string | null;
@@ -52,12 +58,18 @@ export interface CreateDeviceSensorDto {
   port: number | null;
   displayName: string;
   url: string;
-  unitType: string;
   sensorType: string;
   protocol: number;
+  baseUrl: string;
+  portNo: string;
+  dataPath: string;
+  infoPath: string;
+  inchingPath: string;
   syncPeriodicity: number | null;
   eventChangeSync: boolean;
   eventChangeDelta: number | null;
+  isInInchingMode: boolean;
+  inchingModeWidthInMs: number;
   installedById: string | null;
 }
 

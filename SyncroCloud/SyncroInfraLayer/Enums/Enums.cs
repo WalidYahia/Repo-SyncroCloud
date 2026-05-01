@@ -17,22 +17,17 @@ public enum DeviceStatus
 // ── Sensor ────────────────────────────────────────────────
 public enum SensorType
 {
-    Swich,
-    Temperature,
-    Humidity,
-    Pressure,
-    Motion,
-    Gas,
-    Light,
-    Vibration,
-    Current,
-    Voltage
-}
-public enum UnitType
-{
-    Unknown = -1,
-    SonoffMiniR3 = 0,
-    SonoffMiniR4M = 1,
+    Unknown           = 0,
+    SonOffMiniR3Swich = 1,
+    Temperature       = 2,
+    Humidity          = 3,
+    Pressure          = 4,
+    Motion            = 5,
+    Gas               = 6,
+    Light             = 7,
+    Vibration         = 8,
+    Current           = 9,
+    Voltage           = 10,
 }
 public enum SwitchNo
 {

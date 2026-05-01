@@ -19,7 +19,21 @@ public class SensorService(SyncroDbContext db) : ISensorService
 
     public async Task<SensorDto> CreateAsync(CreateSensorDto dto)
     {
-        var sensor = new Sensor { SensorId = Guid.NewGuid(), Name = dto.Name, UnitType = dto.UnitType, Type = dto.Type, ConnectionProtocol = dto.ConnectionProtocol, SyncPeriodicity = dto.SyncPeriodicity, EventChangeSync = dto.EventChangeSync, EventChangeDelta = dto.EventChangeDelta };
+        var sensor = new Sensor
+        {
+            SensorId           = Guid.NewGuid(),
+            Name               = dto.Name,
+            Type               = dto.Type,
+            ConnectionProtocol = dto.ConnectionProtocol,
+            BaseUrl            = dto.BaseUrl,
+            PortNo             = dto.PortNo,
+            DataPath           = dto.DataPath,
+            InfoPath           = dto.InfoPath,
+            InchingPath        = dto.InchingPath,
+            SyncPeriodicity    = dto.SyncPeriodicity,
+            EventChangeSync    = dto.EventChangeSync,
+            EventChangeDelta   = dto.EventChangeDelta
+        };
         db.Sensors.Add(sensor);
         await db.SaveChangesAsync();
         return ToDto(sensor);
@@ -29,13 +43,17 @@ public class SensorService(SyncroDbContext db) : ISensorService
     {
         var sensor = await db.Sensors.FindAsync(id);
         if (sensor is null) return null;
-        sensor.Name = dto.Name;
-        sensor.UnitType = dto.UnitType;
-        sensor.Type = dto.Type;
+        sensor.Name               = dto.Name;
+        sensor.Type               = dto.Type;
         sensor.ConnectionProtocol = dto.ConnectionProtocol;
-        sensor.SyncPeriodicity = dto.SyncPeriodicity;
-        sensor.EventChangeSync = dto.EventChangeSync;
-        sensor.EventChangeDelta = dto.EventChangeDelta;
+        sensor.BaseUrl            = dto.BaseUrl;
+        sensor.PortNo             = dto.PortNo;
+        sensor.DataPath           = dto.DataPath;
+        sensor.InfoPath           = dto.InfoPath;
+        sensor.InchingPath        = dto.InchingPath;
+        sensor.SyncPeriodicity    = dto.SyncPeriodicity;
+        sensor.EventChangeSync    = dto.EventChangeSync;
+        sensor.EventChangeDelta   = dto.EventChangeDelta;
         await db.SaveChangesAsync();
         return ToDto(sensor);
     }
@@ -49,5 +67,10 @@ public class SensorService(SyncroDbContext db) : ISensorService
         return true;
     }
 
-    private static SensorDto ToDto(Sensor s) => new(s.SensorId, s.Name, s.UnitType, s.Type, s.ConnectionProtocol, s.SyncPeriodicity, s.EventChangeSync, s.EventChangeDelta);
+    private static SensorDto ToDto(Sensor s) =>
+        new(s.SensorId, s.Name,
+            s.Type, s.ConnectionProtocol,
+            s.BaseUrl, s.PortNo,
+            s.DataPath, s.InfoPath, s.InchingPath,
+            s.SyncPeriodicity, s.EventChangeSync, s.EventChangeDelta);
 }

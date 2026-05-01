@@ -10,6 +10,7 @@ using MQTTnet.Protocol;
 using SyncroApplicationLayer.DTOs;
 using SyncroApplicationLayer.Interfaces;
 using SyncroInfraLayer.Enums;
+using SyncroInfraLayer.Helpers;
 
 namespace SyncroApplicationLayer.Services;
 
@@ -20,6 +21,7 @@ public class MqttService(
 {
     private IMqttClient _client = null!;
     private MqttClientOptions _options = null!;
+    private TaskCompletionSource _disconnectedTcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     // Topic patterns:
     //   syncro/{deviceId}/sensors/{sensorId}/data  → incoming reading
@@ -33,6 +35,11 @@ public class MqttService(
         var factory = new MqttFactory();
         _client = factory.CreateMqttClient();
         _client.ApplicationMessageReceivedAsync += OnMessageReceivedAsync;
+        _client.DisconnectedAsync += _ =>
+        {
+            _disconnectedTcs.TrySetResult();
+            return Task.CompletedTask;
+        };
 
         var optionsBuilder = new MqttClientOptionsBuilder()
             .WithTcpServer(config["Mqtt:Broker"] ?? "localhost", config.GetValue<int>("Mqtt:Port", 1883))
@@ -53,14 +60,17 @@ public class MqttService(
                 logger.LogInformation("MQTT connected to {Broker}:{Port}", config["Mqtt:Broker"], config.GetValue<int>("Mqtt:Port", 1883));
 
                 var subscribeOptions = factory.CreateSubscribeOptionsBuilder()
-                    .WithTopicFilter(f => f.WithTopic("syncro/+/sensors/+/data").WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
-                    .WithTopicFilter(f => f.WithTopic("syncro/+/status").WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
+                    .WithTopicFilter(f => f.WithTopic(MqttHelper.SensorDataWildcard).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
+                    .WithTopicFilter(f => f.WithTopic(MqttHelper.DeviceStatusWildcard).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
+                    .WithTopicFilter(f => f.WithTopic(MqttHelper.GetWildcardTopic(MqttTopics.DeviceSensorConfig)).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
                     .Build();
 
                 await _client.SubscribeAsync(subscribeOptions, stoppingToken);
                 logger.LogInformation("MQTT subscribed to device topics");
 
-                await Task.Delay(Timeout.Infinite, stoppingToken);
+                _disconnectedTcs = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+                using (stoppingToken.Register(() => _disconnectedTcs.TrySetCanceled()))
+                    await _disconnectedTcs.Task;
             }
             catch (OperationCanceledException)
             {
@@ -90,7 +100,7 @@ public class MqttService(
             using var scope = scopeFactory.CreateScope();
 
             // syncro/{deviceId}/sensors/{sensorId}/data
-            if (parts.Length == 5 && parts[0] == "syncro" && parts[2] == "sensors" && parts[4] == "data")
+            if (parts.Length == 5 && parts[0] == "Syncro" && parts[2] == "sensors" && parts[4] == "data")
             {
                 var deviceId = parts[1];
                 if (!Guid.TryParse(parts[3], out var sensorId))
@@ -105,7 +115,7 @@ public class MqttService(
                 logger.LogDebug("Stored reading for device {DeviceId} sensor {SensorId}", deviceId, sensorId);
             }
             // syncro/{deviceId}/status
-            else if (parts.Length == 3 && parts[0] == "syncro" && parts[2] == "status")
+            else if (parts.Length == 3 && parts[0] == "Syncro" && parts[2] == "status")
             {
                 var deviceId = parts[1];
 
@@ -116,6 +126,17 @@ public class MqttService(
 
                 await deviceService.UpdateStatusAsync(deviceId, status);
                 logger.LogInformation("Device {DeviceId} is now {Status}", deviceId, status);
+            }
+            // Syncro/{deviceId}/DeviceSensorConfig  — device pushes its full sensor list
+            else if (parts.Length == 3 && parts[0] == "Syncro" && parts[2] == MqttTopics.DeviceSensorConfig.ToString())
+            {
+                var deviceId = parts[1];
+                var sensors  = JsonSerializer.Deserialize<List<DeviceSensorSyncDto>>(payload,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
+
+                var sensorService = scope.ServiceProvider.GetRequiredService<IDeviceSensorService>();
+                await sensorService.SyncFromDeviceAsync(deviceId, sensors);
+                logger.LogInformation("Synced {Count} sensors from device {DeviceId}", sensors.Count, deviceId);
             }
             else
             {

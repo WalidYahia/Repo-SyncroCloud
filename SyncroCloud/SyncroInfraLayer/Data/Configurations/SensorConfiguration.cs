@@ -14,10 +14,6 @@ public class SensorConfiguration : IEntityTypeConfiguration<Sensor>
             .IsRequired()
             .HasMaxLength(200);
 
-        builder.Property(s => s.UnitType)
-            .IsRequired()
-            .HasConversion<string>();
-
         builder.Property(s => s.Type)
             .IsRequired()
             .HasConversion<string>();
@@ -26,10 +22,13 @@ public class SensorConfiguration : IEntityTypeConfiguration<Sensor>
             .IsRequired()
             .HasConversion<string>();
 
-        builder.HasIndex(s => s.Name)
-            .IsUnique();
+        builder.Property(s => s.BaseUrl).HasMaxLength(200);
+        builder.Property(s => s.PortNo).HasMaxLength(10);
+        builder.Property(s => s.DataPath).HasMaxLength(200);
+        builder.Property(s => s.InfoPath).HasMaxLength(200);
+        builder.Property(s => s.InchingPath).HasMaxLength(200);
 
-        builder.HasIndex(s => new { s.UnitType, s.Type })
-            .IsUnique();
+        builder.HasIndex(s => s.Name).IsUnique();
+        builder.HasIndex(s => s.Type).IsUnique();
     }
 }

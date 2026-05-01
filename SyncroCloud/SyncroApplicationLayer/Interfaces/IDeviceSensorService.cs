@@ -10,4 +10,5 @@ public interface IDeviceSensorService
     Task<DeviceSensorDto?> UpdateAsync(string id, UpdateDeviceSensorDto dto);
     Task<bool> UpdateLastReadingAsync(string deviceId, Guid sensorId, string json);
     Task<bool> UninstallAsync(string id);
+    Task SyncFromDeviceAsync(string deviceId, List<DeviceSensorSyncDto> sensors);
 }

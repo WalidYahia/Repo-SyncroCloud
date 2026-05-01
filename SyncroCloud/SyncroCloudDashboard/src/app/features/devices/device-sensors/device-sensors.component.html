@@ -28,7 +28,6 @@
             <span class="info-label">From sensor definition:</span>
             <mat-chip-set>
               <mat-chip>{{ selectedSensor.type }}</mat-chip>
-              <mat-chip>{{ selectedSensor.unitType }}</mat-chip>
               <mat-chip>{{ selectedSensor.connectionProtocol }}</mat-chip>
               @if (selectedSensor.syncPeriodicity) {
                 <mat-chip>Sync every {{ selectedSensor.syncPeriodicity }}s</mat-chip>
@@ -57,10 +56,11 @@
           </mat-select>
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>URL</mat-label>
-          <input matInput formControlName="url" />
-        </mat-form-field>
+        @if (computedUrl) {
+          <div class="computed-url">
+            <span class="info-label">URL:</span> <code>{{ computedUrl }}</code>
+          </div>
+        }
 
         <mat-form-field appearance="outline">
           <mat-label>Address</mat-label>

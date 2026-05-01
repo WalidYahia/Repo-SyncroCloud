@@ -33,16 +33,18 @@ public class DeviceSensorConfiguration : IEntityTypeConfiguration<DeviceSensor>
         builder.Property(ds => ds.Url)
             .HasMaxLength(500);
 
-        builder.Property(ds => ds.UnitType)
-            .IsRequired()
-            .HasConversion<string>();
-
         builder.Property(ds => ds.SensorType)
             .IsRequired()
             .HasConversion<string>();
 
         builder.Property(ds => ds.Protocol)
             .IsRequired();
+
+        builder.Property(ds => ds.BaseUrl).HasMaxLength(200);
+        builder.Property(ds => ds.PortNo).HasMaxLength(10);
+        builder.Property(ds => ds.DataPath).HasMaxLength(200);
+        builder.Property(ds => ds.InfoPath).HasMaxLength(200);
+        builder.Property(ds => ds.InchingPath).HasMaxLength(200);
 
         builder.Property(ds => ds.InstalledAt)
             .IsRequired();

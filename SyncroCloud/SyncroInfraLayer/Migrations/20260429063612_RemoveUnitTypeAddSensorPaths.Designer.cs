@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SyncroInfraLayer.Data;
@@ -11,9 +12,11 @@ using SyncroInfraLayer.Data;
 namespace SyncroInfraLayer.Migrations
 {
     [DbContext(typeof(SyncroDbContext))]
-    partial class SyncroDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260429063612_RemoveUnitTypeAddSensorPaths")]
+    partial class RemoveUnitTypeAddSensorPaths
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -473,19 +476,9 @@ namespace SyncroInfraLayer.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("BaseUrl")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
                     b.Property<string>("ConnectionProtocol")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<string>("DataPath")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
 
                     b.Property<double?>("EventChangeDelta")
                         .HasColumnType("double precision");
@@ -493,25 +486,10 @@ namespace SyncroInfraLayer.Migrations
                     b.Property<bool>("EventChangeSync")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("InchingPath")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("InfoPath")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
-
-                    b.Property<string>("PortNo")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
 
                     b.Property<int?>("SyncPeriodicity")
                         .HasColumnType("integer");

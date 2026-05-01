@@ -23,17 +23,35 @@
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Unit Type</mat-label>
-          <mat-select formControlName="unitType">
-            @for (u of unitTypes; track u) { <mat-option [value]="u">{{ u }}</mat-option> }
+          <mat-label>Connection Protocol</mat-label>
+          <mat-select formControlName="connectionProtocol">
+            @for (p of protocols; track p) { <mat-option [value]="p">{{ p }}</mat-option> }
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Protocol</mat-label>
-          <mat-select formControlName="connectionProtocol">
-            @for (p of protocols; track p) { <mat-option [value]="p">{{ p }}</mat-option> }
-          </mat-select>
+          <mat-label>Base URL</mat-label>
+          <input matInput formControlName="baseUrl" placeholder="http://eWeLink_" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Port No</mat-label>
+          <input matInput formControlName="portNo" placeholder="8081" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Data Path</mat-label>
+          <input matInput formControlName="dataPath" placeholder="/zeroconf/switches" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Info Path</mat-label>
+          <input matInput formControlName="infoPath" placeholder="/zeroconf/info" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Inching Path</mat-label>
+          <input matInput formControlName="inchingPath" placeholder="/zeroconf/pulses" />
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -76,13 +94,20 @@
       <th mat-header-cell *matHeaderCellDef>Type</th>
       <td mat-cell *matCellDef="let s">{{ s.type }}</td>
     </ng-container>
-    <ng-container matColumnDef="unitType">
-      <th mat-header-cell *matHeaderCellDef>Unit</th>
-      <td mat-cell *matCellDef="let s">{{ s.unitType }}</td>
-    </ng-container>
     <ng-container matColumnDef="protocol">
       <th mat-header-cell *matHeaderCellDef>Protocol</th>
       <td mat-cell *matCellDef="let s">{{ s.connectionProtocol }}</td>
+    </ng-container>
+    <ng-container matColumnDef="baseUrl">
+      <th mat-header-cell *matHeaderCellDef>Base URL / Paths</th>
+      <td mat-cell *matCellDef="let s">
+        <span [matTooltip]="s.dataPath || s.infoPath || s.inchingPath
+          ? 'Data: ' + (s.dataPath || '—') + ' | Info: ' + (s.infoPath || '—') + ' | Inching: ' + (s.inchingPath || '—')
+          : ''"
+          matTooltipPosition="above">
+          {{ s.baseUrl || '—' }}{{ s.portNo ? ':' + s.portNo : '' }}
+        </span>
+      </td>
     </ng-container>
     <ng-container matColumnDef="syncPeriodicity">
       <th mat-header-cell *matHeaderCellDef>Period (s)</th>
