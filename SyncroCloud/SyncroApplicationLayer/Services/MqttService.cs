@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Configuration;
@@ -23,10 +24,11 @@ public class MqttService(
     private MqttClientOptions _options = null!;
     private TaskCompletionSource _disconnectedTcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-    // Topic patterns:
-    //   syncro/{deviceId}/sensors/{sensorId}/data  → incoming reading
-    //   syncro/{deviceId}/status                    → device online/offline
-    //   syncro/{deviceId}/commands/{action}         → outgoing commands
+    private readonly ConcurrentDictionary<string, TaskCompletionSource<RemoteActionAckDto>> _pendingAcks = new();
+
+    private static readonly JsonSerializerOptions _caseInsensitive = new() { PropertyNameCaseInsensitive = true };
+
+    private const int AckTimeoutSeconds = 30;
 
     public bool IsConnected => _client?.IsConnected ?? false;
 
@@ -35,9 +37,12 @@ public class MqttService(
         var factory = new MqttFactory();
         _client = factory.CreateMqttClient();
         _client.ApplicationMessageReceivedAsync += OnMessageReceivedAsync;
-        _client.DisconnectedAsync += _ =>
+        _client.DisconnectedAsync += args =>
         {
             _disconnectedTcs.TrySetResult();
+            foreach (var (_, tcs) in _pendingAcks)
+                tcs.TrySetCanceled();
+            _pendingAcks.Clear();
             return Task.CompletedTask;
         };
 
@@ -63,6 +68,7 @@ public class MqttService(
                     .WithTopicFilter(f => f.WithTopic(MqttHelper.SensorDataWildcard).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
                     .WithTopicFilter(f => f.WithTopic(MqttHelper.DeviceStatusWildcard).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
                     .WithTopicFilter(f => f.WithTopic(MqttHelper.GetWildcardTopic(MqttTopics.DeviceSensorConfig)).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
+                    .WithTopicFilter(f => f.WithTopic($"+/{MqttTopics.RemoteAction_Ack}").WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
                     .Build();
 
                 await _client.SubscribeAsync(subscribeOptions, stoppingToken);
@@ -131,12 +137,20 @@ public class MqttService(
             else if (parts.Length == 3 && parts[0] == "Syncro" && parts[2] == MqttTopics.DeviceSensorConfig.ToString())
             {
                 var deviceId = parts[1];
-                var sensors  = JsonSerializer.Deserialize<List<DeviceSensorSyncDto>>(payload,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
+                var sensors  = JsonSerializer.Deserialize<List<DeviceSensorSyncDto>>(payload, _caseInsensitive) ?? [];
 
                 var sensorService = scope.ServiceProvider.GetRequiredService<IDeviceSensorService>();
                 await sensorService.SyncFromDeviceAsync(deviceId, sensors);
                 logger.LogInformation("Synced {Count} sensors from device {DeviceId}", sensors.Count, deviceId);
+            }
+            // {hubId}/RemoteAction_Ack  — hub acknowledges a remote command
+            else if (parts.Length == 2 && parts[1] == MqttTopics.RemoteAction_Ack.ToString())
+            {
+                var ack = JsonSerializer.Deserialize<RemoteActionAckDto>(payload, _caseInsensitive);
+                if (ack is not null && _pendingAcks.TryRemove(ack.RequestId, out var tcs))
+                    tcs.TrySetResult(ack);
+                else
+                    logger.LogDebug("Received unmatched RemoteAction_Ack from hub {HubId}", parts[0]);
             }
             else
             {
@@ -162,7 +176,7 @@ public class MqttService(
             .WithTopic(topic)
             .WithPayload(json)
             .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-            .WithRetainFlag(true)
+            .WithRetainFlag(retainFlag)
             .Build();
 
         await _client.PublishAsync(message, ct);
@@ -187,5 +201,64 @@ public class MqttService(
 
         await _client.PublishAsync(message, ct);
         logger.LogDebug("Published command '{Action}' to device {DeviceId}", action, deviceId);
+    }
+
+    // ── Remote Actions ────────────────────────────────────────
+
+    public Task<RemoteActionAckDto> TurnOffUnitAsync(string hubId, string installedSensorId, CancellationToken ct = default)
+        => SendRemoteActionAsync(hubId, JsonCommandType.TurnOff, new TurnUnitPayload(installedSensorId), ct);
+
+    public Task<RemoteActionAckDto> TurnOnUnitAsync(string hubId, string installedSensorId, CancellationToken ct = default)
+        => SendRemoteActionAsync(hubId, JsonCommandType.TurnOn, new TurnUnitPayload(installedSensorId), ct);
+
+    public Task<RemoteActionAckDto> EnableInchingAsync(string hubId, string installedSensorId, string unitId, int inchingTimeInMs, CancellationToken ct = default)
+        => SendRemoteActionAsync(hubId, JsonCommandType.EnableInching, new EnableInchingPayload(installedSensorId, unitId, inchingTimeInMs), ct);
+
+    public Task<RemoteActionAckDto> DisableInchingAsync(string hubId, string installedSensorId, string unitId, CancellationToken ct = default)
+        => SendRemoteActionAsync(hubId, JsonCommandType.DisableInching, new DisableInchingPayload(installedSensorId, unitId), ct);
+
+    public Task<RemoteActionAckDto> UpdateUnitNameAsync(string hubId, string installedSensorId, string name, CancellationToken ct = default)
+        => SendRemoteActionAsync(hubId, JsonCommandType.UpdateUnitName, new UpdateUnitNamePayload(installedSensorId, name), ct);
+
+    public Task<RemoteActionAckDto> SaveScenarioAsync(string hubId, MqttUserScenarioDto scenario, CancellationToken ct = default)
+        => SendRemoteActionAsync(hubId, JsonCommandType.SaveScenario, new SaveScenarioPayload(scenario), ct);
+
+    public Task<RemoteActionAckDto> DeleteScenarioAsync(string hubId, string scenarioId, CancellationToken ct = default)
+        => SendRemoteActionAsync(hubId, JsonCommandType.DeleteScenario, new DeleteScenarioPayload(new DeleteScenarioIdDto(scenarioId)), ct);
+
+    private async Task<RemoteActionAckDto> SendRemoteActionAsync<TPayload>(
+        string hubId, JsonCommandType commandType, TPayload commandPayload, CancellationToken ct)
+    {
+        if (!_client.IsConnected)
+            throw new InvalidOperationException("MQTT client is not connected");
+
+        var requestId = $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}_{config["Mqtt:ClientId"] ?? "SyncroCloud"}";
+        var tcs = new TaskCompletionSource<RemoteActionAckDto>(TaskCreationOptions.RunContinuationsAsynchronously);
+        _pendingAcks[requestId] = tcs;
+
+        var payloadElement = JsonSerializer.SerializeToElement(commandPayload);
+        var envelope = new RemoteActionEnvelope(requestId, commandType, payloadElement);
+        var json = JsonSerializer.Serialize(envelope);
+
+        var message = new MqttApplicationMessageBuilder()
+            .WithTopic($"{hubId}/{MqttTopics.RemoteAction}")
+            .WithPayload(json)
+            .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
+            .WithRetainFlag(false)
+            .Build();
+
+        await _client.PublishAsync(message, ct);
+        logger.LogDebug("Published {CommandType} to hub {HubId}, requestId={RequestId}", commandType, hubId, requestId);
+
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        linkedCts.CancelAfter(TimeSpan.FromSeconds(AckTimeoutSeconds));
+        try
+        {
+            return await tcs.Task.WaitAsync(linkedCts.Token);
+        }
+        finally
+        {
+            _pendingAcks.TryRemove(requestId, out _);
+        }
     }
 }

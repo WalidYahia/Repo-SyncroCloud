@@ -103,6 +103,33 @@ public enum ScenarioLogic
     Or
 }
 
+// ── Remote Action ─────────────────────────────────────────
+public enum JsonCommandType
+{
+    TurnOff      = 0,
+    TurnOn       = 1,
+    EnableInching  = 2,
+    DisableInching = 3,
+    UpdateUnitName = 6,
+    SaveScenario   = 10,
+    DeleteScenario = 11
+}
+
+public enum RemoteActionState
+{
+    Ok                           = 0,
+    Error                        = 1,
+    Timeout                      = 3,
+    BadRequest                   = 4,
+    DeviceDataIsRequired         = 5,
+    DeviceAlreadyRegistered      = 6,
+    DeviceNameAlreadyRegistered  = 7,
+    Conflict                     = 8,
+    InchingIntervalValidationError = 9,
+    EmptyPayload                 = 10,
+    NoContent                    = 11
+}
+
 public enum MqttTopics
 {
     /// <summary>
