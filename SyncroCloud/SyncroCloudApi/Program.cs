@@ -5,6 +5,8 @@ using SyncroApplicationLayer.Services;
 using SyncroCloudApi.Auth.Extensions;
 using SyncroCloudApi.Auth.Middleware;
 using SyncroCloudApi.Exceptions;
+using SyncroCloudApi.Hubs;
+using SyncroCloudApi.Services;
 using SyncroInfraLayer.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +29,11 @@ builder.Services.AddScoped<IDeviceSensorService, DeviceSensorService>();
 builder.Services.AddScoped<IDeviceReadingService, DeviceReadingService>();
 builder.Services.AddScoped<IAlarmLookupService, AlarmLookupService>();
 builder.Services.AddScoped<IDeviceScenarioService, DeviceScenarioService>();
+builder.Services.AddScoped<IDeviceActionLogService, DeviceActionLogService>();
+
+// SignalR — INotificationService must be registered before MqttService is resolved
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<INotificationService, SignalRNotificationService>();
 
 // MQTT background service
 builder.Services.AddMqttService();
@@ -36,11 +43,13 @@ builder.Services.AddProblemDetails();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("Angular", policy =>
-        policy.WithOrigins("http://localhost:4200")
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials());
+    options.AddDefaultPolicy(policy =>
+    {
+        var p = builder.Environment.IsDevelopment()
+            ? policy.SetIsOriginAllowed(_ => true)
+            : policy.WithOrigins("http://localhost:4200");
+        p.AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+    });
 });
 
 builder.Services.AddControllers()
@@ -98,7 +107,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseExceptionHandler();
 
-app.UseCors("Angular");
+app.UseCors();
 
 if (!app.Environment.IsDevelopment()) app.UseHttpsRedirection();
 app.UseDefaultFiles();
@@ -110,5 +119,6 @@ app.UseAuthorization();
 app.UseMiddleware<ApiKeyMiddleware>();
 
 app.MapControllers();
+app.MapHub<SyncroHub>("/hubs/syncro");
 
 app.Run();

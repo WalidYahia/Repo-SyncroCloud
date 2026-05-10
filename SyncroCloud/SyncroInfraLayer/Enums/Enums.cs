@@ -106,13 +106,20 @@ public enum ScenarioLogic
 // ── Remote Action ─────────────────────────────────────────
 public enum JsonCommandType
 {
-    TurnOff      = 0,
-    TurnOn       = 1,
-    EnableInching  = 2,
-    DisableInching = 3,
+    TurnOn = 0,
+    TurnOff = 1,
+    InchingOn = 2,
+    InchingOff = 3,
+    GetInfo = 4,
+    CreateDevice = 5,
     UpdateUnitName = 6,
-    SaveScenario   = 10,
-    DeleteScenario = 11
+    LoaddAllUnits = 7,
+
+
+    SaveUSerScenario = 10,
+    DeleteUSerScenario = 11,
+
+    Ping = -1,
 }
 
 public enum RemoteActionState

@@ -310,6 +310,68 @@
         }
       }
     },
+    "/api/action-logs/device/{deviceId}": {
+      "get": {
+        "tags": [
+          "DeviceActionLogs"
+        ],
+        "parameters": [
+          {
+            "name": "deviceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/action-logs/sensor/{installedSensorId}": {
+      "get": {
+        "tags": [
+          "DeviceActionLogs"
+        ],
+        "parameters": [
+          {
+            "name": "installedSensorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/devices/{deviceId}/api-key": {
       "post": {
         "tags": [
@@ -907,6 +969,47 @@
         }
       }
     },
+    "/api/DeviceSensors/{id}/name": {
+      "patch": {
+        "tags": [
+          "DeviceSensors"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSensorNameDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSensorNameDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSensorNameDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Location/countries": {
       "get": {
         "tags": [
@@ -1134,6 +1237,284 @@
       "post": {
         "tags": [
           "Location"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/remote-actions/{hubId}/sensors/{installedSensorId}/turn-on": {
+      "post": {
+        "tags": [
+          "RemoteActions"
+        ],
+        "parameters": [
+          {
+            "name": "hubId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "installedSensorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/remote-actions/{hubId}/sensors/{installedSensorId}/turn-off": {
+      "post": {
+        "tags": [
+          "RemoteActions"
+        ],
+        "parameters": [
+          {
+            "name": "hubId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "installedSensorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/remote-actions/{hubId}/sensors/{installedSensorId}/inching/enable": {
+      "post": {
+        "tags": [
+          "RemoteActions"
+        ],
+        "parameters": [
+          {
+            "name": "hubId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "installedSensorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnableInchingRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnableInchingRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnableInchingRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/remote-actions/{hubId}/sensors/{installedSensorId}/inching/disable": {
+      "post": {
+        "tags": [
+          "RemoteActions"
+        ],
+        "parameters": [
+          {
+            "name": "hubId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "installedSensorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DisableInchingRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DisableInchingRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DisableInchingRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/remote-actions/{hubId}/sensors/{installedSensorId}/name": {
+      "put": {
+        "tags": [
+          "RemoteActions"
+        ],
+        "parameters": [
+          {
+            "name": "hubId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "installedSensorId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUnitNameRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUnitNameRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUnitNameRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/remote-actions/{hubId}/scenarios": {
+      "put": {
+        "tags": [
+          "RemoteActions"
+        ],
+        "parameters": [
+          {
+            "name": "hubId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MqttUserScenarioDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MqttUserScenarioDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/MqttUserScenarioDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/remote-actions/{hubId}/scenarios/{scenarioId}": {
+      "delete": {
+        "tags": [
+          "RemoteActions"
+        ],
+        "parameters": [
+          {
+            "name": "hubId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "scenarioId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -1983,6 +2364,30 @@
         ],
         "type": "string"
       },
+      "DisableInchingRequest": {
+        "type": "object",
+        "properties": {
+          "unitId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "EnableInchingRequest": {
+        "type": "object",
+        "properties": {
+          "unitId": {
+            "type": "string",
+            "nullable": true
+          },
+          "inchingTimeInMs": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
       "GenerateApiKeyResponseDto": {
         "type": "object",
         "properties": {
@@ -2010,6 +2415,85 @@
           },
           "password": {
             "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MqttScenarioConditionDto": {
+        "type": "object",
+        "properties": {
+          "condition": {
+            "$ref": "#/components/schemas/ScenarioCondition"
+          },
+          "durationInSeconds": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "time": {
+            "type": "string",
+            "nullable": true
+          },
+          "sensorsDependency": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MqttSensorDependencyDto"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "MqttSensorDependencyDto": {
+        "type": "object",
+        "properties": {
+          "sensorId": {
+            "type": "string",
+            "nullable": true
+          },
+          "sensorType": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "value": {
+            "type": "string",
+            "nullable": true
+          },
+          "operator": {
+            "$ref": "#/components/schemas/ScenarioOperator"
+          }
+        },
+        "additionalProperties": false
+      },
+      "MqttUserScenarioDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "isEnabled": {
+            "type": "boolean"
+          },
+          "targetSensorId": {
+            "type": "string",
+            "nullable": true
+          },
+          "action": {
+            "$ref": "#/components/schemas/SwitchOutletStatus"
+          },
+          "logicOfConditions": {
+            "$ref": "#/components/schemas/ScenarioLogic"
+          },
+          "conditions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MqttScenarioConditionDto"
+            },
             "nullable": true
           }
         },
@@ -2055,6 +2539,32 @@
         },
         "additionalProperties": false
       },
+      "ScenarioCondition": {
+        "enum": [
+          "Duration",
+          "OnTime",
+          "OnOtherSensorValue"
+        ],
+        "type": "string"
+      },
+      "ScenarioLogic": {
+        "enum": [
+          "And",
+          "Or"
+        ],
+        "type": "string"
+      },
+      "ScenarioOperator": {
+        "enum": [
+          "Equals",
+          "NotEquals",
+          "GreaterThan",
+          "LessThan",
+          "GreaterOrEqual",
+          "LessOrEqual"
+        ],
+        "type": "string"
+      },
       "SensorType": {
         "enum": [
           "Unknown",
@@ -2082,6 +2592,13 @@
           "Switch7",
           "Switch8",
           "Non"
+        ],
+        "type": "string"
+      },
+      "SwitchOutletStatus": {
+        "enum": [
+          "Off",
+          "On"
         ],
         "type": "string"
       },
@@ -2310,6 +2827,16 @@
         },
         "additionalProperties": false
       },
+      "UpdateSensorNameDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "UpdateTenantDto": {
         "type": "object",
         "properties": {
@@ -2319,6 +2846,16 @@
           },
           "isActive": {
             "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateUnitNameRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false

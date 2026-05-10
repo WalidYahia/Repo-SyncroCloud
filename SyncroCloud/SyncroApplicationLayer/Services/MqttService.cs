@@ -18,7 +18,8 @@ namespace SyncroApplicationLayer.Services;
 public class MqttService(
     IServiceScopeFactory scopeFactory,
     IConfiguration config,
-    ILogger<MqttService> logger) : BackgroundService, IMqttService
+    ILogger<MqttService> logger,
+    INotificationService notifier) : BackgroundService, IMqttService
 {
     private IMqttClient _client = null!;
     private MqttClientOptions _options = null!;
@@ -65,10 +66,8 @@ public class MqttService(
                 logger.LogInformation("MQTT connected to {Broker}:{Port}", config["Mqtt:Broker"], config.GetValue<int>("Mqtt:Port", 1883));
 
                 var subscribeOptions = factory.CreateSubscribeOptionsBuilder()
-                    .WithTopicFilter(f => f.WithTopic(MqttHelper.SensorDataWildcard).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
-                    .WithTopicFilter(f => f.WithTopic(MqttHelper.DeviceStatusWildcard).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
                     .WithTopicFilter(f => f.WithTopic(MqttHelper.GetWildcardTopic(MqttTopics.DeviceSensorConfig)).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
-                    .WithTopicFilter(f => f.WithTopic($"+/{MqttTopics.RemoteAction_Ack}").WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
+                    .WithTopicFilter(f => f.WithTopic(MqttHelper.GetHubWildcardTopic(MqttTopics.RemoteAction_Ack)).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
                     .Build();
 
                 await _client.SubscribeAsync(subscribeOptions, stoppingToken);
@@ -99,58 +98,59 @@ public class MqttService(
     {
         var topic = e.ApplicationMessage.Topic;
         var payload = Encoding.UTF8.GetString(e.ApplicationMessage.PayloadSegment);
-        var parts = topic.Split('/');
 
         try
         {
             using var scope = scopeFactory.CreateScope();
 
-            // syncro/{deviceId}/sensors/{sensorId}/data
-            if (parts.Length == 5 && parts[0] == "Syncro" && parts[2] == "sensors" && parts[4] == "data")
+            // Syncro/{deviceId}/sensors/{sensorId}/data
+            if (MqttHelper.TryParseSensorData(topic, out var deviceId, out var sensorId))
             {
-                var deviceId = parts[1];
-                if (!Guid.TryParse(parts[3], out var sensorId))
-                    return;
-
                 var readingService = scope.ServiceProvider.GetRequiredService<IDeviceReadingService>();
-                var sensorService = scope.ServiceProvider.GetRequiredService<IDeviceSensorService>();
+                var sensorService  = scope.ServiceProvider.GetRequiredService<IDeviceSensorService>();
+                var logService     = scope.ServiceProvider.GetRequiredService<IDeviceActionLogService>();
 
                 await readingService.AddAsync(new CreateDeviceReadingDto(deviceId, sensorId, DateTime.UtcNow, payload));
                 await sensorService.UpdateLastReadingAsync(deviceId, sensorId, payload);
 
+                // Log device-initiated state change (no installedSensorId available at this level)
+                await logService.LogAsync(new CreateDeviceActionLogDto(
+                    deviceId, sensorId.ToString(), "StateChanged", "Device", "Ok"));
+
+                await notifier.SendSensorDataUpdatedAsync(deviceId, sensorId, payload);
                 logger.LogDebug("Stored reading for device {DeviceId} sensor {SensorId}", deviceId, sensorId);
             }
-            // syncro/{deviceId}/status
-            else if (parts.Length == 3 && parts[0] == "Syncro" && parts[2] == "status")
+            // Syncro/{deviceId}/status
+            else if (MqttHelper.TryParseDeviceStatus(topic, out var statusDeviceId))
             {
-                var deviceId = parts[1];
-
                 var deviceService = scope.ServiceProvider.GetRequiredService<IDeviceService>();
-                var status = payload.Trim('"').Equals("online", StringComparison.OrdinalIgnoreCase)
+                var statusValue   = payload.Trim('"');
+                var status        = statusValue.Equals("online", StringComparison.OrdinalIgnoreCase)
                     ? DeviceStatus.Online
                     : DeviceStatus.Offline;
 
-                await deviceService.UpdateStatusAsync(deviceId, status);
-                logger.LogInformation("Device {DeviceId} is now {Status}", deviceId, status);
+                await deviceService.UpdateStatusAsync(statusDeviceId, status);
+                await notifier.SendDeviceStatusChangedAsync(statusDeviceId, statusValue);
+                logger.LogInformation("Device {DeviceId} is now {Status}", statusDeviceId, status);
             }
-            // Syncro/{deviceId}/DeviceSensorConfig  — device pushes its full sensor list
-            else if (parts.Length == 3 && parts[0] == "Syncro" && parts[2] == MqttTopics.DeviceSensorConfig.ToString())
+            // Syncro/{deviceId}/DeviceSensorConfig
+            else if (MqttHelper.TryParseDeviceTopic(topic, MqttTopics.DeviceSensorConfig, out var configDeviceId))
             {
-                var deviceId = parts[1];
-                var sensors  = JsonSerializer.Deserialize<List<DeviceSensorSyncDto>>(payload, _caseInsensitive) ?? [];
+                var sensors = JsonSerializer.Deserialize<List<DeviceSensorSyncDto>>(payload, _caseInsensitive) ?? [];
 
                 var sensorService = scope.ServiceProvider.GetRequiredService<IDeviceSensorService>();
-                await sensorService.SyncFromDeviceAsync(deviceId, sensors);
-                logger.LogInformation("Synced {Count} sensors from device {DeviceId}", sensors.Count, deviceId);
+                await sensorService.SyncFromDeviceAsync(configDeviceId, sensors);
+                await notifier.SendSensorConfigChangedAsync(configDeviceId);
+                logger.LogInformation("Synced {Count} sensors from device {DeviceId}", sensors.Count, configDeviceId);
             }
-            // {hubId}/RemoteAction_Ack  — hub acknowledges a remote command
-            else if (parts.Length == 2 && parts[1] == MqttTopics.RemoteAction_Ack.ToString())
+            // Syncro/{hubId}/RemoteAction_Ack
+            else if (MqttHelper.TryParseDeviceTopic(topic, MqttTopics.RemoteAction_Ack, out var hubId))
             {
                 var ack = JsonSerializer.Deserialize<RemoteActionAckDto>(payload, _caseInsensitive);
                 if (ack is not null && _pendingAcks.TryRemove(ack.RequestId, out var tcs))
                     tcs.TrySetResult(ack);
                 else
-                    logger.LogDebug("Received unmatched RemoteAction_Ack from hub {HubId}", parts[0]);
+                    logger.LogDebug("Received unmatched RemoteAction_Ack from hub {HubId}", hubId);
             }
             else
             {
@@ -193,7 +193,7 @@ public class MqttService(
 
         var json    = JsonSerializer.Serialize(payload);
         var message = new MqttApplicationMessageBuilder()
-            .WithTopic($"syncro/{deviceId}/commands/{action}")
+            .WithTopic(MqttHelper.GetCommandTopic(deviceId, action))
             .WithPayload(json)
             .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
             .WithRetainFlag(false)
@@ -212,19 +212,19 @@ public class MqttService(
         => SendRemoteActionAsync(hubId, JsonCommandType.TurnOn, new TurnUnitPayload(installedSensorId), ct);
 
     public Task<RemoteActionAckDto> EnableInchingAsync(string hubId, string installedSensorId, string unitId, int inchingTimeInMs, CancellationToken ct = default)
-        => SendRemoteActionAsync(hubId, JsonCommandType.EnableInching, new EnableInchingPayload(installedSensorId, unitId, inchingTimeInMs), ct);
+        => SendRemoteActionAsync(hubId, JsonCommandType.InchingOn, new EnableInchingPayload(installedSensorId, unitId, inchingTimeInMs), ct);
 
     public Task<RemoteActionAckDto> DisableInchingAsync(string hubId, string installedSensorId, string unitId, CancellationToken ct = default)
-        => SendRemoteActionAsync(hubId, JsonCommandType.DisableInching, new DisableInchingPayload(installedSensorId, unitId), ct);
+        => SendRemoteActionAsync(hubId, JsonCommandType.InchingOff, new DisableInchingPayload(installedSensorId, unitId), ct);
 
     public Task<RemoteActionAckDto> UpdateUnitNameAsync(string hubId, string installedSensorId, string name, CancellationToken ct = default)
         => SendRemoteActionAsync(hubId, JsonCommandType.UpdateUnitName, new UpdateUnitNamePayload(installedSensorId, name), ct);
 
     public Task<RemoteActionAckDto> SaveScenarioAsync(string hubId, MqttUserScenarioDto scenario, CancellationToken ct = default)
-        => SendRemoteActionAsync(hubId, JsonCommandType.SaveScenario, new SaveScenarioPayload(scenario), ct);
+        => SendRemoteActionAsync(hubId, JsonCommandType.SaveUSerScenario, new SaveScenarioPayload(scenario), ct);
 
     public Task<RemoteActionAckDto> DeleteScenarioAsync(string hubId, string scenarioId, CancellationToken ct = default)
-        => SendRemoteActionAsync(hubId, JsonCommandType.DeleteScenario, new DeleteScenarioPayload(new DeleteScenarioIdDto(scenarioId)), ct);
+        => SendRemoteActionAsync(hubId, JsonCommandType.DeleteUSerScenario, new DeleteScenarioPayload(new DeleteScenarioIdDto(scenarioId)), ct);
 
     private async Task<RemoteActionAckDto> SendRemoteActionAsync<TPayload>(
         string hubId, JsonCommandType commandType, TPayload commandPayload, CancellationToken ct)
@@ -241,7 +241,7 @@ public class MqttService(
         var json = JsonSerializer.Serialize(envelope);
 
         var message = new MqttApplicationMessageBuilder()
-            .WithTopic($"{hubId}/{MqttTopics.RemoteAction}")
+            .WithTopic(MqttHelper.GetMqttTopic(MqttTopics.RemoteAction, hubId))
             .WithPayload(json)
             .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
             .WithRetainFlag(false)

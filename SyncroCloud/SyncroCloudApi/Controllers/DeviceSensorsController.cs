@@ -33,6 +33,14 @@ public class DeviceSensorsController(IDeviceSensorService service) : ApiControll
         return result is null ? ResourceNotFound("DeviceSensor", id) : Ok(result);
     }
 
+    // DB-first display name update — no MQTT ack wait (hub is notified via CloudSensorConfig publish)
+    [HttpPatch("{id}/name")]
+    public async Task<IActionResult> UpdateName(string id, [FromBody] UpdateSensorNameDto dto)
+    {
+        var updated = await service.UpdateDisplayNameAsync(id, dto.Name);
+        return updated ? NoContent() : ResourceNotFound("DeviceSensor", id);
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> Uninstall(string id)
     {

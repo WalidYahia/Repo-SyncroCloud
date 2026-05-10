@@ -38,6 +38,8 @@ public record UpdateDeviceSensorDto(
     bool IsInInchingMode, int InchingModeWidthInMs,
     bool IsActive, string? Notes);
 
+public record UpdateSensorNameDto(string Name);
+
 /// <summary>
 /// Incoming device-side sensor sync payload (matches SmartGuardHub SensorConfig wire format).
 /// </summary>

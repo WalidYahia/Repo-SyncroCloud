@@ -1,5 +1,47 @@
 [
   {
+    "ContainingType": "SyncroCloudApi.Controllers.DeviceActionLogsController",
+    "Method": "GetByDevice",
+    "RelativePath": "api/action-logs/device/{deviceId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "deviceId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "limit",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SyncroCloudApi.Controllers.DeviceActionLogsController",
+    "Method": "GetBySensor",
+    "RelativePath": "api/action-logs/sensor/{installedSensorId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "installedSensorId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "limit",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "SyncroCloudApi.Controllers.AlarmLookupsController",
     "Method": "GetAll",
     "RelativePath": "api/AlarmLookups",
@@ -549,6 +591,27 @@
   },
   {
     "ContainingType": "SyncroCloudApi.Controllers.DeviceSensorsController",
+    "Method": "UpdateName",
+    "RelativePath": "api/DeviceSensors/{id}/name",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "SyncroApplicationLayer.DTOs.UpdateSensorNameDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SyncroCloudApi.Controllers.DeviceSensorsController",
     "Method": "GetByDevice",
     "RelativePath": "api/DeviceSensors/device/{deviceId}",
     "HttpMethod": "GET",
@@ -714,6 +777,168 @@
     "IsController": true,
     "Order": 0,
     "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SyncroCloudApi.Controllers.RemoteActionsController",
+    "Method": "SaveScenario",
+    "RelativePath": "api/remote-actions/{hubId}/scenarios",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "hubId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "scenario",
+        "Type": "SyncroApplicationLayer.DTOs.MqttUserScenarioDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SyncroCloudApi.Controllers.RemoteActionsController",
+    "Method": "DeleteScenario",
+    "RelativePath": "api/remote-actions/{hubId}/scenarios/{scenarioId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "hubId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "scenarioId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SyncroCloudApi.Controllers.RemoteActionsController",
+    "Method": "DisableInching",
+    "RelativePath": "api/remote-actions/{hubId}/sensors/{installedSensorId}/inching/disable",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "hubId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "installedSensorId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "req",
+        "Type": "SyncroApplicationLayer.DTOs.DisableInchingRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SyncroCloudApi.Controllers.RemoteActionsController",
+    "Method": "EnableInching",
+    "RelativePath": "api/remote-actions/{hubId}/sensors/{installedSensorId}/inching/enable",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "hubId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "installedSensorId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "req",
+        "Type": "SyncroApplicationLayer.DTOs.EnableInchingRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SyncroCloudApi.Controllers.RemoteActionsController",
+    "Method": "UpdateName",
+    "RelativePath": "api/remote-actions/{hubId}/sensors/{installedSensorId}/name",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "hubId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "installedSensorId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "req",
+        "Type": "SyncroApplicationLayer.DTOs.UpdateUnitNameRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SyncroCloudApi.Controllers.RemoteActionsController",
+    "Method": "TurnOff",
+    "RelativePath": "api/remote-actions/{hubId}/sensors/{installedSensorId}/turn-off",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "hubId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "installedSensorId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SyncroCloudApi.Controllers.RemoteActionsController",
+    "Method": "TurnOn",
+    "RelativePath": "api/remote-actions/{hubId}/sensors/{installedSensorId}/turn-on",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "hubId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "installedSensorId",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
     "ReturnTypes": []
   },
   {

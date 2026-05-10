@@ -33,6 +33,7 @@ public class DeviceSensor
     public int InchingModeWidthInMs { get; set; }
     public bool IsActive { get; set; }
     public string? Notes { get; set; }
+    public bool IsPendingSync { get; set; }
 
     public Device Device { get; set; } = null!;
     public Sensor Sensor { get; set; } = null!;

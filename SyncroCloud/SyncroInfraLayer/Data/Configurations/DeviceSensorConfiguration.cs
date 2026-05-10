@@ -56,6 +56,10 @@ public class DeviceSensorConfiguration : IEntityTypeConfiguration<DeviceSensor>
         builder.Property(ds => ds.Notes)
             .HasMaxLength(500);
 
+        builder.Property(ds => ds.IsPendingSync)
+            .IsRequired()
+            .HasDefaultValue(false);
+
         builder.Property<string?>("LastReading")
             .HasColumnType("jsonb");
 

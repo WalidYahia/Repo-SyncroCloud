@@ -86,12 +86,44 @@ public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDevic
         return TrackedToDto(ds);
     }
 
+    public async Task<bool> UpdateDisplayNameAsync(string id, string name)
+    {
+        var ds = await db.DeviceSensors.FindAsync(id);
+        if (ds is null) return false;
+        ds.DisplayName   = name;
+        ds.IsPendingSync = !mqtt.IsConnected;
+        await db.SaveChangesAsync();
+        await PublishSensorConfigAsync(ds.DeviceId);
+        return true;
+    }
+
+    public async Task<bool> UpdateInchingAsync(string id, bool enabled, int widthMs)
+    {
+        var ds = await db.DeviceSensors.FindAsync(id);
+        if (ds is null) return false;
+        ds.IsInInchingMode      = enabled;
+        ds.InchingModeWidthInMs = enabled ? widthMs : 0;
+        ds.IsPendingSync = !mqtt.IsConnected;
+        await db.SaveChangesAsync();
+        await PublishSensorConfigAsync(ds.DeviceId);
+        return true;
+    }
+
     public async Task<bool> UpdateLastReadingAsync(string deviceId, Guid sensorId, string json)
     {
         var ds = await db.DeviceSensors
             .Where(ds => ds.DeviceId == deviceId && ds.SensorId == sensorId && ds.IsActive)
             .OrderByDescending(ds => ds.InstalledAt)
             .FirstOrDefaultAsync();
+        if (ds is null) return false;
+        db.Entry(ds).Property<string?>("LastReading").CurrentValue = json;
+        await db.SaveChangesAsync();
+        return true;
+    }
+
+    public async Task<bool> UpdateLastReadingAsync(string id, string json)
+    {
+        var ds = await db.DeviceSensors.FindAsync(id);
         if (ds is null) return false;
         db.Entry(ds).Property<string?>("LastReading").CurrentValue = json;
         await db.SaveChangesAsync();
@@ -127,7 +159,10 @@ public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDevic
 
             if (existingById.TryGetValue(id, out var ds))
             {
-                ds.DisplayName       = dto.DisplayName;
+                // Only accept hub's DisplayName when cloud has no pending update waiting to be pushed
+                if (!ds.IsPendingSync)
+                    ds.DisplayName = dto.DisplayName;
+
                 ds.Url               = dto.Url;
                 ds.SensorType        = sensorType;
                 ds.Protocol          = dto.Protocol;
@@ -141,6 +176,7 @@ public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDevic
                 ds.InchingModeWidthInMs = dto.InchingModeWidthInMs;
                 ds.IsActive          = dto.IsActive;
                 ds.Notes             = dto.Notes;
+                ds.IsPendingSync     = false;
             }
             else
             {

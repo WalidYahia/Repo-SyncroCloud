@@ -22,7 +22,8 @@ public class SyncroDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     public DbSet<AlarmLookup> AlarmLookups => Set<AlarmLookup>();
     public DbSet<DeviceScenario> DeviceScenarios => Set<DeviceScenario>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
-    public DbSet<DeviceApiKey> DeviceApiKeys => Set<DeviceApiKey>();
+    public DbSet<DeviceApiKey>    DeviceApiKeys    => Set<DeviceApiKey>();
+    public DbSet<DeviceActionLog> DeviceActionLogs => Set<DeviceActionLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -41,5 +42,6 @@ public class SyncroDbContext : IdentityDbContext<AppUser, AppRole, Guid>
         modelBuilder.ApplyConfiguration(new DeviceScenarioConfiguration());
         modelBuilder.ApplyConfiguration(new RefreshTokenConfiguration());
         modelBuilder.ApplyConfiguration(new DeviceApiKeyConfiguration());
+        modelBuilder.ApplyConfiguration(new DeviceActionLogConfiguration());
     }
 }
