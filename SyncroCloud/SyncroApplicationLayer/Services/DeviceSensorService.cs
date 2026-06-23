@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using SyncroApplicationLayer.DTOs;
 using SyncroApplicationLayer.Interfaces;
@@ -10,231 +11,264 @@ namespace SyncroApplicationLayer.Services;
 
 public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDeviceSensorService
 {
-    public async Task<List<DeviceSensorDto>> GetByDeviceAsync(string deviceId) =>
-        await db.DeviceSensors
-            .Where(ds => ds.DeviceId == deviceId)
-            .Select(ds => ToDto(ds, EF.Property<string?>(ds, "LastReading")))
-            .ToListAsync();
+    private static readonly JsonSerializerOptions _json = new() { PropertyNameCaseInsensitive = true };
+
+    // ── Queries ───────────────────────────────────────────────
+
+    public async Task<List<DeviceSensorDto>> GetByDeviceAsync(string deviceId)
+    {
+        var config = await db.DeviceConfigs
+            .FirstOrDefaultAsync(c => c.DeviceId == deviceId && c.ConfigType == ConfigType.Sensor);
+        if (config is null) return [];
+
+        var sensors = Deserialize(config.Config);
+        var sensorIds = sensors.Select(s => s.Id).ToList();
+        var latestReadings = await db.DeviceLatestReadings
+            .Where(r => sensorIds.Contains(r.DeviceSensorId))
+            .ToDictionaryAsync(r => r.DeviceSensorId);
+
+        return sensors.Select(s =>
+        {
+            var latest = latestReadings.GetValueOrDefault(s.Id);
+            return ToDto(s, ExtractValue(latest?.Payload), latest?.ReadingTime);
+        }).ToList();
+    }
 
     public async Task<DeviceSensorDto?> GetByIdAsync(string id)
     {
-        var ds = await db.DeviceSensors.FindAsync(id);
-        return ds is null ? null : TrackedToDto(ds);
+        var (_, sensor) = await FindConfigAndSensorAsync(id);
+        if (sensor is null) return null;
+
+        var latest = await db.DeviceLatestReadings.FindAsync(id);
+        return ToDto(sensor, ExtractValue(latest?.Payload), latest?.ReadingTime);
     }
+
+    // ── Writes (cloud-originated) ─────────────────────────────
 
     public async Task<DeviceSensorDto> InstallAsync(CreateDeviceSensorDto dto)
     {
-        var ds = new DeviceSensor
+        var sensor = await db.Sensors.FindAsync(dto.SensorId)
+            ?? throw new KeyNotFoundException($"Sensor template '{dto.SensorId}' not found");
+
+        var newSensor = new DeviceSensorSyncDto(
+            SensorIdHelper.ComputeId(dto.DeviceId, dto.SensorType, dto.UnitId, dto.SwitchNo, dto.Address, dto.Port),
+            dto.DeviceId, dto.SensorId,
+            (int)dto.SwitchNo, dto.UnitId, dto.Address, dto.Port,
+            dto.DisplayName, dto.Url,
+            (int)dto.SensorType, dto.Protocol,
+            dto.DataPath ?? string.Empty, dto.InfoPath ?? string.Empty, dto.InchingPath ?? string.Empty,
+            dto.SyncPeriodicity, sensor.EventChangeSync, dto.EventChangeDelta, sensor.OnlySaveRecordOnChange,
+            dto.IsInInchingMode, dto.IsInInchingMode ? dto.InchingModeWidthInMs : 0,
+            DateTime.UtcNow, true, null);
+
+        var config = await GetOrCreateConfigAsync(dto.DeviceId);
+        var sensors = Deserialize(config.Config);
+        sensors.Add(newSensor);
+        await SaveAndPublishAsync(config, sensors);
+
+        return ToDto(newSensor, null, null);
+    }
+
+    public async Task<DeviceSensorDto?> UpdateAsync(string id, UpdateDeviceSensorDto dto)
+    {
+        var (config, existing) = await FindConfigAndSensorAsync(id);
+        if (config is null || existing is null) return null;
+
+        var sensors = Deserialize(config.Config);
+        var idx = sensors.FindIndex(s => s.Id == id);
+        if (idx < 0) return null;
+
+        var updated = existing with
         {
-            Id               = DeviceSensor.ComputeId(dto.DeviceId, dto.SensorType, dto.UnitId, dto.SwitchNo, dto.Address, dto.Port),
-            DeviceId         = dto.DeviceId,
-            SensorId         = dto.SensorId,
-            SwitchNo         = dto.SwitchNo,
+            SwitchNo         = (int)dto.SwitchNo,
             UnitId           = dto.UnitId,
             Address          = dto.Address,
             Port             = dto.Port,
             DisplayName      = dto.DisplayName,
             Url              = dto.Url,
-            SensorType       = dto.SensorType,
+            SensorType       = (int)dto.SensorType,
             Protocol         = dto.Protocol,
-            BaseUrl          = dto.BaseUrl     ?? string.Empty,
-            PortNo           = dto.PortNo      ?? string.Empty,
-            DataPath         = dto.DataPath    ?? string.Empty,
-            InfoPath         = dto.InfoPath    ?? string.Empty,
-            InchingPath      = dto.InchingPath ?? string.Empty,
+            DataPath         = dto.DataPath,
+            InfoPath         = dto.InfoPath,
+            InchingPath      = dto.InchingPath,
             SyncPeriodicity  = dto.SyncPeriodicity,
-            EventChangeSync  = dto.EventChangeSync,
-            EventChangeDelta = dto.EventChangeDelta,
-            IsInInchingMode  = dto.IsInInchingMode,
+            EventChangeSync       = dto.EventChangeSync,
+            EventChangeDelta      = dto.EventChangeDelta,
+            OnlySaveRecordOnChange = dto.OnlySaveRecordOnChange,
+            IsInInchingMode       = dto.IsInInchingMode,
             InchingModeWidthInMs = dto.InchingModeWidthInMs,
-            InstalledById    = dto.InstalledById,
-            InstalledAt      = DateTime.UtcNow,
-            IsActive         = true
+            IsActive         = dto.IsActive,
+            Notes            = dto.Notes
         };
-        db.DeviceSensors.Add(ds);
-        await db.SaveChangesAsync();
-        await PublishSensorConfigAsync(ds.DeviceId);
-        return TrackedToDto(ds);
-    }
 
-    public async Task<DeviceSensorDto?> UpdateAsync(string id, UpdateDeviceSensorDto dto)
-    {
-        var ds = await db.DeviceSensors.FindAsync(id);
-        if (ds is null) return null;
-        ds.SwitchNo          = dto.SwitchNo;
-        ds.UnitId            = dto.UnitId;
-        ds.Address           = dto.Address;
-        ds.Port              = dto.Port;
-        ds.DisplayName       = dto.DisplayName;
-        ds.Url               = dto.Url;
-        ds.SensorType        = dto.SensorType;
-        ds.Protocol          = dto.Protocol;
-        ds.BaseUrl           = dto.BaseUrl;
-        ds.PortNo            = dto.PortNo;
-        ds.DataPath          = dto.DataPath;
-        ds.InfoPath          = dto.InfoPath;
-        ds.InchingPath       = dto.InchingPath;
-        ds.SyncPeriodicity   = dto.SyncPeriodicity;
-        ds.EventChangeSync   = dto.EventChangeSync;
-        ds.EventChangeDelta  = dto.EventChangeDelta;
-        ds.IsInInchingMode   = dto.IsInInchingMode;
-        ds.InchingModeWidthInMs = dto.InchingModeWidthInMs;
-        ds.IsActive          = dto.IsActive;
-        ds.Notes             = dto.Notes;
-        await db.SaveChangesAsync();
-        await PublishSensorConfigAsync(ds.DeviceId);
-        return TrackedToDto(ds);
+        sensors[idx] = updated;
+        await SaveAndPublishAsync(config, sensors);
+
+        var latest = await db.DeviceLatestReadings.FindAsync(id);
+        return ToDto(updated, ExtractValue(latest?.Payload), latest?.ReadingTime);
     }
 
     public async Task<bool> UpdateDisplayNameAsync(string id, string name)
     {
-        var ds = await db.DeviceSensors.FindAsync(id);
-        if (ds is null) return false;
-        ds.DisplayName   = name;
-        ds.IsPendingSync = !mqtt.IsConnected;
-        await db.SaveChangesAsync();
-        await PublishSensorConfigAsync(ds.DeviceId);
+        var (config, existing) = await FindConfigAndSensorAsync(id);
+        if (config is null || existing is null) return false;
+
+        var sensors = Deserialize(config.Config);
+        var idx = sensors.FindIndex(s => s.Id == id);
+        if (idx < 0) return false;
+
+        sensors[idx] = existing with { DisplayName = name };
+        await SaveAndPublishAsync(config, sensors);
         return true;
     }
 
     public async Task<bool> UpdateInchingAsync(string id, bool enabled, int widthMs)
     {
-        var ds = await db.DeviceSensors.FindAsync(id);
-        if (ds is null) return false;
-        ds.IsInInchingMode      = enabled;
-        ds.InchingModeWidthInMs = enabled ? widthMs : 0;
-        ds.IsPendingSync = !mqtt.IsConnected;
-        await db.SaveChangesAsync();
-        await PublishSensorConfigAsync(ds.DeviceId);
-        return true;
-    }
+        var (config, existing) = await FindConfigAndSensorAsync(id);
+        if (config is null || existing is null) return false;
 
-    public async Task<bool> UpdateLastReadingAsync(string deviceId, Guid sensorId, string json)
-    {
-        var ds = await db.DeviceSensors
-            .Where(ds => ds.DeviceId == deviceId && ds.SensorId == sensorId && ds.IsActive)
-            .OrderByDescending(ds => ds.InstalledAt)
-            .FirstOrDefaultAsync();
-        if (ds is null) return false;
-        db.Entry(ds).Property<string?>("LastReading").CurrentValue = json;
-        await db.SaveChangesAsync();
-        return true;
-    }
+        var sensors = Deserialize(config.Config);
+        var idx = sensors.FindIndex(s => s.Id == id);
+        if (idx < 0) return false;
 
-    public async Task<bool> UpdateLastReadingAsync(string id, string json)
-    {
-        var ds = await db.DeviceSensors.FindAsync(id);
-        if (ds is null) return false;
-        db.Entry(ds).Property<string?>("LastReading").CurrentValue = json;
-        await db.SaveChangesAsync();
+        sensors[idx] = existing with
+        {
+            IsInInchingMode      = enabled,
+            InchingModeWidthInMs = enabled ? widthMs : 0
+        };
+        await SaveAndPublishAsync(config, sensors);
         return true;
     }
 
     public async Task<bool> UninstallAsync(string id)
     {
-        var ds = await db.DeviceSensors.FindAsync(id);
-        if (ds is null) return false;
-        var deviceId = ds.DeviceId;
-        db.DeviceSensors.Remove(ds);
-        await db.SaveChangesAsync();
-        await PublishSensorConfigAsync(deviceId);
+        var (config, existing) = await FindConfigAndSensorAsync(id);
+        if (config is null || existing is null) return false;
+
+        var sensors = Deserialize(config.Config);
+        sensors.RemoveAll(s => s.Id == id);
+        await SaveAndPublishAsync(config, sensors);
         return true;
     }
 
-    public async Task SyncFromDeviceAsync(string deviceId, List<DeviceSensorSyncDto> incoming)
+    // ── Hub sync (hub-originated, no publish back) ────────────
+
+    public async Task SyncFromDeviceAsync(string deviceId, SensorConfigEnvelope envelope)
     {
-        var existing = await db.DeviceSensors
-            .Where(ds => ds.DeviceId == deviceId)
-            .ToListAsync();
+        var config = await db.DeviceConfigs
+            .FirstOrDefaultAsync(c => c.DeviceId == deviceId && c.ConfigType == ConfigType.Sensor);
 
-        var existingById = existing.ToDictionary(ds => ds.Id);
-        var incomingIds  = new HashSet<string>();
+        // Same version — already in sync
+        if (config is not null && config.ConfigVersion == envelope.ConfigVersion)
+            return;
 
-        foreach (var dto in incoming)
+        // Different version but cloud is more recent — keep cloud's copy
+        if (config is not null && envelope.UpdateTime <= config.UpdateTime)
+            return;
+
+        var updateTime = DateTime.SpecifyKind(envelope.UpdateTime, DateTimeKind.Utc);
+
+        if (config is null)
         {
-            var sensorType = (SensorType)dto.SensorType;
-            var switchNo   = (SwitchNo)dto.SwitchNo;
-            var id = DeviceSensor.ComputeId(deviceId, sensorType, dto.UnitId, switchNo, dto.Address, dto.Port);
-            incomingIds.Add(id);
-
-            if (existingById.TryGetValue(id, out var ds))
+            db.DeviceConfigs.Add(new DeviceConfig
             {
-                // Only accept hub's DisplayName when cloud has no pending update waiting to be pushed
-                if (!ds.IsPendingSync)
-                    ds.DisplayName = dto.DisplayName;
-
-                ds.Url               = dto.Url;
-                ds.SensorType        = sensorType;
-                ds.Protocol          = dto.Protocol;
-                ds.DataPath          = dto.DataPath;
-                ds.InfoPath          = dto.InfoPath;
-                ds.InchingPath       = dto.InchingPath;
-                ds.SyncPeriodicity   = dto.SyncPeriodicity;
-                ds.EventChangeSync   = dto.EventChangeSync;
-                ds.EventChangeDelta  = dto.EventChangeDelta;
-                ds.IsInInchingMode   = dto.IsInInchingMode;
-                ds.InchingModeWidthInMs = dto.InchingModeWidthInMs;
-                ds.IsActive          = dto.IsActive;
-                ds.Notes             = dto.Notes;
-                ds.IsPendingSync     = false;
-            }
-            else
-            {
-                db.DeviceSensors.Add(new DeviceSensor
-                {
-                    Id           = id,
-                    DeviceId     = deviceId,
-                    SensorId     = dto.SensorId,
-                    SwitchNo     = switchNo,
-                    UnitId       = dto.UnitId,
-                    Address      = dto.Address,
-                    Port         = dto.Port,
-                    DisplayName  = dto.DisplayName,
-                    Url          = dto.Url,
-                    SensorType   = sensorType,
-                    Protocol     = dto.Protocol,
-                    DataPath     = dto.DataPath,
-                    InfoPath     = dto.InfoPath,
-                    InchingPath  = dto.InchingPath,
-                    SyncPeriodicity  = dto.SyncPeriodicity,
-                    EventChangeSync  = dto.EventChangeSync,
-                    EventChangeDelta = dto.EventChangeDelta,
-                    IsInInchingMode  = dto.IsInInchingMode,
-                    InchingModeWidthInMs = dto.InchingModeWidthInMs,
-                    IsActive    = dto.IsActive,
-                    Notes       = dto.Notes,
-                    InstalledAt = dto.InstalledAt
-                });
-            }
+                DeviceId      = deviceId,
+                ConfigType    = ConfigType.Sensor,
+                ConfigVersion = envelope.ConfigVersion,
+                UpdateTime    = updateTime,
+                Config        = JsonSerializer.Serialize(envelope.Sensors, _json),
+                UpdatedFrom   = ConfigSource.Local
+            });
+        }
+        else
+        {
+            config.Config        = JsonSerializer.Serialize(envelope.Sensors, _json);
+            config.ConfigVersion = envelope.ConfigVersion;
+            config.UpdateTime    = updateTime;
+            config.UpdatedFrom   = ConfigSource.Local;
         }
 
-        foreach (var ds in existing.Where(ds => !incomingIds.Contains(ds.Id)))
-            db.DeviceSensors.Remove(ds);
+        await db.SaveChangesAsync();
+        // No publish — hub is already up to date
+    }
+
+    // ── Private helpers ───────────────────────────────────────
+
+    private async Task<DeviceConfig> GetOrCreateConfigAsync(string deviceId)
+    {
+        var config = await db.DeviceConfigs
+            .FirstOrDefaultAsync(c => c.DeviceId == deviceId && c.ConfigType == ConfigType.Sensor);
+
+        if (config is null)
+        {
+            config = new DeviceConfig
+            {
+                DeviceId    = deviceId,
+                ConfigType  = ConfigType.Sensor,
+                UpdatedFrom = ConfigSource.Local
+            };
+            db.DeviceConfigs.Add(config);
+        }
+
+        return config;
+    }
+
+    private async Task<(DeviceConfig? config, DeviceSensorSyncDto? sensor)> FindConfigAndSensorAsync(string sensorId)
+    {
+        var configs = await db.DeviceConfigs
+            .Where(c => c.ConfigType == ConfigType.Sensor)
+            .ToListAsync();
+
+        foreach (var config in configs)
+        {
+            if (!sensorId.StartsWith(config.DeviceId + "_")) continue;
+            var sensor = Deserialize(config.Config).FirstOrDefault(s => s.Id == sensorId);
+            if (sensor is not null) return (config, sensor);
+        }
+
+        return (null, null);
+    }
+
+    private async Task SaveAndPublishAsync(DeviceConfig config, List<DeviceSensorSyncDto> sensors)
+    {
+        config.Config        = JsonSerializer.Serialize(sensors, _json);
+        config.ConfigVersion = Guid.NewGuid();
+        config.UpdateTime    = DateTime.UtcNow;
+        config.UpdatedFrom   = ConfigSource.Local;
 
         await db.SaveChangesAsync();
-        await PublishSensorConfigAsync(deviceId);
+
+        var envelope = new SensorConfigEnvelope(config.ConfigVersion, config.UpdateTime, sensors);
+        await mqtt.PublishAsync(
+            MqttHelper.GetMqttTopic(MqttTopics.CloudSensorConfig, config.DeviceId),
+            envelope,
+            retainFlag: true);
     }
 
-    private async Task PublishSensorConfigAsync(string deviceId)
+    private static List<DeviceSensorSyncDto> Deserialize(string json) =>
+        JsonSerializer.Deserialize<List<DeviceSensorSyncDto>>(json, _json) ?? [];
+
+    private static string? ExtractValue(string? payload)
     {
-        var sensors = await db.DeviceSensors
-            .Where(ds => ds.DeviceId == deviceId)
-            .Select(ds => ToDto(ds, EF.Property<string?>(ds, "LastReading")))
-            .ToListAsync();
-        await mqtt.PublishAsync(MqttHelper.GetMqttTopic(MqttTopics.CloudSensorConfig, deviceId), sensors, retainFlag: true);
+        if (payload is null) return null;
+        try
+        {
+            using var doc = JsonDocument.Parse(payload);
+            if (doc.RootElement.TryGetProperty("value", out var v))
+                return v.ToString();
+        }
+        catch { }
+        return null;
     }
 
-    // For use inside EF LINQ .Select() — lastReading passed via EF.Property<string?>
-    private static DeviceSensorDto ToDto(DeviceSensor ds, string? lastReading) =>
-        new(ds.Id, ds.DeviceId, ds.SensorId, ds.SwitchNo, ds.UnitId, ds.Address, ds.Port,
-            ds.DisplayName, ds.Url, ds.SensorType, ds.Protocol,
-            ds.BaseUrl, ds.PortNo, ds.DataPath, ds.InfoPath, ds.InchingPath,
-            ds.SyncPeriodicity, ds.EventChangeSync, ds.EventChangeDelta,
-            ds.IsInInchingMode, ds.InchingModeWidthInMs,
-            ds.InstalledAt, ds.IsActive, ds.Notes,
-            lastReading);
-
-    // For use with tracked entity instances outside LINQ
-    private DeviceSensorDto TrackedToDto(DeviceSensor ds) =>
-        ToDto(ds, db.Entry(ds).Property<string?>("LastReading").CurrentValue);
+    private static DeviceSensorDto ToDto(DeviceSensorSyncDto s, string? lastReading, DateTime? lastSeen) =>
+        new(s.Id, s.DeviceId, s.SensorId,
+            (SwitchNo)s.SwitchNo, s.UnitId, s.Address, s.Port,
+            s.DisplayName, s.Url,
+            (SensorType)s.SensorType, s.Protocol,
+            s.DataPath, s.InfoPath, s.InchingPath,
+            s.SyncPeriodicity, s.EventChangeSync, s.EventChangeDelta, s.OnlySaveRecordOnChange,
+            s.IsInInchingMode, s.InchingModeWidthInMs,
+            s.InstalledAt, s.IsActive, s.Notes,
+            lastReading, lastSeen);
 }

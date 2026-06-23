@@ -103,6 +103,19 @@ public enum ScenarioLogic
     Or
 }
 
+// ── Device Config ─────────────────────────────────────────
+public enum ConfigType
+{
+    Sensor  = 0,
+    Network = 1,
+}
+
+public enum ConfigSource
+{
+    Local = 0,
+    Cloud = 1,
+}
+
 // ── Remote Action ─────────────────────────────────────────
 public enum JsonCommandType
 {
@@ -162,7 +175,7 @@ public enum MqttTopics
     /// <summary>
     /// Publish from Device
     /// </summary>
-    DeviceData,
+    Readings,
 
     /// <summary>
     /// Publish from Cloud

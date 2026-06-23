@@ -22,5 +22,5 @@ public class Device
     public Tenant Tenant { get; set; } = null!;
     public AppUser? User { get; set; }
     public City City { get; set; } = null!;
-    public ICollection<DeviceSensor> DeviceSensors { get; set; } = [];
+    public ICollection<DeviceConfig> DeviceConfigs { get; set; } = [];
 }

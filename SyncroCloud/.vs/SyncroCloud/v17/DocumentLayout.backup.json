@@ -11,28 +11,56 @@
       "RelativeMoniker": "D:0:0:{6EB3238D-57FE-49AF-BD5D-71AF673803D1}|SyncroApplicationLayer\\SyncroApplicationLayer.csproj|solutionrelative:syncroapplicationlayer\\services\\mqttservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{50A845F6-0B74-417C-9B3F-001873B732A4}|SyncroInfraLayer\\SyncroInfraLayer.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncroinfralayer\\enums\\enums.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{50A845F6-0B74-417C-9B3F-001873B732A4}|SyncroInfraLayer\\SyncroInfraLayer.csproj|solutionrelative:syncroinfralayer\\enums\\enums.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{6EB3238D-57FE-49AF-BD5D-71AF673803D1}|SyncroApplicationLayer\\SyncroApplicationLayer.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncroapplicationlayer\\interfaces\\imqttservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6EB3238D-57FE-49AF-BD5D-71AF673803D1}|SyncroApplicationLayer\\SyncroApplicationLayer.csproj|solutionrelative:syncroapplicationlayer\\interfaces\\imqttservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{50A845F6-0B74-417C-9B3F-001873B732A4}|SyncroInfraLayer\\SyncroInfraLayer.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncroinfralayer\\helpers\\mqtthelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{50A845F6-0B74-417C-9B3F-001873B732A4}|SyncroInfraLayer\\SyncroInfraLayer.csproj|solutionrelative:syncroinfralayer\\helpers\\mqtthelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{6EB3238D-57FE-49AF-BD5D-71AF673803D1}|SyncroApplicationLayer\\SyncroApplicationLayer.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncroapplicationlayer\\services\\devicesensorservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6EB3238D-57FE-49AF-BD5D-71AF673803D1}|SyncroApplicationLayer\\SyncroApplicationLayer.csproj|solutionrelative:syncroapplicationlayer\\services\\devicesensorservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{50A845F6-0B74-417C-9B3F-001873B732A4}|SyncroInfraLayer\\SyncroInfraLayer.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncroinfralayer\\entities\\devicesensor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{50A845F6-0B74-417C-9B3F-001873B732A4}|SyncroInfraLayer\\SyncroInfraLayer.csproj|solutionrelative:syncroinfralayer\\entities\\devicesensor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{6EB3238D-57FE-49AF-BD5D-71AF673803D1}|SyncroApplicationLayer\\SyncroApplicationLayer.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncroapplicationlayer\\services\\devicereadingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6EB3238D-57FE-49AF-BD5D-71AF673803D1}|SyncroApplicationLayer\\SyncroApplicationLayer.csproj|solutionrelative:syncroapplicationlayer\\services\\devicereadingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncrocloudapi\\controllers\\devicesensorscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|solutionrelative:syncrocloudapi\\controllers\\devicesensorscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50A845F6-0B74-417C-9B3F-001873B732A4}|SyncroInfraLayer\\SyncroInfraLayer.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncroinfralayer\\entities\\deviceconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50A845F6-0B74-417C-9B3F-001873B732A4}|SyncroInfraLayer\\SyncroInfraLayer.csproj|solutionrelative:syncroinfralayer\\entities\\deviceconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncrocloudapi\\controllers\\sensorscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|solutionrelative:syncrocloudapi\\controllers\\sensorscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50A845F6-0B74-417C-9B3F-001873B732A4}|SyncroInfraLayer\\SyncroInfraLayer.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncroinfralayer\\helpers\\mqtthelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50A845F6-0B74-417C-9B3F-001873B732A4}|SyncroInfraLayer\\SyncroInfraLayer.csproj|solutionrelative:syncroinfralayer\\helpers\\mqtthelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6EB3238D-57FE-49AF-BD5D-71AF673803D1}|SyncroApplicationLayer\\SyncroApplicationLayer.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncroapplicationlayer\\interfaces\\idevicereadingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6EB3238D-57FE-49AF-BD5D-71AF673803D1}|SyncroApplicationLayer\\SyncroApplicationLayer.csproj|solutionrelative:syncroapplicationlayer\\interfaces\\idevicereadingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50A845F6-0B74-417C-9B3F-001873B732A4}|SyncroInfraLayer\\SyncroInfraLayer.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncroinfralayer\\enums\\enums.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50A845F6-0B74-417C-9B3F-001873B732A4}|SyncroInfraLayer\\SyncroInfraLayer.csproj|solutionrelative:syncroinfralayer\\enums\\enums.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncrocloudapi\\controllers\\deviceactionlogscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|solutionrelative:syncrocloudapi\\controllers\\deviceactionlogscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncrocloudapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|solutionrelative:syncrocloudapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50A845F6-0B74-417C-9B3F-001873B732A4}|SyncroInfraLayer\\SyncroInfraLayer.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncroinfralayer\\entities\\sensor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50A845F6-0B74-417C-9B3F-001873B732A4}|SyncroInfraLayer\\SyncroInfraLayer.csproj|solutionrelative:syncroinfralayer\\entities\\sensor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6EB3238D-57FE-49AF-BD5D-71AF673803D1}|SyncroApplicationLayer\\SyncroApplicationLayer.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncroapplicationlayer\\services\\locationsyncservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6EB3238D-57FE-49AF-BD5D-71AF673803D1}|SyncroApplicationLayer\\SyncroApplicationLayer.csproj|solutionrelative:syncroapplicationlayer\\services\\locationsyncservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncrocloudapi\\controllers\\devicescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -43,10 +71,6 @@
       "RelativeMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|solutionrelative:syncrocloudapi\\controllers\\devicescenarioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncrocloudapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|solutionrelative:syncrocloudapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncrocloudapi\\auth\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|solutionrelative:syncrocloudapi\\auth\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -55,28 +79,12 @@
       "RelativeMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|solutionrelative:syncrocloudapi\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{50A845F6-0B74-417C-9B3F-001873B732A4}|SyncroInfraLayer\\SyncroInfraLayer.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncroinfralayer\\entities\\sensor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{50A845F6-0B74-417C-9B3F-001873B732A4}|SyncroInfraLayer\\SyncroInfraLayer.csproj|solutionrelative:syncroinfralayer\\entities\\sensor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncrocloudapi\\controllers\\devicesensorscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|solutionrelative:syncrocloudapi\\controllers\\devicesensorscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{6EB3238D-57FE-49AF-BD5D-71AF673803D1}|SyncroApplicationLayer\\SyncroApplicationLayer.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncroapplicationlayer\\services\\devicescenarioservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6EB3238D-57FE-49AF-BD5D-71AF673803D1}|SyncroApplicationLayer\\SyncroApplicationLayer.csproj|solutionrelative:syncroapplicationlayer\\services\\devicescenarioservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6EB3238D-57FE-49AF-BD5D-71AF673803D1}|SyncroApplicationLayer\\SyncroApplicationLayer.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncroapplicationlayer\\services\\locationsyncservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6EB3238D-57FE-49AF-BD5D-71AF673803D1}|SyncroApplicationLayer\\SyncroApplicationLayer.csproj|solutionrelative:syncroapplicationlayer\\services\\locationsyncservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncrocloudapi\\controllers\\locationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|solutionrelative:syncrocloudapi\\controllers\\locationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncrocloudapi\\controllers\\sensorscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|solutionrelative:syncrocloudapi\\controllers\\sensorscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{60CC3ABB-E16B-438A-BC65-4BB377A122C4}|SyncroCloudApi\\SyncroCloudApi.csproj|f:\\work data\\syncro-eg\\repo-syncrocloud\\syncrocloud\\syncrocloudapi\\controllers\\alarmlookupscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -94,84 +102,19 @@
       "DocumentGroups": [
         {
           "DockedHeight": 136,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Enums.cs",
-              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroInfraLayer\\Enums\\Enums.cs",
-              "RelativeDocumentMoniker": "SyncroInfraLayer\\Enums\\Enums.cs",
-              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroInfraLayer\\Enums\\Enums.cs",
-              "RelativeToolTip": "SyncroInfraLayer\\Enums\\Enums.cs",
-              "ViewState": "AgIAAGUAAAAAAAAAAAApwHIAAAAXAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-02T15:44:00.662Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "MqttHelper.cs",
-              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroInfraLayer\\Helpers\\MqttHelper.cs",
-              "RelativeDocumentMoniker": "SyncroInfraLayer\\Helpers\\MqttHelper.cs",
-              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroInfraLayer\\Helpers\\MqttHelper.cs",
-              "RelativeToolTip": "SyncroInfraLayer\\Helpers\\MqttHelper.cs",
-              "ViewState": "AgIAAA8AAAAAAAAAAAAYwB0AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-02T15:08:31.665Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 5,
-              "Title": "DeviceSensorService.cs",
-              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroApplicationLayer\\Services\\DeviceSensorService.cs",
-              "RelativeDocumentMoniker": "SyncroApplicationLayer\\Services\\DeviceSensorService.cs",
-              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroApplicationLayer\\Services\\DeviceSensorService.cs",
-              "RelativeToolTip": "SyncroApplicationLayer\\Services\\DeviceSensorService.cs",
-              "ViewState": "AgIAAIYAAAAAAAAAAAAYwNYAAAAIAAAAAAAAAA==",
+              "Title": "DeviceSensorsController.cs",
+              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\DeviceSensorsController.cs",
+              "RelativeDocumentMoniker": "SyncroCloudApi\\Controllers\\DeviceSensorsController.cs",
+              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\DeviceSensorsController.cs",
+              "RelativeToolTip": "SyncroCloudApi\\Controllers\\DeviceSensorsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAABSAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-25T13:24:04.696Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "DevicesController.cs",
-              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\DevicesController.cs",
-              "RelativeDocumentMoniker": "SyncroCloudApi\\Controllers\\DevicesController.cs",
-              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\DevicesController.cs",
-              "RelativeToolTip": "SyncroCloudApi\\Controllers\\DevicesController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAAEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-25T05:05:16.037Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "IMqttService.cs",
-              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroApplicationLayer\\Interfaces\\IMqttService.cs",
-              "RelativeDocumentMoniker": "SyncroApplicationLayer\\Interfaces\\IMqttService.cs",
-              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroApplicationLayer\\Interfaces\\IMqttService.cs",
-              "RelativeToolTip": "SyncroApplicationLayer\\Interfaces\\IMqttService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAoAAAAdAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-25T14:02:59.458Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "RemoteActionsController.cs",
-              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\RemoteActionsController.cs",
-              "RelativeDocumentMoniker": "SyncroCloudApi\\Controllers\\RemoteActionsController.cs",
-              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\RemoteActionsController.cs",
-              "RelativeToolTip": "SyncroCloudApi\\Controllers\\RemoteActionsController.cs",
-              "ViewState": "AgIAABAAAAAAAAAAAAA3wCEAAAAMAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-01T04:33:38.047Z",
+              "WhenOpened": "2026-04-30T05:30:59.783Z",
               "EditorCaption": ""
             },
             {
@@ -182,40 +125,188 @@
               "RelativeDocumentMoniker": "SyncroApplicationLayer\\Services\\MqttService.cs",
               "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroApplicationLayer\\Services\\MqttService.cs",
               "RelativeToolTip": "SyncroApplicationLayer\\Services\\MqttService.cs",
-              "ViewState": "AgIAANMAAAAAAAAAAAAAAN0AAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAMQAAAAAAAAAAAAgwNQAAABcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-23T04:40:29.076Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "DeviceActionLogsController.cs",
-              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\DeviceActionLogsController.cs",
-              "RelativeDocumentMoniker": "SyncroCloudApi\\Controllers\\DeviceActionLogsController.cs",
-              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\DeviceActionLogsController.cs",
-              "RelativeToolTip": "SyncroCloudApi\\Controllers\\DeviceActionLogsController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "RemoteActionsController.cs",
+              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\RemoteActionsController.cs",
+              "RelativeDocumentMoniker": "SyncroCloudApi\\Controllers\\RemoteActionsController.cs",
+              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\RemoteActionsController.cs",
+              "RelativeToolTip": "SyncroCloudApi\\Controllers\\RemoteActionsController.cs",
+              "ViewState": "AgIAAF4AAAAAAAAAAAAwwGkAAABKAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-02T11:58:46.008Z",
+              "WhenOpened": "2026-05-01T04:33:38.047Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "DeviceSensor.cs",
-              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroInfraLayer\\Entities\\DeviceSensor.cs",
-              "RelativeDocumentMoniker": "SyncroInfraLayer\\Entities\\DeviceSensor.cs",
-              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroInfraLayer\\Entities\\DeviceSensor.cs",
-              "RelativeToolTip": "SyncroInfraLayer\\Entities\\DeviceSensor.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAlAAAAAAAAAA==",
+              "DocumentIndex": 3,
+              "Title": "DeviceSensorService.cs",
+              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroApplicationLayer\\Services\\DeviceSensorService.cs",
+              "RelativeDocumentMoniker": "SyncroApplicationLayer\\Services\\DeviceSensorService.cs",
+              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroApplicationLayer\\Services\\DeviceSensorService.cs",
+              "RelativeToolTip": "SyncroApplicationLayer\\Services\\DeviceSensorService.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAAwBMAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-29T04:24:13.378Z",
+              "WhenOpened": "2026-06-19T07:37:39.329Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 9,
+              "Title": "IDeviceReadingService.cs",
+              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroApplicationLayer\\Interfaces\\IDeviceReadingService.cs",
+              "RelativeDocumentMoniker": "SyncroApplicationLayer\\Interfaces\\IDeviceReadingService.cs",
+              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroApplicationLayer\\Interfaces\\IDeviceReadingService.cs",
+              "RelativeToolTip": "SyncroApplicationLayer\\Interfaces\\IDeviceReadingService.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAjwAcAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-13T12:19:49.436Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "DeviceConfig.cs",
+              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroInfraLayer\\Entities\\DeviceConfig.cs",
+              "RelativeDocumentMoniker": "SyncroInfraLayer\\Entities\\DeviceConfig.cs",
+              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroInfraLayer\\Entities\\DeviceConfig.cs",
+              "RelativeToolTip": "SyncroInfraLayer\\Entities\\DeviceConfig.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-15T07:22:16.987Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "DeviceReadingService.cs",
+              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroApplicationLayer\\Services\\DeviceReadingService.cs",
+              "RelativeDocumentMoniker": "SyncroApplicationLayer\\Services\\DeviceReadingService.cs",
+              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroApplicationLayer\\Services\\DeviceReadingService.cs",
+              "RelativeToolTip": "SyncroApplicationLayer\\Services\\DeviceReadingService.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAAAQwB8AAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-13T11:26:28.962Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "IMqttService.cs",
+              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroApplicationLayer\\Interfaces\\IMqttService.cs",
+              "RelativeDocumentMoniker": "SyncroApplicationLayer\\Interfaces\\IMqttService.cs",
+              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroApplicationLayer\\Interfaces\\IMqttService.cs",
+              "RelativeToolTip": "SyncroApplicationLayer\\Interfaces\\IMqttService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-25T14:02:59.458Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "SensorsController.cs",
+              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\SensorsController.cs",
+              "RelativeDocumentMoniker": "SyncroCloudApi\\Controllers\\SensorsController.cs",
+              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\SensorsController.cs",
+              "RelativeToolTip": "SyncroCloudApi\\Controllers\\SensorsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-25T04:11:26.629Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Sensor.cs",
+              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroInfraLayer\\Entities\\Sensor.cs",
+              "RelativeDocumentMoniker": "SyncroInfraLayer\\Entities\\Sensor.cs",
+              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroInfraLayer\\Entities\\Sensor.cs",
+              "RelativeToolTip": "SyncroInfraLayer\\Entities\\Sensor.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAYAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-29T04:24:02.28Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "DeviceActionLogsController.cs",
+              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\DeviceActionLogsController.cs",
+              "RelativeDocumentMoniker": "SyncroCloudApi\\Controllers\\DeviceActionLogsController.cs",
+              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\DeviceActionLogsController.cs",
+              "RelativeToolTip": "SyncroCloudApi\\Controllers\\DeviceActionLogsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAA8AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T11:58:46.008Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "MqttHelper.cs",
+              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroInfraLayer\\Helpers\\MqttHelper.cs",
+              "RelativeDocumentMoniker": "SyncroInfraLayer\\Helpers\\MqttHelper.cs",
+              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroInfraLayer\\Helpers\\MqttHelper.cs",
+              "RelativeToolTip": "SyncroInfraLayer\\Helpers\\MqttHelper.cs",
+              "ViewState": "AgIAABYAAAAAAAAAAAAAACQAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T15:08:31.665Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "LocationSyncService.cs",
+              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroApplicationLayer\\Services\\LocationSyncService.cs",
+              "RelativeDocumentMoniker": "SyncroApplicationLayer\\Services\\LocationSyncService.cs",
+              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroApplicationLayer\\Services\\LocationSyncService.cs",
+              "RelativeToolTip": "SyncroApplicationLayer\\Services\\LocationSyncService.cs",
+              "ViewState": "AgIAACYAAAAAAAAAAAAnwC0AAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-25T05:49:28.651Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Enums.cs",
+              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroInfraLayer\\Enums\\Enums.cs",
+              "RelativeDocumentMoniker": "SyncroInfraLayer\\Enums\\Enums.cs",
+              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroInfraLayer\\Enums\\Enums.cs",
+              "RelativeToolTip": "SyncroInfraLayer\\Enums\\Enums.cs",
+              "ViewState": "AgIAAKEAAAAAAAAAAAAYwLEAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-02T15:44:00.662Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\appsettings.json",
+              "RelativeDocumentMoniker": "SyncroCloudApi\\appsettings.json",
+              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\appsettings.json",
+              "RelativeToolTip": "SyncroCloudApi\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-05-19T05:13:11.728Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "DevicesController.cs",
+              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\DevicesController.cs",
+              "RelativeDocumentMoniker": "SyncroCloudApi\\Controllers\\DevicesController.cs",
+              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\DevicesController.cs",
+              "RelativeToolTip": "SyncroCloudApi\\Controllers\\DevicesController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-25T05:05:16.037Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
               "Title": "DeviceScenariosController.cs",
               "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\DeviceScenariosController.cs",
               "RelativeDocumentMoniker": "SyncroCloudApi\\Controllers\\DeviceScenariosController.cs",
@@ -228,20 +319,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "Program.cs",
-              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Program.cs",
-              "RelativeDocumentMoniker": "SyncroCloudApi\\Program.cs",
-              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Program.cs",
-              "RelativeToolTip": "SyncroCloudApi\\Program.cs",
-              "ViewState": "AgIAAD8AAAAAAAAAAAD4vzIAAAA/AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-01T21:10:13.895Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 17,
               "Title": "AuthController.cs",
               "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Auth\\Controllers\\AuthController.cs",
               "RelativeDocumentMoniker": "SyncroCloudApi\\Auth\\Controllers\\AuthController.cs",
@@ -249,12 +327,11 @@
               "RelativeToolTip": "SyncroCloudApi\\Auth\\Controllers\\AuthController.cs",
               "ViewState": "AgIAAAsAAAAAAAAAAAAAwBcAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-05-01T21:15:30.071Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-05-01T21:15:30.071Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
+              "DocumentIndex": 20,
               "Title": "LocationController.cs",
               "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\LocationController.cs",
               "RelativeDocumentMoniker": "SyncroCloudApi\\Controllers\\LocationController.cs",
@@ -262,25 +339,11 @@
               "RelativeToolTip": "SyncroCloudApi\\Controllers\\LocationController.cs",
               "ViewState": "AgIAADwAAAAAAAAAAAAowEsAAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-25T05:49:09.206Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-25T05:49:09.206Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "Sensor.cs",
-              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroInfraLayer\\Entities\\Sensor.cs",
-              "RelativeDocumentMoniker": "SyncroInfraLayer\\Entities\\Sensor.cs",
-              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroInfraLayer\\Entities\\Sensor.cs",
-              "RelativeToolTip": "SyncroInfraLayer\\Entities\\Sensor.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAA3wBMAAAAxAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-29T04:24:02.28Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 18,
               "Title": "UsersController.cs",
               "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\UsersController.cs",
               "RelativeDocumentMoniker": "SyncroCloudApi\\Controllers\\UsersController.cs",
@@ -288,25 +351,11 @@
               "RelativeToolTip": "SyncroCloudApi\\Controllers\\UsersController.cs",
               "ViewState": "AgIAABcAAAAAAAAAAAAgwBoAAAAyAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-27T04:25:07.365Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-27T04:25:07.365Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "DeviceSensorsController.cs",
-              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\DeviceSensorsController.cs",
-              "RelativeDocumentMoniker": "SyncroCloudApi\\Controllers\\DeviceSensorsController.cs",
-              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\DeviceSensorsController.cs",
-              "RelativeToolTip": "SyncroCloudApi\\Controllers\\DeviceSensorsController.cs",
-              "ViewState": "AgIAAAsAAAAAAAAAAAAQwBMAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-30T05:30:59.783Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 19,
               "Title": "DeviceScenarioService.cs",
               "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroApplicationLayer\\Services\\DeviceScenarioService.cs",
               "RelativeDocumentMoniker": "SyncroApplicationLayer\\Services\\DeviceScenarioService.cs",
@@ -314,25 +363,11 @@
               "RelativeToolTip": "SyncroApplicationLayer\\Services\\DeviceScenarioService.cs",
               "ViewState": "AgIAADMAAAAAAAAAAAAowDYAAAAkAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-25T14:03:17.967Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-25T14:03:17.967Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "LocationSyncService.cs",
-              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroApplicationLayer\\Services\\LocationSyncService.cs",
-              "RelativeDocumentMoniker": "SyncroApplicationLayer\\Services\\LocationSyncService.cs",
-              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroApplicationLayer\\Services\\LocationSyncService.cs",
-              "RelativeToolTip": "SyncroApplicationLayer\\Services\\LocationSyncService.cs",
-              "ViewState": "AgIAACYAAAAAAAAAAAAnwDYAAAAIAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-25T05:49:28.651Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 20,
+              "DocumentIndex": 22,
               "Title": "SensorService.cs",
               "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroApplicationLayer\\Services\\SensorService.cs",
               "RelativeDocumentMoniker": "SyncroApplicationLayer\\Services\\SensorService.cs",
@@ -340,25 +375,11 @@
               "RelativeToolTip": "SyncroApplicationLayer\\Services\\SensorService.cs",
               "ViewState": "AgIAAA0AAAAAAAAAAAAQwCUAAAAdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-25T04:17:34.444Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-25T04:17:34.444Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "SensorsController.cs",
-              "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\SensorsController.cs",
-              "RelativeDocumentMoniker": "SyncroCloudApi\\Controllers\\SensorsController.cs",
-              "ToolTip": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\SensorsController.cs",
-              "RelativeToolTip": "SyncroCloudApi\\Controllers\\SensorsController.cs",
-              "ViewState": "AgIAAA0AAAAAAAAAAAAQwBUAAAAOAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-25T04:11:26.629Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 19,
+              "DocumentIndex": 21,
               "Title": "AlarmLookupsController.cs",
               "DocumentMoniker": "F:\\Work data\\Syncro-eg\\Repo-SyncroCloud\\SyncroCloud\\SyncroCloudApi\\Controllers\\AlarmLookupsController.cs",
               "RelativeDocumentMoniker": "SyncroCloudApi\\Controllers\\AlarmLookupsController.cs",
@@ -366,8 +387,7 @@
               "RelativeToolTip": "SyncroCloudApi\\Controllers\\AlarmLookupsController.cs",
               "ViewState": "AgIAABMAAAAAAAAAAAAswBcAAABRAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-19T05:28:29.052Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-19T05:28:29.052Z"
             }
           ]
         },

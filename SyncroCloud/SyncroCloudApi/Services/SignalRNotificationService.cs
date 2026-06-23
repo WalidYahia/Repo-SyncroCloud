@@ -6,9 +6,9 @@ namespace SyncroCloudApi.Services;
 
 public class SignalRNotificationService(IHubContext<SyncroHub> hub) : INotificationService
 {
-    public Task SendSensorDataUpdatedAsync(string deviceId, Guid sensorId, string? reading) =>
+    public Task SendSensorDataUpdatedAsync(string deviceId, string deviceSensorId, string? reading) =>
         hub.Clients.Group($"device_{deviceId}")
-           .SendAsync("SensorDataUpdated", new { deviceId, sensorId, reading });
+           .SendAsync("SensorDataUpdated", new { deviceId, deviceSensorId, reading });
 
     public Task SendDeviceStatusChangedAsync(string deviceId, string status) =>
         hub.Clients.Group($"device_{deviceId}")

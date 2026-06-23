@@ -30,6 +30,7 @@ builder.Services.AddScoped<IDeviceReadingService, DeviceReadingService>();
 builder.Services.AddScoped<IAlarmLookupService, AlarmLookupService>();
 builder.Services.AddScoped<IDeviceScenarioService, DeviceScenarioService>();
 builder.Services.AddScoped<IDeviceActionLogService, DeviceActionLogService>();
+builder.Services.AddScoped<ISmartHomeService, SmartHomeService>();
 
 // SignalR — INotificationService must be registered before MqttService is resolved
 builder.Services.AddSignalR();

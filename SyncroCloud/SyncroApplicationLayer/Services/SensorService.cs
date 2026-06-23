@@ -31,8 +31,9 @@ public class SensorService(SyncroDbContext db) : ISensorService
             InfoPath           = dto.InfoPath,
             InchingPath        = dto.InchingPath,
             SyncPeriodicity    = dto.SyncPeriodicity,
-            EventChangeSync    = dto.EventChangeSync,
-            EventChangeDelta   = dto.EventChangeDelta
+            EventChangeSync        = dto.EventChangeSync,
+            EventChangeDelta       = dto.EventChangeDelta,
+            OnlySaveRecordOnChange = dto.OnlySaveRecordOnChange
         };
         db.Sensors.Add(sensor);
         await db.SaveChangesAsync();
@@ -52,8 +53,9 @@ public class SensorService(SyncroDbContext db) : ISensorService
         sensor.InfoPath           = dto.InfoPath;
         sensor.InchingPath        = dto.InchingPath;
         sensor.SyncPeriodicity    = dto.SyncPeriodicity;
-        sensor.EventChangeSync    = dto.EventChangeSync;
-        sensor.EventChangeDelta   = dto.EventChangeDelta;
+        sensor.EventChangeSync        = dto.EventChangeSync;
+        sensor.EventChangeDelta       = dto.EventChangeDelta;
+        sensor.OnlySaveRecordOnChange = dto.OnlySaveRecordOnChange;
         await db.SaveChangesAsync();
         return ToDto(sensor);
     }
@@ -72,5 +74,5 @@ public class SensorService(SyncroDbContext db) : ISensorService
             s.Type, s.ConnectionProtocol,
             s.BaseUrl, s.PortNo,
             s.DataPath, s.InfoPath, s.InchingPath,
-            s.SyncPeriodicity, s.EventChangeSync, s.EventChangeDelta);
+            s.SyncPeriodicity, s.EventChangeSync, s.EventChangeDelta, s.OnlySaveRecordOnChange);
 }

@@ -137,6 +137,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "SyncroCloudApi.Controllers.AlexaController",
+    "Method": "HandleDirective",
+    "RelativePath": "api/alexa/smart-home",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SyncroApplicationLayer.DTOs.AlexaRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "SyncroCloudApi.Auth.Controllers.AuthController",
     "Method": "Login",
     "RelativePath": "api/Auth/login",
@@ -229,13 +245,8 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "deviceId",
+        "Name": "deviceSensorId",
         "Type": "System.String",
-        "IsRequired": false
-      },
-      {
-        "Name": "sensorId",
-        "Type": "System.Guid",
         "IsRequired": false
       },
       {
@@ -621,6 +632,22 @@
       {
         "Name": "deviceId",
         "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SyncroCloudApi.Controllers.GoogleHomeController",
+    "Method": "Fulfillment",
+    "RelativePath": "api/google-home/fulfillment",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "SyncroApplicationLayer.DTOs.GoogleHomeRequest",
         "IsRequired": true
       }
     ],

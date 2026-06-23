@@ -10,20 +10,18 @@ public class DeviceReadingsController(IDeviceReadingService service) : ApiContro
 {
     [HttpGet]
     public async Task<IActionResult> Get(
-        [FromQuery] string deviceId,
-        [FromQuery] Guid sensorId,
+        [FromQuery] string deviceSensorId,
         [FromQuery] DateTime? from,
         [FromQuery] DateTime? to)
     {
-        if (string.IsNullOrEmpty(deviceId)) return BadInput("deviceId is required.");
-        if (sensorId == Guid.Empty) return BadInput("sensorId is required.");
-        return Ok(await service.GetAsync(deviceId, sensorId, from, to));
+        if (string.IsNullOrEmpty(deviceSensorId)) return BadInput("deviceSensorId is required.");
+        return Ok(await service.GetAsync(deviceSensorId, from, to));
     }
 
     [HttpPost]
     public async Task<IActionResult> Add(CreateDeviceReadingDto dto)
     {
         var result = await service.AddAsync(dto);
-        return CreatedAtAction(nameof(Get), new { deviceId = result.DeviceId, sensorId = result.SensorId }, result);
+        return CreatedAtAction(nameof(Get), new { deviceSensorId = result.DeviceSensorId }, result);
     }
 }

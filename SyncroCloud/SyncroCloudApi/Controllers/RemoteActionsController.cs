@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Mvc;
 using SyncroApplicationLayer.DTOs;
 using SyncroApplicationLayer.Interfaces;
@@ -8,8 +10,9 @@ namespace SyncroCloudApi.Controllers;
 [ApiController]
 [Route("api/remote-actions")]
 public class RemoteActionsController(
-    IMqttService           mqtt,
-    IDeviceSensorService   sensorService,
+    IMqttService            mqtt,
+    IDeviceSensorService    sensorService,
+    IDeviceReadingService   readingService,
     IDeviceActionLogService logService) : ApiControllerBase
 {
     // POST api/remote-actions/{hubId}/sensors/{installedSensorId}/turn-on
@@ -19,8 +22,8 @@ public class RemoteActionsController(
             () => mqtt.TurnOnUnitAsync(hubId, installedSensorId, HttpContext.RequestAborted),
             async ack =>
             {
-                if (ack.DevicePayload is { } p && p.TryGetProperty("lastReading", out var v))
-                    await sensorService.UpdateLastReadingAsync(installedSensorId, v.GetRawText());
+                if (ack.DevicePayload is { } p && p.TryGetProperty("lastReading", out _))
+                    await readingService.AddAsync(new CreateDeviceReadingDto(hubId, installedSensorId, BuildReadingPayload(p)));
                 await logService.LogAsync(new CreateDeviceActionLogDto(
                     hubId, installedSensorId, "TurnOn", "Remote", ack.State.ToString()));
             });
@@ -32,8 +35,8 @@ public class RemoteActionsController(
             () => mqtt.TurnOffUnitAsync(hubId, installedSensorId, HttpContext.RequestAborted),
             async ack =>
             {
-                if (ack.DevicePayload is { } p && p.TryGetProperty("lastReading", out var v))
-                    await sensorService.UpdateLastReadingAsync(installedSensorId, v.GetRawText());
+                if (ack.DevicePayload is { } p && p.TryGetProperty("lastReading", out _))
+                    await readingService.AddAsync(new CreateDeviceReadingDto(hubId, installedSensorId, BuildReadingPayload(p)));
                 await logService.LogAsync(new CreateDeviceActionLogDto(
                     hubId, installedSensorId, "TurnOff", "Remote", ack.State.ToString()));
             });
@@ -91,6 +94,30 @@ public class RemoteActionsController(
             () => mqtt.DeleteScenarioAsync(hubId, scenarioId, HttpContext.RequestAborted));
 
     // ── helpers ───────────────────────────────────────────────
+
+    // Builds the canonical reading payload from the ack's DevicePayload:
+    // value comes from "lastReading", status and readingTime (was "lastSeen") are siblings on the payload,
+    // publishedAt is stamped with now (the moment the cloud captured this ack).
+    private static string BuildReadingPayload(JsonElement devicePayload)
+    {
+        var node = JsonNode.Parse(devicePayload.GetRawText())!.AsObject();
+
+        var value = node.TryGetPropertyValue("lastReading", out var lr) ? lr?.DeepClone() : null;
+        var status = node.TryGetPropertyValue("status", out var st) ? st?.DeepClone() : null;
+        var readingTime = node.TryGetPropertyValue("lastSeen", out var lastSeen) && lastSeen is not null
+            ? lastSeen.DeepClone()
+            : JsonValue.Create(DateTime.UtcNow);
+
+        var reading = new JsonObject
+        {
+            ["value"]       = value,
+            ["status"]      = "online",
+            ["publishedAt"] = JsonValue.Create(DateTime.UtcNow),
+            ["readingTime"] = readingTime
+        };
+
+        return reading.ToJsonString();
+    }
 
     private async Task<IActionResult> ExecuteActionAsync(
         Func<Task<RemoteActionAckDto>> action,

@@ -341,6 +341,75 @@ namespace SyncroInfraLayer.Migrations
                     b.ToTable("DeviceActionLogs");
                 });
 
+            modelBuilder.Entity("SyncroInfraLayer.Entities.DeviceConfig", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Config")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasDefaultValue("[]");
+
+                    b.Property<int>("ConfigType")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ConfigVersion")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("DeviceId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime>("UpdateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UpdatedFrom")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeviceId", "ConfigType")
+                        .IsUnique()
+                        .HasDatabaseName("IX_DeviceConfigs_DeviceId_ConfigType");
+
+                    b.ToTable("DeviceConfigs");
+                });
+
+            modelBuilder.Entity("SyncroInfraLayer.Entities.DeviceLatestReading", b =>
+                {
+                    b.Property<string>("DeviceSensorId")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("DeviceId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateTime>("PublishedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ReadingTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("WriteTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("DeviceSensorId");
+
+                    b.ToTable("DeviceLatestReadings");
+                });
+
             modelBuilder.Entity("SyncroInfraLayer.Entities.DeviceReading", b =>
                 {
                     b.Property<Guid>("Id")
@@ -349,32 +418,33 @@ namespace SyncroInfraLayer.Migrations
 
                     b.Property<string>("DeviceId")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("DeviceSensorId")
                         .IsRequired()
+                        .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
                     b.Property<string>("Payload")
                         .IsRequired()
                         .HasColumnType("jsonb");
 
-                    b.Property<DateTime>("ReceivedAt")
+                    b.Property<DateTime>("PublishedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("RecordedAt")
+                    b.Property<DateTime>("ReadingTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("SensorId")
-                        .HasColumnType("uuid");
+                    b.Property<DateTime>("WriteTime")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DeviceSensorId");
+                    b.HasIndex("WriteTime");
 
-                    b.HasIndex("RecordedAt");
-
-                    b.HasIndex("DeviceId", "SensorId");
+                    b.HasIndex("DeviceSensorId", "ReadingTime")
+                        .IsUnique();
 
                     b.ToTable("DeviceReadings");
                 });
@@ -401,127 +471,6 @@ namespace SyncroInfraLayer.Migrations
                     b.HasIndex("DeviceId");
 
                     b.ToTable("DeviceScenarios");
-                });
-
-            modelBuilder.Entity("SyncroInfraLayer.Entities.DeviceSensor", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<int?>("Address")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("BaseUrl")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("DataPath")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("DeviceId")
-                        .IsRequired()
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("DisplayName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<double?>("EventChangeDelta")
-                        .HasColumnType("double precision");
-
-                    b.Property<bool>("EventChangeSync")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("InchingModeWidthInMs")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("InchingPath")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("InfoPath")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<DateTime>("InstalledAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid?>("InstalledById")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
-
-                    b.Property<bool>("IsInInchingMode")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsPendingSync")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
-                    b.Property<string>("LastReading")
-                        .HasColumnType("jsonb");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<int?>("Port")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("PortNo")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
-                    b.Property<int>("Protocol")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("SensorId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("SensorType")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("SwitchNo")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int?>("SyncPeriodicity")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("UnitId")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("InstalledById");
-
-                    b.HasIndex("SensorId");
-
-                    b.HasIndex("DeviceId", "SensorId", "SwitchNo", "UnitId", "Address", "Port")
-                        .IsUnique()
-                        .HasDatabaseName("IX_DeviceSensors_Unique");
-
-                    b.ToTable("DeviceSensors");
                 });
 
             modelBuilder.Entity("SyncroInfraLayer.Entities.Sensor", b =>
@@ -564,6 +513,9 @@ namespace SyncroInfraLayer.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("OnlySaveRecordOnChange")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("PortNo")
                         .IsRequired()
@@ -913,15 +865,15 @@ namespace SyncroInfraLayer.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SyncroInfraLayer.Entities.DeviceReading", b =>
+            modelBuilder.Entity("SyncroInfraLayer.Entities.DeviceConfig", b =>
                 {
-                    b.HasOne("SyncroInfraLayer.Entities.DeviceSensor", "DeviceSensor")
-                        .WithMany("Readings")
-                        .HasForeignKey("DeviceSensorId")
+                    b.HasOne("SyncroInfraLayer.Entities.Device", "Device")
+                        .WithMany("DeviceConfigs")
+                        .HasForeignKey("DeviceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("DeviceSensor");
+                    b.Navigation("Device");
                 });
 
             modelBuilder.Entity("SyncroInfraLayer.Entities.DeviceScenario", b =>
@@ -933,32 +885,6 @@ namespace SyncroInfraLayer.Migrations
                         .IsRequired();
 
                     b.Navigation("Device");
-                });
-
-            modelBuilder.Entity("SyncroInfraLayer.Entities.DeviceSensor", b =>
-                {
-                    b.HasOne("SyncroInfraLayer.Entities.Device", "Device")
-                        .WithMany("DeviceSensors")
-                        .HasForeignKey("DeviceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SyncroInfraLayer.Identity.AppUser", "InstalledBy")
-                        .WithMany()
-                        .HasForeignKey("InstalledById")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("SyncroInfraLayer.Entities.Sensor", "Sensor")
-                        .WithMany("DeviceSensors")
-                        .HasForeignKey("SensorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Device");
-
-                    b.Navigation("InstalledBy");
-
-                    b.Navigation("Sensor");
                 });
 
             modelBuilder.Entity("SyncroInfraLayer.Entities.TenantUser", b =>
@@ -1014,17 +940,7 @@ namespace SyncroInfraLayer.Migrations
 
             modelBuilder.Entity("SyncroInfraLayer.Entities.Device", b =>
                 {
-                    b.Navigation("DeviceSensors");
-                });
-
-            modelBuilder.Entity("SyncroInfraLayer.Entities.DeviceSensor", b =>
-                {
-                    b.Navigation("Readings");
-                });
-
-            modelBuilder.Entity("SyncroInfraLayer.Entities.Sensor", b =>
-                {
-                    b.Navigation("DeviceSensors");
+                    b.Navigation("DeviceConfigs");
                 });
 
             modelBuilder.Entity("SyncroInfraLayer.Entities.Tenant", b =>

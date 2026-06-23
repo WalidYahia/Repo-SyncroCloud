@@ -152,6 +152,37 @@
         }
       }
     },
+    "/api/alexa/smart-home": {
+      "post": {
+        "tags": [
+          "Alexa"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlexaRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlexaRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlexaRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/Auth/register": {
       "post": {
         "tags": [
@@ -438,18 +469,10 @@
         ],
         "parameters": [
           {
-            "name": "deviceId",
+            "name": "deviceSensorId",
             "in": "query",
             "schema": {
               "type": "string"
-            }
-          },
-          {
-            "name": "sensorId",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
             }
           },
           {
@@ -999,6 +1022,37 @@
             "application/*+json": {
               "schema": {
                 "$ref": "#/components/schemas/UpdateSensorNameDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/google-home/fulfillment": {
+      "post": {
+        "tags": [
+          "GoogleHome"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleHomeRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleHomeRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleHomeRequest"
               }
             }
           }
@@ -2044,6 +2098,92 @@
         ],
         "type": "string"
       },
+      "AlexaDirective": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "$ref": "#/components/schemas/AlexaDirectiveHeader"
+          },
+          "endpoint": {
+            "$ref": "#/components/schemas/AlexaEndpointRef"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/AlexaRequestPayload"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AlexaDirectiveHeader": {
+        "type": "object",
+        "properties": {
+          "namespace": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "messageId": {
+            "type": "string",
+            "nullable": true
+          },
+          "correlationToken": {
+            "type": "string",
+            "nullable": true
+          },
+          "payloadVersion": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AlexaEndpointRef": {
+        "type": "object",
+        "properties": {
+          "endpointId": {
+            "type": "string",
+            "nullable": true
+          },
+          "scope": {
+            "$ref": "#/components/schemas/AlexaScope"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AlexaRequest": {
+        "type": "object",
+        "properties": {
+          "directive": {
+            "$ref": "#/components/schemas/AlexaDirective"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AlexaRequestPayload": {
+        "type": "object",
+        "properties": {
+          "scope": {
+            "$ref": "#/components/schemas/AlexaScope"
+          }
+        },
+        "additionalProperties": false
+      },
+      "AlexaScope": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "token": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "ConnectionProtocol": {
         "enum": [
           "MQTT",
@@ -2162,13 +2302,9 @@
             "type": "string",
             "nullable": true
           },
-          "sensorId": {
+          "deviceSensorId": {
             "type": "string",
-            "format": "uuid"
-          },
-          "recordedAt": {
-            "type": "string",
-            "format": "date-time"
+            "nullable": true
           },
           "payload": {
             "type": "string",
@@ -2220,14 +2356,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "baseUrl": {
-            "type": "string",
-            "nullable": true
-          },
-          "portNo": {
-            "type": "string",
-            "nullable": true
-          },
           "dataPath": {
             "type": "string",
             "nullable": true
@@ -2245,9 +2373,6 @@
             "format": "int32",
             "nullable": true
           },
-          "eventChangeSync": {
-            "type": "boolean"
-          },
           "eventChangeDelta": {
             "type": "number",
             "format": "double",
@@ -2259,11 +2384,6 @@
           "inchingModeWidthInMs": {
             "type": "integer",
             "format": "int32"
-          },
-          "installedById": {
-            "type": "string",
-            "format": "uuid",
-            "nullable": true
           }
         },
         "additionalProperties": false
@@ -2313,6 +2433,9 @@
             "type": "number",
             "format": "double",
             "nullable": true
+          },
+          "onlySaveRecordOnChange": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -2402,6 +2525,101 @@
           "createdAt": {
             "type": "string",
             "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GoogleHomeCommand": {
+        "type": "object",
+        "properties": {
+          "devices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoogleHomeDeviceRef"
+            },
+            "nullable": true
+          },
+          "execution": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoogleHomeExecution"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GoogleHomeDeviceRef": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GoogleHomeExecution": {
+        "type": "object",
+        "properties": {
+          "command": {
+            "type": "string",
+            "nullable": true
+          },
+          "params": {
+            "type": "object",
+            "additionalProperties": { },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GoogleHomeInput": {
+        "type": "object",
+        "properties": {
+          "intent": {
+            "type": "string",
+            "nullable": true
+          },
+          "payload": {
+            "$ref": "#/components/schemas/GoogleHomePayload"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GoogleHomePayload": {
+        "type": "object",
+        "properties": {
+          "commands": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoogleHomeCommand"
+            },
+            "nullable": true
+          },
+          "devices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoogleHomeDeviceRef"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GoogleHomeRequest": {
+        "type": "object",
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "nullable": true
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GoogleHomeInput"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -2728,14 +2946,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "baseUrl": {
-            "type": "string",
-            "nullable": true
-          },
-          "portNo": {
-            "type": "string",
-            "nullable": true
-          },
           "dataPath": {
             "type": "string",
             "nullable": true
@@ -2760,6 +2970,9 @@
             "type": "number",
             "format": "double",
             "nullable": true
+          },
+          "onlySaveRecordOnChange": {
+            "type": "boolean"
           },
           "isInInchingMode": {
             "type": "boolean"
@@ -2823,6 +3036,9 @@
             "type": "number",
             "format": "double",
             "nullable": true
+          },
+          "onlySaveRecordOnChange": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false

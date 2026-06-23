@@ -18,6 +18,6 @@ public class Sensor
     public int? SyncPeriodicity { get; set; }
     public bool EventChangeSync { get; set; }
     public double? EventChangeDelta { get; set; }
+    public bool OnlySaveRecordOnChange { get; set; }
 
-    public ICollection<DeviceSensor> DeviceSensors { get; set; } = [];
 }

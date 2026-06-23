@@ -7,18 +7,18 @@ public record SensorDto(
     SensorType Type, ConnectionProtocol ConnectionProtocol,
     string BaseUrl, string PortNo,
     string DataPath, string InfoPath, string InchingPath,
-    int? SyncPeriodicity, bool EventChangeSync, double? EventChangeDelta);
+    int? SyncPeriodicity, bool EventChangeSync, double? EventChangeDelta, bool OnlySaveRecordOnChange);
 
 public record CreateSensorDto(
     string Name,
     SensorType Type, ConnectionProtocol ConnectionProtocol,
     string BaseUrl, string PortNo,
     string DataPath, string InfoPath, string InchingPath,
-    int? SyncPeriodicity, bool EventChangeSync, double? EventChangeDelta);
+    int? SyncPeriodicity, bool EventChangeSync, double? EventChangeDelta, bool OnlySaveRecordOnChange);
 
 public record UpdateSensorDto(
     string Name,
     SensorType Type, ConnectionProtocol ConnectionProtocol,
     string BaseUrl, string PortNo,
     string DataPath, string InfoPath, string InchingPath,
-    int? SyncPeriodicity, bool EventChangeSync, double? EventChangeDelta);
+    int? SyncPeriodicity, bool EventChangeSync, double? EventChangeDelta, bool OnlySaveRecordOnChange);

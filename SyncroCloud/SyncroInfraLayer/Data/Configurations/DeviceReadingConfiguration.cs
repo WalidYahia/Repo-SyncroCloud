@@ -10,16 +10,14 @@ public class DeviceReadingConfiguration : IEntityTypeConfiguration<DeviceReading
     {
         builder.HasKey(r => r.Id);
 
-        builder.Property(r => r.RecordedAt).IsRequired();
-        builder.Property(r => r.ReceivedAt).IsRequired();
+        builder.Property(r => r.DeviceSensorId).IsRequired().HasMaxLength(500);
+        builder.Property(r => r.DeviceId).IsRequired().HasMaxLength(200);
+        builder.Property(r => r.ReadingTime).IsRequired();
+        builder.Property(r => r.PublishedAt).IsRequired();
+        builder.Property(r => r.WriteTime).IsRequired();
         builder.Property(r => r.Payload).IsRequired().HasColumnType("jsonb");
 
-        builder.HasIndex(r => new { r.DeviceId, r.SensorId });
-        builder.HasIndex(r => r.RecordedAt);
-
-        builder.HasOne(r => r.DeviceSensor)
-            .WithMany(ds => ds.Readings)
-            .HasForeignKey(r => r.DeviceSensorId)
-            .OnDelete(DeleteBehavior.Cascade);
+        builder.HasIndex(r => new { r.DeviceSensorId, r.ReadingTime }).IsUnique();
+        builder.HasIndex(r => r.WriteTime);
     }
 }

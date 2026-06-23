@@ -13,6 +13,9 @@ namespace SyncroInfraLayer.Helpers
         public static string GetWildcardTopic(MqttTopics topic) =>
             GetMqttTopic(topic, "+");
 
+        public static string GetWildcardReadingsTopic(MqttTopics topic) =>
+            GetMqttTopic(topic, "+") + "/+";
+
         // ── Build: SmartGuard hub topics ──────────────────────────────
         // Pattern: {hubId}/{topic}
 
@@ -29,15 +32,17 @@ namespace SyncroInfraLayer.Helpers
             $"Syncro/{deviceId}/commands/{action}";
 
         // ── Parse: Syncro/{deviceId}/sensors/{sensorId}/data ──────────
-        public static bool TryParseSensorData(string topic, out string deviceId, out Guid sensorId)
+        // ── Parse: Syncro/{deviceId}/Readings/{deviceSensorId} ───────
+        public static bool TryParseReading(string topic, out string deviceId, out string deviceSensorId)
         {
-            deviceId = string.Empty;
-            sensorId = Guid.Empty;
+            deviceId       = string.Empty;
+            deviceSensorId = string.Empty;
             var p = topic.Split('/');
-            if (p.Length != 5 || p[0] != "Syncro" || p[2] != "sensors" || p[4] != "data")
+            if (p.Length != 4 || p[0] != "Syncro" || p[2] != "Readings")
                 return false;
-            deviceId = p[1];
-            return Guid.TryParse(p[3], out sensorId);
+            deviceId       = p[1];
+            deviceSensorId = p[3];
+            return true;
         }
 
         // ── Parse: Syncro/{deviceId}/status ──────────────────────────

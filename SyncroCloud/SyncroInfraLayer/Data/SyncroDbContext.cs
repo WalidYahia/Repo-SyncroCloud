@@ -17,8 +17,9 @@ public class SyncroDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     public DbSet<City> Cities => Set<City>();
     public DbSet<Device> Devices => Set<Device>();
     public DbSet<Sensor> Sensors => Set<Sensor>();
-    public DbSet<DeviceSensor> DeviceSensors => Set<DeviceSensor>();
+    public DbSet<DeviceConfig> DeviceConfigs => Set<DeviceConfig>();
     public DbSet<DeviceReading> DeviceReadings => Set<DeviceReading>();
+    public DbSet<DeviceLatestReading> DeviceLatestReadings => Set<DeviceLatestReading>();
     public DbSet<AlarmLookup> AlarmLookups => Set<AlarmLookup>();
     public DbSet<DeviceScenario> DeviceScenarios => Set<DeviceScenario>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
@@ -36,8 +37,9 @@ public class SyncroDbContext : IdentityDbContext<AppUser, AppRole, Guid>
         modelBuilder.ApplyConfiguration(new AppUserConfiguration());
         modelBuilder.ApplyConfiguration(new DeviceConfiguration());
         modelBuilder.ApplyConfiguration(new SensorConfiguration());
-        modelBuilder.ApplyConfiguration(new DeviceSensorConfiguration());
+        modelBuilder.ApplyConfiguration(new DeviceConfigConfiguration());
         modelBuilder.ApplyConfiguration(new DeviceReadingConfiguration());
+        modelBuilder.ApplyConfiguration(new DeviceLatestReadingConfiguration());
         modelBuilder.ApplyConfiguration(new AlarmLookupConfiguration());
         modelBuilder.ApplyConfiguration(new DeviceScenarioConfiguration());
         modelBuilder.ApplyConfiguration(new RefreshTokenConfiguration());

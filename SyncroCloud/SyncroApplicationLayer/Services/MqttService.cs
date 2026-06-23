@@ -68,6 +68,7 @@ public class MqttService(
                 var subscribeOptions = factory.CreateSubscribeOptionsBuilder()
                     .WithTopicFilter(f => f.WithTopic(MqttHelper.GetWildcardTopic(MqttTopics.DeviceSensorConfig)).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
                     .WithTopicFilter(f => f.WithTopic(MqttHelper.GetHubWildcardTopic(MqttTopics.RemoteAction_Ack)).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
+                    .WithTopicFilter(f => f.WithTopic(MqttHelper.GetWildcardReadingsTopic(MqttTopics.Readings)).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
                     .Build();
 
                 await _client.SubscribeAsync(subscribeOptions, stoppingToken);
@@ -103,22 +104,19 @@ public class MqttService(
         {
             using var scope = scopeFactory.CreateScope();
 
-            // Syncro/{deviceId}/sensors/{sensorId}/data
-            if (MqttHelper.TryParseSensorData(topic, out var deviceId, out var sensorId))
+            // Syncro/{deviceId}/Readings/{deviceSensorId}
+            if (MqttHelper.TryParseReading(topic, out var deviceId, out var deviceSensorId))
             {
                 var readingService = scope.ServiceProvider.GetRequiredService<IDeviceReadingService>();
-                var sensorService  = scope.ServiceProvider.GetRequiredService<IDeviceSensorService>();
                 var logService     = scope.ServiceProvider.GetRequiredService<IDeviceActionLogService>();
 
-                await readingService.AddAsync(new CreateDeviceReadingDto(deviceId, sensorId, DateTime.UtcNow, payload));
-                await sensorService.UpdateLastReadingAsync(deviceId, sensorId, payload);
+                await readingService.AddAsync(new CreateDeviceReadingDto(deviceId, deviceSensorId, payload));
 
-                // Log device-initiated state change (no installedSensorId available at this level)
                 await logService.LogAsync(new CreateDeviceActionLogDto(
-                    deviceId, sensorId.ToString(), "StateChanged", "Device", "Ok"));
+                    deviceId, deviceSensorId, "StateChanged", "Device", "Ok"));
 
-                await notifier.SendSensorDataUpdatedAsync(deviceId, sensorId, payload);
-                logger.LogDebug("Stored reading for device {DeviceId} sensor {SensorId}", deviceId, sensorId);
+                await notifier.SendSensorDataUpdatedAsync(deviceId, deviceSensorId, payload);
+                logger.LogDebug("Stored reading for device {DeviceId} sensor {DeviceSensorId}", deviceId, deviceSensorId);
             }
             // Syncro/{deviceId}/status
             else if (MqttHelper.TryParseDeviceStatus(topic, out var statusDeviceId))
@@ -136,12 +134,18 @@ public class MqttService(
             // Syncro/{deviceId}/DeviceSensorConfig
             else if (MqttHelper.TryParseDeviceTopic(topic, MqttTopics.DeviceSensorConfig, out var configDeviceId))
             {
-                var sensors = JsonSerializer.Deserialize<List<DeviceSensorSyncDto>>(payload, _caseInsensitive) ?? [];
+                var envelope = JsonSerializer.Deserialize<SensorConfigEnvelope>(payload, _caseInsensitive);
+                if (envelope is null)
+                {
+                    logger.LogWarning("Received null or unparseable SensorConfigEnvelope from device {DeviceId}", configDeviceId);
+                    return;
+                }
 
                 var sensorService = scope.ServiceProvider.GetRequiredService<IDeviceSensorService>();
-                await sensorService.SyncFromDeviceAsync(configDeviceId, sensors);
+                await sensorService.SyncFromDeviceAsync(configDeviceId, envelope);
                 await notifier.SendSensorConfigChangedAsync(configDeviceId);
-                logger.LogInformation("Synced {Count} sensors from device {DeviceId}", sensors.Count, configDeviceId);
+                logger.LogInformation("Received sensor config v{Version} from device {DeviceId} ({Count} sensors)",
+                    envelope.ConfigVersion, configDeviceId, envelope.Sensors.Count);
             }
             // Syncro/{hubId}/RemoteAction_Ack
             else if (MqttHelper.TryParseDeviceTopic(topic, MqttTopics.RemoteAction_Ack, out var hubId))
