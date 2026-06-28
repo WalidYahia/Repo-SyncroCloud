@@ -1,38 +1,38 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { DatePipe } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableModule } from '@angular/material/table';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { forkJoin } from 'rxjs';
 import { DeviceService } from '../../../core/services/device.service';
-import { DeviceScenarioDto } from '../../../core/models/device.models';
+import { DeviceSensorDto, UserScenario } from '../../../core/models/device.models';
+import { ScenarioDialogComponent, ScenarioDialogData } from './scenario-dialog/scenario-dialog.component';
 
 @Component({
   selector: 'app-device-scenarios',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule, DatePipe, MatTableModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatCardModule, MatTooltipModule],
+  imports: [RouterLink, MatButtonModule, MatIconModule, MatTooltipModule, MatProgressSpinnerModule,
+            MatTableModule, MatChipsModule, MatDialogModule],
   templateUrl: './device-scenarios.component.html',
   styleUrl: './device-scenarios.component.scss'
 })
 export class DeviceScenariosComponent implements OnInit {
-  private route = inject(ActivatedRoute);
+  private route         = inject(ActivatedRoute);
   private deviceService = inject(DeviceService);
-  private fb = inject(FormBuilder);
+  private dialog         = inject(MatDialog);
+  private cdr           = inject(ChangeDetectorRef);
 
   deviceId!: string;
-  scenarios: DeviceScenarioDto[] = [];
-  columns = ['name', 'action', 'conditions', 'updatedAt', 'actions'];
-  showForm = false;
-  editingId: string | null = null;
+  scenarios: UserScenario[] = [];
+  sensors: DeviceSensorDto[] = [];
+  isLoading = true;
+  errorMessage: string | null = null;
 
-  form = this.fb.group({
-    payload: ['', [Validators.required]]
-  });
+  columns = ['name', 'targetSensor', 'action', 'logic', 'conditions', 'status', 'actions'];
 
   ngOnInit() {
     this.deviceId = this.route.snapshot.paramMap.get('id')!;
@@ -40,38 +40,50 @@ export class DeviceScenariosComponent implements OnInit {
   }
 
   load() {
-    this.deviceService.getScenarios(this.deviceId).subscribe(s => this.scenarios = s);
-  }
-
-  parsedScenario(payload: string) {
-    try { return JSON.parse(payload); } catch { return {}; }
-  }
-
-  startNew() {
-    this.editingId = null;
-    this.form.reset({ payload: JSON.stringify({ Id: crypto.randomUUID(), Name: '', IsEnabled: true, TargetSensorId: '', Action: 'On', LogicOfConditions: 'And', Conditions: [] }, null, 2) });
-    this.showForm = true;
-  }
-
-  edit(scenario: DeviceScenarioDto) {
-    this.editingId = scenario.id;
-    this.form.setValue({ payload: JSON.stringify(JSON.parse(scenario.payload), null, 2) });
-    this.showForm = true;
-  }
-
-  save() {
-    if (this.form.invalid) return;
-    const payload = this.form.value.payload!;
-    const parsed = this.parsedScenario(payload);
-    const scenarioId = this.editingId ?? parsed.Id ?? crypto.randomUUID();
-    this.deviceService.upsertScenario(scenarioId, { deviceId: this.deviceId, payload }).subscribe(() => {
-      this.showForm = false; this.editingId = null; this.load();
+    this.isLoading = true;
+    this.errorMessage = null;
+    forkJoin([
+      this.deviceService.getScenarios(this.deviceId),
+      this.deviceService.getSensors(this.deviceId)
+    ]).subscribe({
+      next: ([scenarios, sensors]) => {
+        this.scenarios = scenarios;
+        this.sensors = sensors;
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.errorMessage = 'Failed to load scenarios.';
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 
-  delete(scenarioId: string) {
-    if (confirm('Delete this scenario?')) {
-      this.deviceService.deleteScenario(this.deviceId, scenarioId).subscribe(() => this.load());
+  sensorName(sensorId: string): string {
+    return this.sensors.find(s => s.id === sensorId)?.displayName ?? sensorId;
+  }
+
+  openDialog(scenario?: UserScenario) {
+    const ref = this.dialog.open<ScenarioDialogComponent, ScenarioDialogData, UserScenario>(ScenarioDialogComponent, {
+      width: '720px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      data: { scenario: scenario ?? null, sensors: this.sensors }
+    });
+
+    ref.afterClosed().subscribe(result => {
+      if (!result) return;
+      const request = scenario
+        ? this.deviceService.updateScenario(this.deviceId, scenario.id, result)
+        : this.deviceService.createScenario(this.deviceId, result);
+      request.subscribe(() => this.load());
+    });
+  }
+
+  delete(scenario: UserScenario) {
+    if (confirm(`Delete scenario "${scenario.name}"?`)) {
+      this.deviceService.deleteScenario(this.deviceId, scenario.id).subscribe(() => this.load());
     }
   }
 }

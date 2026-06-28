@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { DeviceDto, CreateDeviceDto, DeviceSensorDto, CreateDeviceSensorDto, DeviceScenarioDto, UpsertDeviceScenarioDto } from '../models/device.models';
+import { DeviceDto, CreateDeviceDto, DeviceSensorDto, CreateDeviceSensorDto, UpdateDeviceSensorDto, UserScenario } from '../models/device.models';
 
 @Injectable({ providedIn: 'root' })
 export class DeviceService {
@@ -18,10 +18,12 @@ export class DeviceService {
   // Device Sensors
   getSensors(deviceId: string)        { return this.http.get<DeviceSensorDto[]>(`${environment.apiUrl}/devicesensors/device/${deviceId}`); }
   installSensor(dto: CreateDeviceSensorDto) { return this.http.post<DeviceSensorDto>(`${environment.apiUrl}/devicesensors`, dto); }
+  updateSensor(id: string, dto: UpdateDeviceSensorDto) { return this.http.put<DeviceSensorDto>(`${environment.apiUrl}/devicesensors/${id}`, dto); }
   uninstallSensor(id: string) { return this.http.delete(`${environment.apiUrl}/devicesensors/${id}`); }
 
   // Device Scenarios
-  getScenarios(deviceId: string)      { return this.http.get<DeviceScenarioDto[]>(`${environment.apiUrl}/devicescenarios/device/${deviceId}`); }
-  upsertScenario(scenarioId: string, dto: UpsertDeviceScenarioDto) { return this.http.put<DeviceScenarioDto>(`${environment.apiUrl}/devicescenarios/${scenarioId}`, dto); }
+  getScenarios(deviceId: string)      { return this.http.get<UserScenario[]>(`${environment.apiUrl}/devicescenarios/device/${deviceId}`); }
+  createScenario(deviceId: string, scenario: UserScenario) { return this.http.post<UserScenario>(`${environment.apiUrl}/devicescenarios/device/${deviceId}`, scenario); }
+  updateScenario(deviceId: string, scenarioId: string, scenario: UserScenario) { return this.http.put<UserScenario>(`${environment.apiUrl}/devicescenarios/device/${deviceId}/${scenarioId}`, scenario); }
   deleteScenario(deviceId: string, scenarioId: string) { return this.http.delete(`${environment.apiUrl}/devicescenarios/device/${deviceId}/${scenarioId}`); }
 }

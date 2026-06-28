@@ -1,0 +1,82 @@
+<div mat-dialog-title class="dialog-title-row"
+     cdkDrag
+     cdkDragRootElement=".cdk-overlay-pane"
+     cdkDragBoundary=".cdk-overlay-container">
+  <span cdkDragHandle class="drag-handle">
+    <mat-icon class="drag-icon">drag_indicator</mat-icon>
+    Install Sensor
+  </span>
+</div>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dialog-form">
+
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Sensor</mat-label>
+        <mat-select formControlName="sensorId" (selectionChange)="onSensorChange($event.value)">
+          @for (s of availableSensors; track s.sensorId) {
+            <mat-option [value]="s.sensorId">{{ s.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      @if (selectedSensor) {
+        <div class="sensor-info">
+          <span class="info-label">From sensor definition:</span>
+          <mat-chip-set>
+            <mat-chip>{{ selectedSensor.type }}</mat-chip>
+            <mat-chip>{{ selectedSensor.connectionProtocol }}</mat-chip>
+            @if (selectedSensor.syncPeriodicity) {
+              <mat-chip>Sync every {{ selectedSensor.syncPeriodicity }}s</mat-chip>
+            }
+            @if (selectedSensor.eventChangeSync) {
+              <mat-chip>Event Sync Δ{{ selectedSensor.eventChangeDelta ?? '' }}</mat-chip>
+            }
+          </mat-chip-set>
+        </div>
+      }
+
+      <mat-form-field appearance="outline">
+        <mat-label>Display Name</mat-label>
+        <input matInput formControlName="displayName" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Unit ID</mat-label>
+        <input matInput formControlName="unitId" placeholder="Sonoff device ID" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Switch No</mat-label>
+        <mat-select formControlName="switchNo">
+          @for (s of switchNos; track s) { <mat-option [value]="s">{{ s }}</mat-option> }
+        </mat-select>
+      </mat-form-field>
+
+      @if (computedUrl) {
+        <div class="computed-url">
+          <span class="info-label">URL:</span> <code>{{ computedUrl }}</code>
+        </div>
+      }
+
+      <mat-form-field appearance="outline">
+        <mat-label>Address</mat-label>
+        <input matInput type="number" formControlName="address" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Port</mat-label>
+        <input matInput type="number" formControlName="port" />
+      </mat-form-field>
+    </div>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="primary" [disabled]="form.invalid || !selectedSensor" (click)="save()">
+    Install
+  </button>
+</mat-dialog-actions>

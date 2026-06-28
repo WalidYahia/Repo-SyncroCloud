@@ -106,13 +106,14 @@ public enum ScenarioLogic
 // ── Device Config ─────────────────────────────────────────
 public enum ConfigType
 {
-    Sensor  = 0,
-    Network = 1,
+    Sensor   = 0,
+    Network  = 1,
+    Scenario = 2,
 }
 
 public enum ConfigSource
 {
-    Local = 0,
+    Device = 0,
     Cloud = 1,
 }
 
@@ -170,7 +171,7 @@ public enum MqttTopics
     /// <summary>
     /// Publish from Device
     /// </summary>
-    UserScenario,
+    DeviceUserScenario,
 
     /// <summary>
     /// Publish from Device

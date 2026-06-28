@@ -1,0 +1,30 @@
+.dialog-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.drag-handle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: move;
+}
+
+.drag-icon { color: rgba(0, 0, 0, 0.4); }
+
+.dialog-form { padding-top: 4px; min-width: 480px; }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 16px;
+  align-items: center;
+}
+
+.sensor-info,
+.computed-url { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 4px 0; }
+.info-label   { font-size: 13px; color: var(--mat-sys-on-surface-variant, #5f6368); white-space: nowrap; }
+
+code { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }

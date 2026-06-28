@@ -1,26 +1,22 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { DeviceService } from '../../../core/services/device.service';
 import { SensorService } from '../../../core/services/sensor.service';
 import { DeviceSensorDto } from '../../../core/models/device.models';
 import { SensorDto } from '../../../core/models/sensor.models';
 import { forkJoin } from 'rxjs';
+import { InstallSensorDialogComponent, InstallSensorDialogData, InstallSensorDialogResult } from './install-sensor-dialog/install-sensor-dialog.component';
+import { EditSensorDialogComponent, EditSensorDialogData, EditSensorDialogResult } from './edit-sensor-dialog/edit-sensor-dialog.component';
 
 @Component({
   selector: 'app-device-sensors',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule, MatTableModule, MatButtonModule, MatIconModule,
-            MatFormFieldModule, MatInputModule, MatSelectModule, MatCardModule, MatTooltipModule, MatChipsModule],
+  imports: [RouterLink, MatTableModule, MatButtonModule, MatIconModule, MatTooltipModule, MatDialogModule],
   templateUrl: './device-sensors.component.html',
   styleUrl: './device-sensors.component.scss'
 })
@@ -28,34 +24,20 @@ export class DeviceSensorsComponent implements OnInit {
   private route         = inject(ActivatedRoute);
   private deviceService = inject(DeviceService);
   private sensorService = inject(SensorService);
-  private fb            = inject(FormBuilder);
+  private dialog         = inject(MatDialog);
   private cdr           = inject(ChangeDetectorRef);
 
   deviceId!: string;
   installed:        DeviceSensorDto[] = [];
   availableSensors: SensorDto[]       = [];
-  selectedSensor:   SensorDto | null  = null;
   columns = ['sensor', 'switchNo', 'unitId', 'displayName', 'sensorType', 'actions'];
-  showForm = false;
-
-  switchNos = ['Non','Switch1','Switch2','Switch3','Switch4','Switch5','Switch6','Switch7','Switch8'];
-
-  form = this.fb.group({
-    sensorId:    ['', Validators.required],
-    switchNo:    ['Non'],
-    unitId:      ['', Validators.required],
-    displayName: ['', Validators.required],
-    address:     [null as number | null],
-    port:        [null as number | null],
-  });
-
-  get computedUrl(): string {
-    if (!this.selectedSensor) return '';
-    return `${this.selectedSensor.baseUrl}${this.form.value.unitId ?? ''}:${this.selectedSensor.portNo}`;
-  }
 
   ngOnInit() {
     this.deviceId = this.route.snapshot.paramMap.get('id')!;
+    this.load();
+  }
+
+  load() {
     forkJoin([
       this.deviceService.getSensors(this.deviceId),
       this.sensorService.getAll()
@@ -69,48 +51,107 @@ export class DeviceSensorsComponent implements OnInit {
     });
   }
 
-  onSensorChange(sensorId: string) {
-    this.selectedSensor = this.availableSensors.find(s => s.sensorId === sensorId) ?? null;
-    if (this.selectedSensor) {
-      this.form.patchValue({ displayName: this.selectedSensor.name });
-    }
-  }
-
   sensorName(sensorId: string) {
     return this.availableSensors.find(s => s.sensorId === sensorId)?.name ?? sensorId;
   }
 
-  install() {
-    if (this.form.invalid || !this.selectedSensor) return;
+  openInstallDialog() {
+    const ref = this.dialog.open<InstallSensorDialogComponent, InstallSensorDialogData, InstallSensorDialogResult>(
+      InstallSensorDialogComponent,
+      {
+        width: '600px',
+        maxWidth: '95vw',
+        maxHeight: '90vh',
+        data: { availableSensors: this.availableSensors }
+      }
+    );
+
+    ref.afterClosed().subscribe(result => {
+      if (!result) return;
+      this.install(result);
+    });
+  }
+
+  private install(result: InstallSensorDialogResult) {
     const dto = {
-      ...this.form.value,
-      url:              this.computedUrl,
+      sensorId:    result.sensorId,
+      switchNo:    result.switchNo,
+      unitId:      result.unitId,
+      displayName: result.displayName,
+      address:     result.address,
+      port:        result.port,
+      url:              result.url,
       deviceId:         this.deviceId,
-      sensorType:       this.selectedSensor.type,
+      sensorType:       result.selectedSensor.type,
       protocol:         0,
-      baseUrl:          this.selectedSensor.baseUrl,
-      portNo:           this.selectedSensor.portNo,
-      dataPath:         this.selectedSensor.dataPath,
-      infoPath:         this.selectedSensor.infoPath,
-      inchingPath:      this.selectedSensor.inchingPath,
-      syncPeriodicity:  this.selectedSensor.syncPeriodicity,
-      eventChangeSync:  this.selectedSensor.eventChangeSync,
-      eventChangeDelta: this.selectedSensor.eventChangeDelta,
+      baseUrl:          result.selectedSensor.baseUrl,
+      portNo:           result.selectedSensor.portNo,
+      dataPath:         result.selectedSensor.dataPath,
+      infoPath:         result.selectedSensor.infoPath,
+      inchingPath:      result.selectedSensor.inchingPath,
+      syncPeriodicity:  result.selectedSensor.syncPeriodicity,
+      eventChangeSync:  result.selectedSensor.eventChangeSync,
+      eventChangeDelta: result.selectedSensor.eventChangeDelta,
       installedById:    null
     } as any;
 
-    this.deviceService.installSensor(dto).subscribe(s => {
-      this.installed.push(s);
-      this.showForm      = false;
-      this.selectedSensor = null;
-      this.form.reset({ switchNo: 'Non' });
+    this.deviceService.installSensor(dto).subscribe({
+      next: () => this.load(),
+      error: (err) => console.error('Failed to install sensor', err)
+    });
+  }
+
+  openEditDialog(sensor: DeviceSensorDto) {
+    const ref = this.dialog.open<EditSensorDialogComponent, EditSensorDialogData, EditSensorDialogResult>(
+      EditSensorDialogComponent,
+      {
+        width: '420px',
+        maxWidth: '95vw',
+        maxHeight: '90vh',
+        data: { sensor }
+      }
+    );
+
+    ref.afterClosed().subscribe(result => {
+      if (!result) return;
+      this.update(sensor, result);
+    });
+  }
+
+  private update(sensor: DeviceSensorDto, result: EditSensorDialogResult) {
+    const dto = {
+      switchNo:               sensor.switchNo,
+      unitId:                 sensor.unitId,
+      address:                result.address,
+      port:                   result.port,
+      displayName:            result.displayName,
+      url:                    sensor.url,
+      sensorType:             sensor.sensorType,
+      protocol:               sensor.protocol,
+      dataPath:               sensor.dataPath,
+      infoPath:               sensor.infoPath,
+      inchingPath:            sensor.inchingPath,
+      syncPeriodicity:        sensor.syncPeriodicity,
+      eventChangeSync:        sensor.eventChangeSync,
+      eventChangeDelta:       sensor.eventChangeDelta,
+      onlySaveRecordOnChange: sensor.onlySaveRecordOnChange,
+      isInInchingMode:        sensor.isInInchingMode,
+      inchingModeWidthInMs:   sensor.inchingModeWidthInMs,
+      isActive:               sensor.isActive,
+      notes:                  sensor.notes
+    };
+
+    this.deviceService.updateSensor(sensor.id, dto).subscribe({
+      next: () => this.load(),
+      error: (err) => console.error('Failed to update sensor', err)
     });
   }
 
   uninstall(id: string) {
     if (confirm('Uninstall this sensor?')) {
-      this.deviceService.uninstallSensor(id).subscribe(() => {
-        this.installed = this.installed.filter(s => s.id !== id);
+      this.deviceService.uninstallSensor(id).subscribe({
+        next: () => this.load(),
+        error: (err) => console.error('Failed to uninstall sensor', err)
       });
     }
   }

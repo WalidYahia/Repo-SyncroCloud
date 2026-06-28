@@ -1,0 +1,145 @@
+<div mat-dialog-title class="dialog-title-row"
+     cdkDrag
+     cdkDragRootElement=".cdk-overlay-pane"
+     cdkDragBoundary=".cdk-overlay-container">
+  <span cdkDragHandle class="drag-handle">
+    <mat-icon class="drag-icon">drag_indicator</mat-icon>
+    {{ isEdit ? 'Edit Scenario' : 'New Scenario' }}
+  </span>
+  <mat-slide-toggle [formControl]="form.controls.isEnabled" matTooltip="Enabled"></mat-slide-toggle>
+</div>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dialog-form">
+
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Target Sensor</mat-label>
+        <mat-select formControlName="targetSensorId">
+          @for (s of sensors; track s.id) {
+            <mat-option [value]="s.id">{{ s.displayName }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <div class="toggle-field">
+        <span class="toggle-label">Action</span>
+        <mat-button-toggle-group formControlName="action">
+          @for (a of actions; track a) { <mat-button-toggle [value]="a">{{ a }}</mat-button-toggle> }
+        </mat-button-toggle-group>
+      </div>
+
+      <div class="toggle-field">
+        <span class="toggle-label">Combine Conditions</span>
+        <mat-button-toggle-group formControlName="logicOfConditions">
+          @for (l of logics; track l) { <mat-button-toggle [value]="l">{{ l }}</mat-button-toggle> }
+        </mat-button-toggle-group>
+      </div>
+    </div>
+
+    <mat-divider class="section-divider"></mat-divider>
+
+    <div class="section-header">
+      <h3>Conditions</h3>
+      <button mat-stroked-button type="button" color="primary" (click)="addCondition()">
+        <mat-icon>add</mat-icon> Add Condition
+      </button>
+    </div>
+
+    @if (conditions.length === 0) {
+      <p class="muted">No conditions yet — the scenario will need at least one to be evaluated.</p>
+    }
+
+    <mat-accordion multi="true">
+      @for (condition of conditions.controls; track condition; let i = $index) {
+        <mat-expansion-panel [formGroup]="condition" [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>Condition {{ i + 1 }}</mat-panel-title>
+            <mat-panel-description>{{ condition.value.condition }}</mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="condition-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Condition Type</mat-label>
+              <mat-select formControlName="condition">
+                @for (c of conditionTypes; track c) { <mat-option [value]="c">{{ c }}</mat-option> }
+              </mat-select>
+            </mat-form-field>
+
+            @if (condition.value.condition === 'Duration') {
+              <mat-form-field appearance="outline">
+                <mat-label>Duration (seconds)</mat-label>
+                <input matInput type="number" formControlName="durationInSeconds" />
+              </mat-form-field>
+            }
+
+            @if (condition.value.condition === 'OnTime') {
+              <mat-form-field appearance="outline">
+                <mat-label>Time</mat-label>
+                <input matInput formControlName="time" placeholder="HH:mm:ss" />
+              </mat-form-field>
+            }
+          </div>
+
+          @if (condition.value.condition === 'OnOtherSensorValue') {
+            <div class="section-header dependencies-header">
+              <span class="toggle-label">Sensor Dependencies</span>
+              <button mat-stroked-button type="button" color="primary" (click)="addDependency(i)">
+                <mat-icon>add</mat-icon> Add Dependency
+              </button>
+            </div>
+
+            @for (dep of dependencies(i).controls; track dep; let di = $index) {
+              <div class="dependency-row" [formGroup]="dep">
+                <mat-form-field appearance="outline">
+                  <mat-label>Sensor</mat-label>
+                  <mat-select formControlName="sensorId">
+                    @for (s of sensors; track s.id) {
+                      <mat-option [value]="s.id">{{ s.displayName }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Operator</mat-label>
+                  <mat-select formControlName="operator">
+                    @for (o of operators; track o) { <mat-option [value]="o">{{ o }}</mat-option> }
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Value</mat-label>
+                  <input matInput formControlName="value" />
+                </mat-form-field>
+
+                <button mat-icon-button color="warn" type="button" matTooltip="Remove dependency"
+                        (click)="removeDependency(i, di)">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+            }
+          }
+
+          <mat-action-row>
+            <button mat-button color="warn" type="button" (click)="removeCondition(i)">
+              <mat-icon>delete</mat-icon> Remove Condition
+            </button>
+          </mat-action-row>
+        </mat-expansion-panel>
+      }
+    </mat-accordion>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="save()">
+    {{ isEdit ? 'Save Changes' : 'Create Scenario' }}
+  </button>
+</mat-dialog-actions>

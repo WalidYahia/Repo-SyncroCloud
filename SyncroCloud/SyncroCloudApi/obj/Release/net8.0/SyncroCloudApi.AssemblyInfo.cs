@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SyncroCloudApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f30791de6cb52014bc9de597e121605a549d6999")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1c5d1c4d2be285d9b268061371407154ac7843a2")]
 [assembly: System.Reflection.AssemblyProductAttribute("SyncroCloudApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SyncroCloudApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

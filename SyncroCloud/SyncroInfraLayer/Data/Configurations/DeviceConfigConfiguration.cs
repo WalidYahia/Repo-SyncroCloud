@@ -10,9 +10,9 @@ public class DeviceConfigConfiguration : IEntityTypeConfiguration<DeviceConfig>
     {
         builder.HasKey(dc => dc.Id);
 
-        builder.HasIndex(dc => new { dc.DeviceId, dc.ConfigType })
+        builder.HasIndex(dc => new { dc.DeviceId, dc.ConfigType, dc.UpdatedFrom })
             .IsUnique()
-            .HasDatabaseName("IX_DeviceConfigs_DeviceId_ConfigType");
+            .HasDatabaseName("IX_DeviceConfigs_DeviceId_ConfigType_UpdatedFrom");
 
         builder.Property(dc => dc.DeviceId)
             .IsRequired()

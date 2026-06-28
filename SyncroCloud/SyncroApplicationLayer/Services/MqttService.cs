@@ -67,6 +67,7 @@ public class MqttService(
 
                 var subscribeOptions = factory.CreateSubscribeOptionsBuilder()
                     .WithTopicFilter(f => f.WithTopic(MqttHelper.GetWildcardTopic(MqttTopics.DeviceSensorConfig)).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
+                    .WithTopicFilter(f => f.WithTopic(MqttHelper.GetWildcardTopic(MqttTopics.DeviceUserScenario)).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
                     .WithTopicFilter(f => f.WithTopic(MqttHelper.GetHubWildcardTopic(MqttTopics.RemoteAction_Ack)).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
                     .WithTopicFilter(f => f.WithTopic(MqttHelper.GetWildcardReadingsTopic(MqttTopics.Readings)).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
                     .Build();
@@ -146,6 +147,22 @@ public class MqttService(
                 await notifier.SendSensorConfigChangedAsync(configDeviceId);
                 logger.LogInformation("Received sensor config v{Version} from device {DeviceId} ({Count} sensors)",
                     envelope.ConfigVersion, configDeviceId, envelope.Sensors.Count);
+            }
+            // Syncro/{deviceId}/DeviceUserScenario
+            else if (MqttHelper.TryParseDeviceTopic(topic, MqttTopics.DeviceUserScenario, out var scenarioDeviceId))
+            {
+                var envelope = JsonSerializer.Deserialize<ScenarioConfigEnvelope>(payload, _caseInsensitive);
+                if (envelope is null)
+                {
+                    logger.LogWarning("Received null or unparseable ScenarioConfigEnvelope from device {DeviceId}", scenarioDeviceId);
+                    return;
+                }
+
+                var scenarioService = scope.ServiceProvider.GetRequiredService<IDeviceScenarioService>();
+                await scenarioService.SyncFromDeviceAsync(scenarioDeviceId, envelope);
+                await notifier.SendScenarioConfigChangedAsync(scenarioDeviceId);
+                logger.LogInformation("Received scenario config v{Version} from device {DeviceId} ({Count} scenarios)",
+                    envelope.ConfigVersion, scenarioDeviceId, envelope.Scenarios.Count);
             }
             // Syncro/{hubId}/RemoteAction_Ack
             else if (MqttHelper.TryParseDeviceTopic(topic, MqttTopics.RemoteAction_Ack, out var hubId))

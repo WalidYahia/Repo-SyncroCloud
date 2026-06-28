@@ -17,8 +17,7 @@ public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDevic
 
     public async Task<List<DeviceSensorDto>> GetByDeviceAsync(string deviceId)
     {
-        var config = await db.DeviceConfigs
-            .FirstOrDefaultAsync(c => c.DeviceId == deviceId && c.ConfigType == ConfigType.Sensor);
+        var config = await GetConfigAsync(deviceId, ConfigSource.Cloud);
         if (config is null) return [];
 
         var sensors = Deserialize(config.Config);
@@ -61,7 +60,7 @@ public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDevic
             dto.IsInInchingMode, dto.IsInInchingMode ? dto.InchingModeWidthInMs : 0,
             DateTime.UtcNow, true, null);
 
-        var config = await GetOrCreateConfigAsync(dto.DeviceId);
+        var config = await GetOrCreateConfigAsync(dto.DeviceId, ConfigSource.Cloud);
         var sensors = Deserialize(config.Config);
         sensors.Add(newSensor);
         await SaveAndPublishAsync(config, sensors);
@@ -78,8 +77,11 @@ public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDevic
         var idx = sensors.FindIndex(s => s.Id == id);
         if (idx < 0) return null;
 
+        var newId = SensorIdHelper.ComputeId(existing.DeviceId, dto.SensorType, dto.UnitId, dto.SwitchNo, dto.Address, dto.Port);
+
         var updated = existing with
         {
+            Id               = newId,
             SwitchNo         = (int)dto.SwitchNo,
             UnitId           = dto.UnitId,
             Address          = dto.Address,
@@ -151,53 +153,29 @@ public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDevic
         return true;
     }
 
-    // ── Hub sync (hub-originated, no publish back) ────────────
+    // ── Hub sync (device-originated, no publish back) ─────────
 
     public async Task SyncFromDeviceAsync(string deviceId, SensorConfigEnvelope envelope)
     {
-        var config = await db.DeviceConfigs
-            .FirstOrDefaultAsync(c => c.DeviceId == deviceId && c.ConfigType == ConfigType.Sensor);
+        var config = await GetOrCreateConfigAsync(deviceId, ConfigSource.Device);
 
-        // Same version — already in sync
-        if (config is not null && config.ConfigVersion == envelope.ConfigVersion)
-            return;
-
-        // Different version but cloud is more recent — keep cloud's copy
-        if (config is not null && envelope.UpdateTime <= config.UpdateTime)
-            return;
-
-        var updateTime = DateTime.SpecifyKind(envelope.UpdateTime, DateTimeKind.Utc);
-
-        if (config is null)
-        {
-            db.DeviceConfigs.Add(new DeviceConfig
-            {
-                DeviceId      = deviceId,
-                ConfigType    = ConfigType.Sensor,
-                ConfigVersion = envelope.ConfigVersion,
-                UpdateTime    = updateTime,
-                Config        = JsonSerializer.Serialize(envelope.Sensors, _json),
-                UpdatedFrom   = ConfigSource.Local
-            });
-        }
-        else
-        {
-            config.Config        = JsonSerializer.Serialize(envelope.Sensors, _json);
-            config.ConfigVersion = envelope.ConfigVersion;
-            config.UpdateTime    = updateTime;
-            config.UpdatedFrom   = ConfigSource.Local;
-        }
+        config.Config        = JsonSerializer.Serialize(envelope.Sensors, _json);
+        config.ConfigVersion = envelope.ConfigVersion;
+        config.UpdateTime    = DateTime.SpecifyKind(envelope.UpdateTime, DateTimeKind.Utc);
+        config.UpdatedFrom   = ConfigSource.Device;
 
         await db.SaveChangesAsync();
-        // No publish — hub is already up to date
+        // No publish — hub already knows its own config
     }
 
     // ── Private helpers ───────────────────────────────────────
 
-    private async Task<DeviceConfig> GetOrCreateConfigAsync(string deviceId)
+    private Task<DeviceConfig?> GetConfigAsync(string deviceId, ConfigSource source) =>
+        db.DeviceConfigs.FirstOrDefaultAsync(c => c.DeviceId == deviceId && c.ConfigType == ConfigType.Sensor && c.UpdatedFrom == source);
+
+    private async Task<DeviceConfig> GetOrCreateConfigAsync(string deviceId, ConfigSource source)
     {
-        var config = await db.DeviceConfigs
-            .FirstOrDefaultAsync(c => c.DeviceId == deviceId && c.ConfigType == ConfigType.Sensor);
+        var config = await GetConfigAsync(deviceId, source);
 
         if (config is null)
         {
@@ -205,7 +183,7 @@ public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDevic
             {
                 DeviceId    = deviceId,
                 ConfigType  = ConfigType.Sensor,
-                UpdatedFrom = ConfigSource.Local
+                UpdatedFrom = source
             };
             db.DeviceConfigs.Add(config);
         }
@@ -216,7 +194,7 @@ public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDevic
     private async Task<(DeviceConfig? config, DeviceSensorSyncDto? sensor)> FindConfigAndSensorAsync(string sensorId)
     {
         var configs = await db.DeviceConfigs
-            .Where(c => c.ConfigType == ConfigType.Sensor)
+            .Where(c => c.ConfigType == ConfigType.Sensor && c.UpdatedFrom == ConfigSource.Cloud)
             .ToListAsync();
 
         foreach (var config in configs)
@@ -234,7 +212,7 @@ public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDevic
         config.Config        = JsonSerializer.Serialize(sensors, _json);
         config.ConfigVersion = Guid.NewGuid();
         config.UpdateTime    = DateTime.UtcNow;
-        config.UpdatedFrom   = ConfigSource.Local;
+        config.UpdatedFrom   = ConfigSource.Cloud;
 
         await db.SaveChangesAsync();
 

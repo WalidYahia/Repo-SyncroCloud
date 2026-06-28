@@ -41,12 +41,36 @@ export interface DeviceSensorDto {
   syncPeriodicity: number | null;
   eventChangeSync: boolean;
   eventChangeDelta: number | null;
+  onlySaveRecordOnChange: boolean;
   isInInchingMode: boolean;
   inchingModeWidthInMs: number;
   installedAt: string;
   isActive: boolean;
   notes: string | null;
   lastReading: string | null;
+  lastSeen: string | null;
+}
+
+export interface UpdateDeviceSensorDto {
+  switchNo: string;
+  unitId: string;
+  address: number | null;
+  port: number | null;
+  displayName: string;
+  url: string | null;
+  sensorType: string;
+  protocol: number;
+  dataPath: string;
+  infoPath: string;
+  inchingPath: string;
+  syncPeriodicity: number | null;
+  eventChangeSync: boolean;
+  eventChangeDelta: number | null;
+  onlySaveRecordOnChange: boolean;
+  isInInchingMode: boolean;
+  inchingModeWidthInMs: number;
+  isActive: boolean;
+  notes: string | null;
 }
 
 export interface CreateDeviceSensorDto {
@@ -73,14 +97,31 @@ export interface CreateDeviceSensorDto {
   installedById: string | null;
 }
 
-export interface DeviceScenarioDto {
-  id: string;
-  deviceId: string;
-  payload: string;
-  updatedAt: string;
+export type ScenarioAction = 'Off' | 'On';
+export type ScenarioConditionType = 'Duration' | 'OnTime' | 'OnOtherSensorValue';
+export type ScenarioOperator = 'Equals' | 'NotEquals' | 'GreaterThan' | 'LessThan' | 'GreaterOrEqual' | 'LessOrEqual';
+export type ScenarioLogic = 'And' | 'Or';
+
+export interface UserScenarioSensor {
+  sensorId: string;
+  sensorType: number;
+  value: string;
+  operator: ScenarioOperator;
 }
 
-export interface UpsertDeviceScenarioDto {
-  deviceId: string;
-  payload: string;
+export interface UserScenarioCondition {
+  condition: ScenarioConditionType;
+  durationInSeconds: number;
+  time: string | null;
+  sensorsDependency: UserScenarioSensor[] | null;
+}
+
+export interface UserScenario {
+  id: string;
+  name: string;
+  isEnabled: boolean;
+  targetSensorId: string;
+  action: ScenarioAction;
+  logicOfConditions: ScenarioLogic;
+  conditions: UserScenarioCondition[];
 }

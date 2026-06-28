@@ -17,4 +17,8 @@ public class SignalRNotificationService(IHubContext<SyncroHub> hub) : INotificat
     public Task SendSensorConfigChangedAsync(string deviceId) =>
         hub.Clients.Group($"device_{deviceId}")
            .SendAsync("SensorConfigChanged", new { deviceId });
+
+    public Task SendScenarioConfigChangedAsync(string deviceId) =>
+        hub.Clients.Group($"device_{deviceId}")
+           .SendAsync("ScenarioConfigChanged", new { deviceId });
 }

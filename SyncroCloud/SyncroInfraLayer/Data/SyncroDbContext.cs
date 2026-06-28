@@ -21,7 +21,6 @@ public class SyncroDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     public DbSet<DeviceReading> DeviceReadings => Set<DeviceReading>();
     public DbSet<DeviceLatestReading> DeviceLatestReadings => Set<DeviceLatestReading>();
     public DbSet<AlarmLookup> AlarmLookups => Set<AlarmLookup>();
-    public DbSet<DeviceScenario> DeviceScenarios => Set<DeviceScenario>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<DeviceApiKey>    DeviceApiKeys    => Set<DeviceApiKey>();
     public DbSet<DeviceActionLog> DeviceActionLogs => Set<DeviceActionLog>();
@@ -41,7 +40,6 @@ public class SyncroDbContext : IdentityDbContext<AppUser, AppRole, Guid>
         modelBuilder.ApplyConfiguration(new DeviceReadingConfiguration());
         modelBuilder.ApplyConfiguration(new DeviceLatestReadingConfiguration());
         modelBuilder.ApplyConfiguration(new AlarmLookupConfiguration());
-        modelBuilder.ApplyConfiguration(new DeviceScenarioConfiguration());
         modelBuilder.ApplyConfiguration(new RefreshTokenConfiguration());
         modelBuilder.ApplyConfiguration(new DeviceApiKeyConfiguration());
         modelBuilder.ApplyConfiguration(new DeviceActionLogConfiguration());

@@ -31,7 +31,7 @@ public record DeleteScenarioIdDto(string Id);
 
 // ── Scenario structure ────────────────────────────────────
 public record MqttUserScenarioDto(
-    string Id,
+    string? Id,
     string Name,
     bool IsEnabled,
     string TargetSensorId,
@@ -50,3 +50,11 @@ public record MqttSensorDependencyDto(
     int SensorType,
     string Value,
     ScenarioOperator Operator);
+
+/// <summary>
+/// Envelope used for CloudUserScenario (cloud → hub) publishes.
+/// </summary>
+public record ScenarioConfigEnvelope(
+    Guid ConfigVersion,
+    DateTime UpdateTime,
+    List<MqttUserScenarioDto> Scenarios);

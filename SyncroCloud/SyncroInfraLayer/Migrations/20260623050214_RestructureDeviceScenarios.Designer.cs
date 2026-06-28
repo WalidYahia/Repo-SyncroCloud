@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SyncroInfraLayer.Data;
@@ -11,9 +12,11 @@ using SyncroInfraLayer.Data;
 namespace SyncroInfraLayer.Migrations
 {
     [DbContext(typeof(SyncroDbContext))]
-    partial class SyncroDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260623050214_RestructureDeviceScenarios")]
+    partial class RestructureDeviceScenarios
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -374,9 +377,9 @@ namespace SyncroInfraLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DeviceId", "ConfigType", "UpdatedFrom")
+                    b.HasIndex("DeviceId", "ConfigType")
                         .IsUnique()
-                        .HasDatabaseName("IX_DeviceConfigs_DeviceId_ConfigType_UpdatedFrom");
+                        .HasDatabaseName("IX_DeviceConfigs_DeviceId_ConfigType");
 
                     b.ToTable("DeviceConfigs");
                 });
@@ -447,6 +450,24 @@ namespace SyncroInfraLayer.Migrations
                         .IsUnique();
 
                     b.ToTable("DeviceReadings");
+                });
+
+            modelBuilder.Entity("SyncroInfraLayer.Entities.DeviceScenario", b =>
+                {
+                    b.Property<string>("DeviceId")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("DeviceId");
+
+                    b.ToTable("DeviceScenarios");
                 });
 
             modelBuilder.Entity("SyncroInfraLayer.Entities.Sensor", b =>
@@ -846,6 +867,17 @@ namespace SyncroInfraLayer.Migrations
                     b.HasOne("SyncroInfraLayer.Entities.Device", "Device")
                         .WithMany("DeviceConfigs")
                         .HasForeignKey("DeviceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Device");
+                });
+
+            modelBuilder.Entity("SyncroInfraLayer.Entities.DeviceScenario", b =>
+                {
+                    b.HasOne("SyncroInfraLayer.Entities.Device", "Device")
+                        .WithOne()
+                        .HasForeignKey("SyncroInfraLayer.Entities.DeviceScenario", "DeviceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

@@ -438,27 +438,6 @@
   },
   {
     "ContainingType": "SyncroCloudApi.Controllers.DeviceScenariosController",
-    "Method": "Upsert",
-    "RelativePath": "api/DeviceScenarios/{scenarioId}",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "scenarioId",
-        "Type": "System.Guid",
-        "IsRequired": true
-      },
-      {
-        "Name": "dto",
-        "Type": "SyncroApplicationLayer.DTOs.UpsertDeviceScenarioDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SyncroCloudApi.Controllers.DeviceScenariosController",
     "Method": "GetByDevice",
     "RelativePath": "api/DeviceScenarios/device/{deviceId}",
     "HttpMethod": "GET",
@@ -475,15 +454,20 @@
   },
   {
     "ContainingType": "SyncroCloudApi.Controllers.DeviceScenariosController",
-    "Method": "DeleteAll",
+    "Method": "Create",
     "RelativePath": "api/DeviceScenarios/device/{deviceId}",
-    "HttpMethod": "DELETE",
+    "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
         "Name": "deviceId",
         "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "scenario",
+        "Type": "SyncroApplicationLayer.DTOs.MqttUserScenarioDto",
         "IsRequired": true
       }
     ],
@@ -504,7 +488,33 @@
       },
       {
         "Name": "scenarioId",
-        "Type": "System.Guid",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SyncroCloudApi.Controllers.DeviceScenariosController",
+    "Method": "Update",
+    "RelativePath": "api/DeviceScenarios/device/{deviceId}/{scenarioId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "deviceId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "scenarioId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "scenario",
+        "Type": "SyncroApplicationLayer.DTOs.MqttUserScenarioDto",
         "IsRequired": true
       }
     ],
@@ -525,7 +535,7 @@
       },
       {
         "Name": "scenarioId",
-        "Type": "System.Guid",
+        "Type": "System.String",
         "IsRequired": true
       }
     ],

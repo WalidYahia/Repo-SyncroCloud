@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SyncroInfraLayer.Data;
@@ -11,9 +12,11 @@ using SyncroInfraLayer.Data;
 namespace SyncroInfraLayer.Migrations
 {
     [DbContext(typeof(SyncroDbContext))]
-    partial class SyncroDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260625061500_DropDeviceScenariosUseDeviceConfigs")]
+    partial class DropDeviceScenariosUseDeviceConfigs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -374,9 +377,9 @@ namespace SyncroInfraLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DeviceId", "ConfigType", "UpdatedFrom")
+                    b.HasIndex("DeviceId", "ConfigType")
                         .IsUnique()
-                        .HasDatabaseName("IX_DeviceConfigs_DeviceId_ConfigType_UpdatedFrom");
+                        .HasDatabaseName("IX_DeviceConfigs_DeviceId_ConfigType");
 
                     b.ToTable("DeviceConfigs");
                 });

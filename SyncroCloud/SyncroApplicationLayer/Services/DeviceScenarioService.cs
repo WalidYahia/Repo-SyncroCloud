@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using SyncroApplicationLayer.DTOs;
 using SyncroApplicationLayer.Interfaces;
@@ -10,76 +11,115 @@ namespace SyncroApplicationLayer.Services;
 
 public class DeviceScenarioService(SyncroDbContext db, IMqttService mqtt) : IDeviceScenarioService
 {
-    public async Task<List<DeviceScenarioDto>> GetByDeviceAsync(string deviceId) =>
-        await db.DeviceScenarios
-            .Where(s => s.DeviceId == deviceId)
-            .Select(s => ToDto(s))
-            .ToListAsync();
+    private static readonly JsonSerializerOptions _json = new() { PropertyNameCaseInsensitive = true };
 
-    public async Task<DeviceScenarioDto?> GetByIdAsync(string deviceId, Guid scenarioId)
+    public async Task<List<MqttUserScenarioDto>> GetByDeviceAsync(string deviceId)
     {
-        var s = await db.DeviceScenarios.FindAsync(scenarioId);
-        return s is null || s.DeviceId != deviceId ? null : ToDto(s);
+        var config = await GetConfigAsync(deviceId, ConfigSource.Cloud);
+        return config is null ? [] : Deserialize(config.Config);
     }
 
-    public async Task<DeviceScenarioDto> UpsertAsync(Guid scenarioId, UpsertDeviceScenarioDto dto)
+    public async Task<MqttUserScenarioDto?> GetByIdAsync(string deviceId, string scenarioId)
     {
-        var existing = await db.DeviceScenarios.FindAsync(scenarioId);
-        if (existing is null)
-        {
-            existing = new DeviceScenario
-            {
-                Id        = scenarioId,
-                DeviceId  = dto.DeviceId,
-                Payload   = dto.Payload,
-                UpdatedAt = DateTime.UtcNow
-            };
-            db.DeviceScenarios.Add(existing);
-        }
-        else
-        {
-            existing.Payload   = dto.Payload;
-            existing.UpdatedAt = DateTime.UtcNow;
-        }
-
-        await db.SaveChangesAsync();
-        await PublishScenariosAsync(existing.DeviceId);
-        return ToDto(existing);
+        var scenarios = await GetByDeviceAsync(deviceId);
+        return scenarios.FirstOrDefault(s => s.Id == scenarioId);
     }
 
-    public async Task<bool> DeleteAsync(string deviceId, Guid scenarioId)
+    public async Task<MqttUserScenarioDto> CreateAsync(string deviceId, MqttUserScenarioDto scenario)
     {
-        var s = await db.DeviceScenarios.FindAsync(scenarioId);
-        if (s is null || s.DeviceId != deviceId) return false;
-        db.DeviceScenarios.Remove(s);
-        await db.SaveChangesAsync();
-        await PublishScenariosAsync(deviceId);
+        var config = await GetOrCreateConfigAsync(deviceId, ConfigSource.Cloud);
+        var scenarios = Deserialize(config.Config);
+
+        var newScenario = string.IsNullOrWhiteSpace(scenario.Id)
+            ? scenario with { Id = Guid.NewGuid().ToString() }
+            : scenario;
+
+        scenarios.RemoveAll(s => s.Id == newScenario.Id);
+        scenarios.Add(newScenario);
+
+        await SaveAndPublishAsync(config, scenarios);
+        return newScenario;
+    }
+
+    public async Task<MqttUserScenarioDto?> UpdateAsync(string deviceId, string scenarioId, MqttUserScenarioDto scenario)
+    {
+        var config = await GetConfigAsync(deviceId, ConfigSource.Cloud);
+        if (config is null) return null;
+
+        var scenarios = Deserialize(config.Config);
+        var idx = scenarios.FindIndex(s => s.Id == scenarioId);
+        if (idx < 0) return null;
+
+        var updated = scenario with { Id = scenarioId };
+        scenarios[idx] = updated;
+
+        await SaveAndPublishAsync(config, scenarios);
+        return updated;
+    }
+
+    public async Task<bool> DeleteAsync(string deviceId, string scenarioId)
+    {
+        var config = await GetConfigAsync(deviceId, ConfigSource.Cloud);
+        if (config is null) return false;
+
+        var scenarios = Deserialize(config.Config);
+        if (scenarios.RemoveAll(s => s.Id == scenarioId) == 0) return false;
+
+        await SaveAndPublishAsync(config, scenarios);
         return true;
     }
 
-    public async Task<int> DeleteAllByDeviceAsync(string deviceId)
+    // ── Hub sync (device-originated, no publish back) ─────────
+
+    public async Task SyncFromDeviceAsync(string deviceId, ScenarioConfigEnvelope envelope)
     {
-        var count = await db.DeviceScenarios
-            .Where(s => s.DeviceId == deviceId)
-            .ExecuteDeleteAsync();
+        var config = await GetOrCreateConfigAsync(deviceId, ConfigSource.Device);
 
-        if (count > 0)
-            await PublishScenariosAsync(deviceId);
+        config.Config        = JsonSerializer.Serialize(envelope.Scenarios, _json);
+        config.ConfigVersion = envelope.ConfigVersion;
+        config.UpdateTime    = DateTime.SpecifyKind(envelope.UpdateTime, DateTimeKind.Utc);
+        config.UpdatedFrom   = ConfigSource.Device;
 
-        return count;
+        await db.SaveChangesAsync();
+        // No publish — hub already knows its own config
     }
 
-    // DeviceId IS the PK now — no extra lookup needed
-    private async Task PublishScenariosAsync(string deviceId)
-    {
-        var scenarios = await db.DeviceScenarios
-            .Where(s => s.DeviceId == deviceId)
-            .Select(s => ToDto(s))
-            .ToListAsync();
+    private Task<DeviceConfig?> GetConfigAsync(string deviceId, ConfigSource source) =>
+        db.DeviceConfigs.FirstOrDefaultAsync(c => c.DeviceId == deviceId && c.ConfigType == ConfigType.Scenario && c.UpdatedFrom == source);
 
-        await mqtt.PublishAsync(MqttHelper.GetMqttTopic(MqttTopics.CloudUserScenario, deviceId), scenarios, retainFlag: true);
+    private async Task<DeviceConfig> GetOrCreateConfigAsync(string deviceId, ConfigSource source)
+    {
+        var config = await GetConfigAsync(deviceId, source);
+        if (config is null)
+        {
+            config = new DeviceConfig
+            {
+                DeviceId    = deviceId,
+                ConfigType  = ConfigType.Scenario,
+                UpdatedFrom = source
+            };
+            db.DeviceConfigs.Add(config);
+        }
+
+        return config;
     }
 
-    private static DeviceScenarioDto ToDto(DeviceScenario s) =>
-        new(s.Id, s.DeviceId, s.Payload, s.UpdatedAt);
+    private async Task SaveAndPublishAsync(DeviceConfig config, List<MqttUserScenarioDto> scenarios)
+    {
+        config.Config        = JsonSerializer.Serialize(scenarios, _json);
+        config.ConfigVersion = Guid.NewGuid();
+        config.UpdateTime    = DateTime.UtcNow;
+        config.UpdatedFrom   = ConfigSource.Cloud;
+
+        await db.SaveChangesAsync();
+
+        var envelope = new ScenarioConfigEnvelope(config.ConfigVersion, config.UpdateTime, scenarios);
+        await mqtt.PublishAsync(
+            MqttHelper.GetMqttTopic(MqttTopics.CloudUserScenario, config.DeviceId),
+            envelope,
+            retainFlag: true);
+    }
+
+    private static List<MqttUserScenarioDto> Deserialize(string json) =>
+        JsonSerializer.Deserialize<List<MqttUserScenarioDto>>(json, _json) ?? [];
 }
