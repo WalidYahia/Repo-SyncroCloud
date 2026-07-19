@@ -1,0 +1,33 @@
+<div mat-dialog-title class="dialog-title-row"
+     cdkDrag
+     cdkDragRootElement=".cdk-overlay-pane"
+     cdkDragBoundary=".cdk-overlay-container">
+  <span cdkDragHandle class="drag-handle">
+    <mat-icon class="drag-icon">drag_indicator</mat-icon>
+    Sensor Access — {{ data.device.name }}
+  </span>
+</div>
+
+<mat-dialog-content>
+  @if (rows.controls.length === 0) {
+    <p class="muted">This device has no sensors installed yet.</p>
+  } @else {
+    <div class="permission-rows">
+      @for (row of rows.controls; track row) {
+        <div class="permission-row" [formGroup]="row">
+          <span class="sensor-name">{{ row.value.displayName }}</span>
+          <mat-form-field appearance="outline" class="access-field">
+            <mat-select formControlName="access">
+              @for (opt of accessOptions; track opt) { <mat-option [value]="opt">{{ opt }}</mat-option> }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      }
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="save()">Save Permissions</button>
+</mat-dialog-actions>

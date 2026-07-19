@@ -117,6 +117,13 @@ public enum ConfigSource
     Cloud = 1,
 }
 
+// ── Device User ───────────────────────────────────────────
+public enum SensorAccessLevel
+{
+    Watch   = 0,
+    Control = 1,
+}
+
 // ── Remote Action ─────────────────────────────────────────
 public enum JsonCommandType
 {
@@ -197,4 +204,9 @@ public enum MqttTopics
     /// Publish from Device
     /// </summary>
     RemoteUpdate_Ack,
+
+    /// <summary>
+    /// Publish from Device — presence heartbeat, sent every 60s
+    /// </summary>
+    Heartbeat,
 }

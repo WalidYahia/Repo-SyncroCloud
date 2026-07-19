@@ -70,6 +70,7 @@ public class MqttService(
                     .WithTopicFilter(f => f.WithTopic(MqttHelper.GetWildcardTopic(MqttTopics.DeviceUserScenario)).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
                     .WithTopicFilter(f => f.WithTopic(MqttHelper.GetHubWildcardTopic(MqttTopics.RemoteAction_Ack)).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
                     .WithTopicFilter(f => f.WithTopic(MqttHelper.GetWildcardReadingsTopic(MqttTopics.Readings)).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce))
+                    .WithTopicFilter(f => f.WithTopic(MqttHelper.GetWildcardTopic(MqttTopics.Heartbeat)).WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtMostOnce))
                     .Build();
 
                 await _client.SubscribeAsync(subscribeOptions, stoppingToken);
@@ -131,6 +132,21 @@ public class MqttService(
                 await deviceService.UpdateStatusAsync(statusDeviceId, status);
                 await notifier.SendDeviceStatusChangedAsync(statusDeviceId, statusValue);
                 logger.LogInformation("Device {DeviceId} is now {Status}", statusDeviceId, status);
+            }
+            // Syncro/{deviceId}/Heartbeat
+            else if (MqttHelper.TryParseDeviceTopic(topic, MqttTopics.Heartbeat, out var heartbeatDeviceId))
+            {
+                var deviceService = scope.ServiceProvider.GetRequiredService<IDeviceService>();
+
+                // Store the cloud-received time as last-seen — it is authoritative and
+                // immune to hub clock drift (payload localTime is used only for diagnostics).
+                var cloudReceivedAt = DateTime.UtcNow;
+                var updated = await deviceService.UpdateLastSeenAsync(heartbeatDeviceId, cloudReceivedAt);
+
+                if (!updated)
+                    logger.LogWarning("Heartbeat from unknown device {DeviceId}", heartbeatDeviceId);
+                else
+                    logger.LogDebug("Heartbeat from {DeviceId} — last-seen updated", heartbeatDeviceId);
             }
             // Syncro/{deviceId}/DeviceSensorConfig
             else if (MqttHelper.TryParseDeviceTopic(topic, MqttTopics.DeviceSensorConfig, out var configDeviceId))

@@ -23,9 +23,10 @@ public class AppUserConfiguration : IEntityTypeConfiguration<AppUser>
             .IsRequired()
             .HasDefaultValue(true);
 
-        // phone number is optional but must be unique when provided
+        builder.Property(u => u.PhoneNumber)
+            .IsRequired();
+
         builder.HasIndex(u => u.PhoneNumber)
-            .IsUnique()
-            .HasFilter("\"PhoneNumber\" IS NOT NULL");
+            .IsUnique();
     }
 }

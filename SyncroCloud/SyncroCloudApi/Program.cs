@@ -8,6 +8,8 @@ using SyncroCloudApi.Exceptions;
 using SyncroCloudApi.Hubs;
 using SyncroCloudApi.Services;
 using SyncroInfraLayer.Data;
+using SyncroInfraLayer.Entities;
+using SyncroInfraLayer.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +33,7 @@ builder.Services.AddScoped<IAlarmLookupService, AlarmLookupService>();
 builder.Services.AddScoped<IDeviceScenarioService, DeviceScenarioService>();
 builder.Services.AddScoped<IDeviceActionLogService, DeviceActionLogService>();
 builder.Services.AddScoped<ISmartHomeService, SmartHomeService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
 
 // SignalR — INotificationService must be registered before MqttService is resolved
 builder.Services.AddSignalR();
@@ -45,12 +48,9 @@ builder.Services.AddProblemDetails();
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
-    {
-        var p = builder.Environment.IsDevelopment()
-            ? policy.SetIsOriginAllowed(_ => true)
-            : policy.WithOrigins("http://localhost:4200");
-        p.AllowAnyHeader().AllowAnyMethod().AllowCredentials();
-    });
+        // Allow any origin. SetIsOriginAllowed reflects the request origin, which
+        // (unlike AllowAnyOrigin) is compatible with AllowCredentials.
+        policy.SetIsOriginAllowed(_ => true).AllowAnyHeader().AllowAnyMethod().AllowCredentials());
 });
 
 builder.Services.AddControllers()
@@ -92,11 +92,52 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<SyncroDbContext>();
     db.Database.Migrate();
 
-    var roleManager = scope.ServiceProvider.GetRequiredService<Microsoft.AspNetCore.Identity.RoleManager<SyncroInfraLayer.Identity.AppRole>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<Microsoft.AspNetCore.Identity.RoleManager<AppRole>>();
     foreach (var role in new[] { "SuperAdmin", "TenantAdmin", "User" })
     {
         if (!await roleManager.RoleExistsAsync(role))
-            await roleManager.CreateAsync(new SyncroInfraLayer.Identity.AppRole(role));
+            await roleManager.CreateAsync(new AppRole(role));
+    }
+
+    // Seed privileges
+    foreach (var (code, name) in PrivilegeCodes.All)
+    {
+        if (!await db.Privileges.AnyAsync(p => p.Code == code))
+            db.Privileges.Add(new Privilege { Id = Guid.NewGuid(), Code = code, Name = name });
+    }
+    await db.SaveChangesAsync();
+
+    // Assign all privileges to SuperAdmin and TenantAdmin
+    var allPrivileges = await db.Privileges.ToListAsync();
+    foreach (var roleName in new[] { AppRoles.SuperAdmin, AppRoles.TenantAdmin })
+    {
+        var role = await roleManager.FindByNameAsync(roleName);
+        if (role is null) continue;
+        foreach (var priv in allPrivileges)
+        {
+            if (!await db.RolePrivileges.AnyAsync(rp => rp.RoleId == role.Id && rp.PrivilegeId == priv.Id))
+                db.RolePrivileges.Add(new RolePrivilege { RoleId = role.Id, PrivilegeId = priv.Id });
+        }
+    }
+    await db.SaveChangesAsync();
+
+    // Seed the bootstrap SuperAdmin user (skipped if a user with the same phone already exists)
+    const string superAdminPhone = "01068406116";
+    var userManager = scope.ServiceProvider.GetRequiredService<Microsoft.AspNetCore.Identity.UserManager<AppUser>>();
+    if (!await userManager.Users.AnyAsync(u => u.PhoneNumber == superAdminPhone))
+    {
+        var superAdmin = new AppUser
+        {
+            Id          = Guid.NewGuid(),
+            UserName    = superAdminPhone,
+            PhoneNumber = superAdminPhone,
+            FirstName   = "superAdmin",
+            LastName    = string.Empty,
+            IsActive    = true
+        };
+        var created = await userManager.CreateAsync(superAdmin, "ww123456");
+        if (created.Succeeded)
+            await userManager.AddToRoleAsync(superAdmin, AppRoles.SuperAdmin);
     }
 }
 

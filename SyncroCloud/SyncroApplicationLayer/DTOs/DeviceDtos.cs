@@ -18,3 +18,6 @@ public record UpdateDeviceDto(
     string Name, int CityId,
     double? Longitude, double? Latitude,
     DeviceStatus Status);
+
+/// <summary>Payload of the Syncro/{deviceId}/Heartbeat frame published by the hub every 60s.</summary>
+public record HeartbeatDto(string DeviceId, DateTime LocalTime);

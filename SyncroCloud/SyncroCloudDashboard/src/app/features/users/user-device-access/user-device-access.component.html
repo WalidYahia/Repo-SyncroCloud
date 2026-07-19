@@ -1,0 +1,45 @@
+<div class="page-header">
+  <div class="back-title">
+    <button mat-icon-button routerLink="/users"><mat-icon>arrow_back</mat-icon></button>
+    <h2>{{ user ? (user.firstName + ' ' + user.lastName) : 'Device Access' }}</h2>
+  </div>
+  <button mat-raised-button color="primary" (click)="openAssignDialog()" [disabled]="availableDevices.length === 0">
+    <mat-icon>add</mat-icon> Assign Device
+  </button>
+</div>
+
+@if (loading()) {
+  <div class="loading-container"><mat-spinner diameter="48" /></div>
+} @else if (assignedDevices().length === 0) {
+  <div class="empty-state">
+    <mat-icon>devices_other</mat-icon>
+    <p>This user has no device access yet.</p>
+  </div>
+} @else {
+  <table mat-table [dataSource]="sortedDevices()" matSort (matSortChange)="onSort($event)" class="mat-elevation-z2 full-width">
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Device</th>
+      <td mat-cell *matCellDef="let d">{{ d.name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="deviceId">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Device ID</th>
+      <td mat-cell *matCellDef="let d"><code>{{ d.deviceId }}</code></td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let d">
+        <button mat-icon-button matTooltip="Manage Sensor Access" (click)="openSensorPermissionsDialog(d)">
+          <mat-icon>sensors</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" matTooltip="Unassign" (click)="unassign(d)">
+          <mat-icon>link_off</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+  </table>
+}

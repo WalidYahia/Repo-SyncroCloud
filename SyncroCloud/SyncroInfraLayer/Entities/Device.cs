@@ -23,4 +23,5 @@ public class Device
     public AppUser? User { get; set; }
     public City City { get; set; } = null!;
     public ICollection<DeviceConfig> DeviceConfigs { get; set; } = [];
+    public ICollection<DeviceUser> DeviceUsers { get; set; } = [];
 }

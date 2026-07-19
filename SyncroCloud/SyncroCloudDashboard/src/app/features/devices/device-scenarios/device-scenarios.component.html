@@ -3,9 +3,11 @@
     <button mat-icon-button routerLink="/devices"><mat-icon>arrow_back</mat-icon></button>
     <h2>Scenarios</h2>
   </div>
-  <button mat-raised-button color="primary" (click)="openDialog()">
-    <mat-icon>add</mat-icon> New Scenario
-  </button>
+  @if (auth?.hasPrivilege('ManageScenarioToDevice')) {
+    <button mat-raised-button color="primary" (click)="openDialog()">
+      <mat-icon>add</mat-icon> New Scenario
+    </button>
+  }
 </div>
 
 @if (isLoading) {
@@ -16,42 +18,42 @@
     <p>{{ errorMessage }}</p>
     <button mat-stroked-button (click)="load()"><mat-icon>refresh</mat-icon> Retry</button>
   </div>
-} @else if (scenarios.length === 0) {
+} @else if (scenarios().length === 0) {
   <div class="empty-state">
     <mat-icon>auto_awesome</mat-icon>
     <p>No scenarios yet. Create the first one.</p>
   </div>
 } @else {
-  <table mat-table [dataSource]="scenarios" class="mat-elevation-z2 full-width">
+  <table mat-table [dataSource]="sortedScenarios()" matSort (matSortChange)="onSort($event)" class="mat-elevation-z2 full-width">
     <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef>Name</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
       <td mat-cell *matCellDef="let s">{{ s.name }}</td>
     </ng-container>
 
     <ng-container matColumnDef="targetSensor">
-      <th mat-header-cell *matHeaderCellDef>Target Sensor</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Target Sensor</th>
       <td mat-cell *matCellDef="let s">{{ sensorName(s.targetSensorId) }}</td>
     </ng-container>
 
     <ng-container matColumnDef="action">
-      <th mat-header-cell *matHeaderCellDef>Action</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Action</th>
       <td mat-cell *matCellDef="let s">
         <mat-chip [color]="s.action === 'On' ? 'primary' : undefined" highlighted>{{ s.action }}</mat-chip>
       </td>
     </ng-container>
 
     <ng-container matColumnDef="logic">
-      <th mat-header-cell *matHeaderCellDef>Logic</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Logic</th>
       <td mat-cell *matCellDef="let s">{{ s.logicOfConditions }}</td>
     </ng-container>
 
     <ng-container matColumnDef="conditions">
-      <th mat-header-cell *matHeaderCellDef>Conditions</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Conditions</th>
       <td mat-cell *matCellDef="let s">{{ s.conditions.length }}</td>
     </ng-container>
 
     <ng-container matColumnDef="status">
-      <th mat-header-cell *matHeaderCellDef>Status</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
       <td mat-cell *matCellDef="let s">
         <mat-chip [color]="s.isEnabled ? 'primary' : 'warn'" highlighted>{{ s.isEnabled ? 'Enabled' : 'Disabled' }}</mat-chip>
       </td>

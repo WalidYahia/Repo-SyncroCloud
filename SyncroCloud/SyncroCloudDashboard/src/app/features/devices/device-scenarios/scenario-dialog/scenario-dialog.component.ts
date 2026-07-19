@@ -11,6 +11,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTimepickerModule } from '@angular/material/timepicker';
+import { provideNativeDateAdapter } from '@angular/material/core';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { DeviceSensorDto, UserScenario, UserScenarioCondition, UserScenarioSensor } from '../../../../core/models/device.models';
 
@@ -24,7 +26,8 @@ export interface ScenarioDialogData {
   standalone: true,
   imports: [ReactiveFormsModule, MatDialogModule, MatButtonModule, MatIconModule, MatFormFieldModule,
             MatInputModule, MatSelectModule, MatButtonToggleModule, MatSlideToggleModule,
-            MatExpansionModule, MatDividerModule, MatTooltipModule, DragDropModule],
+            MatExpansionModule, MatDividerModule, MatTooltipModule, MatTimepickerModule, DragDropModule],
+  providers: [provideNativeDateAdapter()],
   templateUrl: './scenario-dialog.component.html',
   styleUrl: './scenario-dialog.component.scss'
 })
@@ -71,9 +74,26 @@ export class ScenarioDialogComponent {
     return this.fb.group({
       condition:          [c?.condition ?? 'Duration', Validators.required],
       durationInSeconds:  [c?.durationInSeconds ?? 0],
-      time:               [c?.time ?? ''],
+      time:               [this.parseTime(c?.time)],
       sensorsDependency:  this.fb.array((c?.sensorsDependency ?? []).map(d => this.newDependency(d)))
     });
+  }
+
+  /** "HH:mm:ss" -> Date (the timepicker binds to a Date), or null. */
+  private parseTime(time?: string | null): Date | null {
+    if (!time) return null;
+    const [h, m, s] = time.split(':').map(Number);
+    if (isNaN(h) || isNaN(m)) return null;
+    const d = new Date();
+    d.setHours(h, m, s || 0, 0);
+    return d;
+  }
+
+  /** Date -> "HH:mm:ss", or null. */
+  private formatTime(value: unknown): string | null {
+    if (!(value instanceof Date) || isNaN(value.getTime())) return null;
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return `${pad(value.getHours())}:${pad(value.getMinutes())}:${pad(value.getSeconds())}`;
   }
 
   addCondition() {
@@ -106,7 +126,7 @@ export class ScenarioDialogComponent {
       conditions: (v.conditions ?? []).map((c: any) => ({
         condition:         c.condition,
         durationInSeconds: c.durationInSeconds ?? 0,
-        time:              c.condition === 'OnTime' ? c.time : null,
+        time:              c.condition === 'OnTime' ? this.formatTime(c.time) : null,
         sensorsDependency: c.condition === 'OnOtherSensorValue' ? c.sensorsDependency : null
       }))
     };

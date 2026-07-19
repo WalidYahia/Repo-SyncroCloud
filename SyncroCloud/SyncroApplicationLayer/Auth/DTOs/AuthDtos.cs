@@ -1,6 +1,6 @@
 namespace SyncroApplicationLayer.Auth.DTOs;
 
-public record RegisterDto(string Email, string Password, string FirstName, string LastName, string? PhoneNumber = null, string Role = "User");
+public record RegisterDto(string PhoneNumber, string Password, string FirstName, string LastName, Guid TenantId, string? Email = null);
 
 public record LoginDto(string EmailOrPhone, string Password);
 

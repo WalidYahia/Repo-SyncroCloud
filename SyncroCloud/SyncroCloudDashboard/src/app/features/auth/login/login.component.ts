@@ -34,7 +34,13 @@ export class LoginComponent {
     this.loading.set(true);
     this.error.set('');
     this.auth.login(this.form.value as any).subscribe({
-      next:  () => this.router.navigate(['/devices']),
+      next: () => {
+        // Fetch user profile (roles + privileges) before navigating
+        this.auth.loadProfile().subscribe({
+          next:  () => this.router.navigate(['/devices']),
+          error: () => this.router.navigate(['/devices']) // navigate even if profile fetch fails
+        });
+      },
       error: () => { this.error.set('Invalid email/phone or password.'); this.loading.set(false); }
     });
   }

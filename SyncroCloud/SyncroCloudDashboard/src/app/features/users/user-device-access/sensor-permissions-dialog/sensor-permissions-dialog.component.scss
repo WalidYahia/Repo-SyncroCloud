@@ -1,0 +1,29 @@
+.dialog-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.drag-handle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: move;
+}
+
+.drag-icon { color: rgba(0, 0, 0, 0.4); }
+
+.permission-rows { min-width: 420px; display: flex; flex-direction: column; gap: 4px; }
+
+.permission-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.sensor-name { flex: 1; }
+.access-field { width: 160px; margin-bottom: -1.25em; }
+
+.muted { color: rgba(0, 0, 0, 0.5); font-size: 0.9rem; }

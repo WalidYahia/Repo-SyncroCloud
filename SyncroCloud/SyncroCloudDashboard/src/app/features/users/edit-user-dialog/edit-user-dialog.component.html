@@ -1,0 +1,49 @@
+<div mat-dialog-title class="dialog-title-row"
+     cdkDrag
+     cdkDragRootElement=".cdk-overlay-pane"
+     cdkDragBoundary=".cdk-overlay-container">
+  <span cdkDragHandle class="drag-handle">
+    <mat-icon class="drag-icon">drag_indicator</mat-icon>
+    Edit User
+  </span>
+  <mat-slide-toggle [formControl]="form.controls.isActive" matTooltip="Active">Active</mat-slide-toggle>
+</div>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dialog-form">
+
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>First Name</mat-label>
+        <input matInput formControlName="firstName" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Last Name</mat-label>
+        <input matInput formControlName="lastName" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email (optional)</mat-label>
+        <input matInput type="email" formControlName="email" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Role</mat-label>
+        <mat-select formControlName="roleId">
+          @for (r of roles; track r.id) {
+            <mat-option [value]="r.id">{{ r.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="save()">
+    Save Changes
+  </button>
+</mat-dialog-actions>

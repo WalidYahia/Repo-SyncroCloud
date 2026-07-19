@@ -12,5 +12,6 @@ public class AppUser : IdentityUser<Guid>
 
     public ICollection<TenantUser> TenantUsers { get; set; } = [];
     public ICollection<Device> Devices { get; set; } = [];
+    public ICollection<DeviceUser> DeviceUsers { get; set; } = [];
     public ICollection<RefreshToken> RefreshTokens { get; set; } = [];
 }

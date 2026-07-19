@@ -1,0 +1,31 @@
+<div mat-dialog-title class="dialog-title-row"
+     cdkDrag
+     cdkDragRootElement=".cdk-overlay-pane"
+     cdkDragBoundary=".cdk-overlay-container">
+  <span cdkDragHandle class="drag-handle">
+    <mat-icon class="drag-icon">drag_indicator</mat-icon>
+    Assign Device
+  </span>
+</div>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dialog-form">
+    @if (devices.length === 0) {
+      <p class="muted">No more devices available to assign.</p>
+    } @else {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Device</mat-label>
+        <mat-select formControlName="deviceId">
+          @for (d of devices; track d.deviceId) {
+            <mat-option [value]="d.deviceId">{{ d.name }} ({{ d.deviceId }})</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="primary" [disabled]="form.invalid" (click)="save()">Assign</button>
+</mat-dialog-actions>

@@ -63,8 +63,15 @@ public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDevic
         var config = await GetOrCreateConfigAsync(dto.DeviceId, ConfigSource.Cloud);
         var sensors = Deserialize(config.Config);
         sensors.Add(newSensor);
-        await SaveAndPublishAsync(config, sensors);
 
+        await using (var tx = await db.Database.BeginTransactionAsync())
+        {
+            await ApplyConfigChangesAsync(config, sensors);
+            await GrantSensorToLinkedUsersAsync(dto.DeviceId, newSensor.Id);
+            await tx.CommitAsync();
+        }
+
+        await PublishSensorConfigAsync(config, sensors);
         return ToDto(newSensor, null, null);
     }
 
@@ -104,7 +111,16 @@ public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDevic
         };
 
         sensors[idx] = updated;
-        await SaveAndPublishAsync(config, sensors);
+
+        await using (var tx = await db.Database.BeginTransactionAsync())
+        {
+            await ApplyConfigChangesAsync(config, sensors);
+            if (newId != id)
+                await RenameSensorForLinkedUsersAsync(existing.DeviceId, id, newId);
+            await tx.CommitAsync();
+        }
+
+        await PublishSensorConfigAsync(config, sensors);
 
         var latest = await db.DeviceLatestReadings.FindAsync(id);
         return ToDto(updated, ExtractValue(latest?.Payload), latest?.ReadingTime);
@@ -209,13 +225,21 @@ public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDevic
 
     private async Task SaveAndPublishAsync(DeviceConfig config, List<DeviceSensorSyncDto> sensors)
     {
+        await ApplyConfigChangesAsync(config, sensors);
+        await PublishSensorConfigAsync(config, sensors);
+    }
+
+    private async Task ApplyConfigChangesAsync(DeviceConfig config, List<DeviceSensorSyncDto> sensors)
+    {
         config.Config        = JsonSerializer.Serialize(sensors, _json);
         config.ConfigVersion = Guid.NewGuid();
         config.UpdateTime    = DateTime.UtcNow;
         config.UpdatedFrom   = ConfigSource.Cloud;
-
         await db.SaveChangesAsync();
+    }
 
+    private async Task PublishSensorConfigAsync(DeviceConfig config, List<DeviceSensorSyncDto> sensors)
+    {
         var envelope = new SensorConfigEnvelope(config.ConfigVersion, config.UpdateTime, sensors);
         await mqtt.PublishAsync(
             MqttHelper.GetMqttTopic(MqttTopics.CloudSensorConfig, config.DeviceId),
@@ -225,6 +249,43 @@ public class DeviceSensorService(SyncroDbContext db, IMqttService mqtt) : IDevic
 
     private static List<DeviceSensorSyncDto> Deserialize(string json) =>
         JsonSerializer.Deserialize<List<DeviceSensorSyncDto>>(json, _json) ?? [];
+
+    private async Task GrantSensorToLinkedUsersAsync(string deviceId, string sensorId)
+    {
+        var deviceUsers = await db.DeviceUsers.Where(du => du.DeviceId == deviceId).ToListAsync();
+        if (deviceUsers.Count == 0) return;
+
+        foreach (var du in deviceUsers)
+        {
+            var permissions = JsonSerializer.Deserialize<List<SensorPermissionDto>>(du.SensorPermissions, _json) ?? [];
+            if (permissions.Any(p => p.SensorId == sensorId)) continue;
+
+            permissions.Add(new SensorPermissionDto(sensorId, SensorAccessLevel.Control));
+            du.SensorPermissions = JsonSerializer.Serialize(permissions, _json);
+        }
+
+        await db.SaveChangesAsync();
+    }
+
+    // Keeps SensorPermissions entries pointing at the right sensor after an update recomputes its id
+    // (e.g. address/port/unitId/switchNo changed) — preserves each user's existing access level.
+    private async Task RenameSensorForLinkedUsersAsync(string deviceId, string oldSensorId, string newSensorId)
+    {
+        var deviceUsers = await db.DeviceUsers.Where(du => du.DeviceId == deviceId).ToListAsync();
+        if (deviceUsers.Count == 0) return;
+
+        foreach (var du in deviceUsers)
+        {
+            var permissions = JsonSerializer.Deserialize<List<SensorPermissionDto>>(du.SensorPermissions, _json) ?? [];
+            var idx = permissions.FindIndex(p => p.SensorId == oldSensorId);
+            if (idx < 0) continue;
+
+            permissions[idx] = permissions[idx] with { SensorId = newSensorId };
+            du.SensorPermissions = JsonSerializer.Serialize(permissions, _json);
+        }
+
+        await db.SaveChangesAsync();
+    }
 
     private static string? ExtractValue(string? payload)
     {

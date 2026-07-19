@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -20,10 +21,14 @@ public static class AuthServiceExtensions
                 options.Password.RequiredLength = 8;
                 options.Password.RequireUppercase = false;
                 options.Password.RequireNonAlphanumeric = false;
-                options.User.RequireUniqueEmail = true;
+                options.User.RequireUniqueEmail = false; // email is optional; uniqueness enforced at DB level via partial index
             })
             .AddEntityFrameworkStores<SyncroDbContext>()
             .AddDefaultTokenProviders();
+
+        // Prevent the JWT middleware from silently renaming claims (e.g. "sub" → ClaimTypes.NameIdentifier).
+        // This ensures User.FindFirstValue(JwtRegisteredClaimNames.Sub) works as expected.
+        JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
         // JWT Bearer
         var secret = config["Jwt:Secret"] ?? throw new InvalidOperationException("Jwt:Secret is not configured");
@@ -34,6 +39,7 @@ public static class AuthServiceExtensions
             })
             .AddJwtBearer(options =>
             {
+                options.MapInboundClaims = false; // keep "sub" as "sub", not mapped to ClaimTypes.NameIdentifier
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,

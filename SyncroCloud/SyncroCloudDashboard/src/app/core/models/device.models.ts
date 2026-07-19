@@ -97,6 +97,20 @@ export interface CreateDeviceSensorDto {
   installedById: string | null;
 }
 
+export type SensorAccessLevel = 'Watch' | 'Control';
+
+export interface SensorPermissionDto {
+  sensorId: string;
+  access: SensorAccessLevel;
+}
+
+export interface DeviceUserDto {
+  deviceId: string;
+  userId: string;
+  linkedAt: string;
+  sensorPermissions: SensorPermissionDto[];
+}
+
 export type ScenarioAction = 'Off' | 'On';
 export type ScenarioConditionType = 'Duration' | 'OnTime' | 'OnOtherSensorValue';
 export type ScenarioOperator = 'Equals' | 'NotEquals' | 'GreaterThan' | 'LessThan' | 'GreaterOrEqual' | 'LessOrEqual';

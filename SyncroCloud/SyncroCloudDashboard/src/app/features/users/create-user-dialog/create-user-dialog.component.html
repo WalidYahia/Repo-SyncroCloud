@@ -1,0 +1,98 @@
+<div mat-dialog-title class="dialog-title-row"
+     cdkDrag
+     cdkDragRootElement=".cdk-overlay-pane"
+     cdkDragBoundary=".cdk-overlay-container">
+  <span cdkDragHandle class="drag-handle">
+    <mat-icon class="drag-icon">drag_indicator</mat-icon>
+    New User
+  </span>
+</div>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dialog-form">
+
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>Phone Number</mat-label>
+        <input matInput formControlName="phoneNumber" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email (optional)</mat-label>
+        <input matInput type="email" formControlName="email" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>First Name</mat-label>
+        <input matInput formControlName="firstName" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Last Name</mat-label>
+        <input matInput formControlName="lastName" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Role</mat-label>
+        <mat-select formControlName="roleId">
+          @for (r of roles; track r.id) {
+            <mat-option [value]="r.id">{{ r.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Tenant section — hidden for SuperAdmin (backend assigns all), hidden for single-tenant (auto-assigned) -->
+    @if (!isSuperAdmin) {
+      @if (isMultiTenant) {
+        <!-- Multi-tenant creator: show checkboxes for their tenants -->
+        <div class="tenant-section">
+          <span class="tenant-label">Assign to Tenant(s)</span>
+          <div class="tenant-list">
+            @for (t of creatorTenants; track t.id) {
+              <mat-checkbox
+                [checked]="isTenantSelected(t.id)"
+                (change)="toggleTenant(t.id, $event.checked)">
+                {{ t.name }}
+              </mat-checkbox>
+            }
+          </div>
+          @if ((form.value.tenantIds)!.length === 0) {
+            <span class="tenant-hint">Select at least one tenant.</span>
+          }
+        </div>
+      } @else if (creatorTenants.length === 1) {
+        <!-- Single-tenant creator: show read-only indicator -->
+        <div class="tenant-section">
+          <span class="tenant-label">Tenant</span>
+          <span class="tenant-auto">{{ creatorTenants[0].name }} <em>(auto-assigned)</em></span>
+        </div>
+      }
+    } @else {
+      <div class="tenant-section">
+        <span class="tenant-label">Tenants</span>
+        <span class="tenant-auto">All tenants <em>(SuperAdmin receives access to all)</em></span>
+      </div>
+    }
+
+    @if (errorMessage()) {
+      <div class="error-banner">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button [disabled]="isSaving()" (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="primary" [disabled]="!isFormValid || isSaving()" (click)="save()">
+    @if (isSaving()) { <mat-spinner diameter="18" /> } @else { Create User }
+  </button>
+</mat-dialog-actions>

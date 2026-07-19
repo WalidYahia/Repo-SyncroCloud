@@ -1,6 +1,7 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, computed, inject, signal, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
+import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -10,27 +11,47 @@ import { SensorService } from '../../../core/services/sensor.service';
 import { DeviceSensorDto } from '../../../core/models/device.models';
 import { SensorDto } from '../../../core/models/sensor.models';
 import { forkJoin } from 'rxjs';
+import { AuthService } from '../../../core/services/auth.service';
+import { sortRows } from '../../../shared/utils/table-sort';
 import { InstallSensorDialogComponent, InstallSensorDialogData, InstallSensorDialogResult } from './install-sensor-dialog/install-sensor-dialog.component';
 import { EditSensorDialogComponent, EditSensorDialogData, EditSensorDialogResult } from './edit-sensor-dialog/edit-sensor-dialog.component';
 
 @Component({
   selector: 'app-device-sensors',
   standalone: true,
-  imports: [RouterLink, MatTableModule, MatButtonModule, MatIconModule, MatTooltipModule, MatDialogModule],
+  imports: [RouterLink, MatTableModule, MatSortModule, MatButtonModule, MatIconModule, MatTooltipModule, MatDialogModule],
   templateUrl: './device-sensors.component.html',
   styleUrl: './device-sensors.component.scss'
 })
 export class DeviceSensorsComponent implements OnInit {
   private route         = inject(ActivatedRoute);
   private deviceService = inject(DeviceService);
+  auth = inject(AuthService);
   private sensorService = inject(SensorService);
   private dialog         = inject(MatDialog);
   private cdr           = inject(ChangeDetectorRef);
 
   deviceId!: string;
-  installed:        DeviceSensorDto[] = [];
+  installed = signal<DeviceSensorDto[]>([]);
   availableSensors: SensorDto[]       = [];
   columns = ['sensor', 'switchNo', 'unitId', 'displayName', 'sensorType', 'actions'];
+
+  sort = signal<Sort>({ active: '', direction: '' });
+  sortedInstalled = computed(() =>
+    sortRows(this.installed(), this.sort(), (s, col) => this.sortValue(s, col))
+  );
+  onSort(s: Sort) { this.sort.set(s); }
+
+  private sortValue(s: DeviceSensorDto, col: string): unknown {
+    switch (col) {
+      case 'sensor':      return this.sensorName(s.sensorId);
+      case 'switchNo':    return s.switchNo;
+      case 'unitId':      return s.unitId;
+      case 'displayName': return s.displayName;
+      case 'sensorType':  return s.sensorType;
+      default:            return '';
+    }
+  }
 
   ngOnInit() {
     this.deviceId = this.route.snapshot.paramMap.get('id')!;
@@ -43,8 +64,8 @@ export class DeviceSensorsComponent implements OnInit {
       this.sensorService.getAll()
     ]).subscribe({
       next: ([installed, sensors]) => {
-        this.installed        = installed;
         this.availableSensors = sensors;
+        this.installed.set(installed);
         this.cdr.detectChanges();
       },
       error: (err) => console.error('Failed to load sensors page data', err)
@@ -62,6 +83,7 @@ export class DeviceSensorsComponent implements OnInit {
         width: '600px',
         maxWidth: '95vw',
         maxHeight: '90vh',
+        disableClose: true,
         data: { availableSensors: this.availableSensors }
       }
     );
@@ -108,6 +130,7 @@ export class DeviceSensorsComponent implements OnInit {
         width: '420px',
         maxWidth: '95vw',
         maxHeight: '90vh',
+        disableClose: true,
         data: { sensor }
       }
     );

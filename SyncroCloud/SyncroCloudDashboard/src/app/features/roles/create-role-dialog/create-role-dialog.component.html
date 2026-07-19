@@ -1,0 +1,49 @@
+<div mat-dialog-title class="dialog-title-row"
+     cdkDrag
+     cdkDragRootElement=".cdk-overlay-pane"
+     cdkDragBoundary=".cdk-overlay-container">
+  <span cdkDragHandle class="drag-handle">
+    <mat-icon class="drag-icon">drag_indicator</mat-icon>
+    {{ isEditMode ? 'Edit Privileges — ' + data.role!.name : 'New Role' }}
+  </span>
+</div>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dialog-form">
+
+    @if (!isEditMode) {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Role Name</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
+    }
+
+    <div class="privileges-section">
+      <span class="section-label">Privileges</span>
+      <div class="privileges-list">
+        @for (p of privileges; track p.id) {
+          <mat-checkbox
+            [checked]="isSelected(p.id)"
+            (change)="togglePrivilege(p.id, $event.checked)">
+            {{ p.name }}
+          </mat-checkbox>
+        }
+      </div>
+    </div>
+
+    @if (errorMessage()) {
+      <div class="error-banner">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button [disabled]="isSaving()" (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="primary" [disabled]="form.invalid || isSaving()" (click)="save()">
+    @if (isSaving()) { <mat-spinner diameter="18" /> } @else { {{ isEditMode ? 'Save Privileges' : 'Create Role' }} }
+  </button>
+</mat-dialog-actions>

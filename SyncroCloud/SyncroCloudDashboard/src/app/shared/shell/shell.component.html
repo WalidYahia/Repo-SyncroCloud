@@ -21,6 +21,9 @@
     <mat-toolbar color="primary" class="toolbar">
       <span class="toolbar-title">{{ activeLabel }}</span>
       <span class="spacer"></span>
+      @if (auth.displayName()) {
+        <span class="user-name">{{ auth.displayName() }}</span>
+      }
       <button mat-icon-button (click)="auth.logout()" matTooltip="Logout">
         <mat-icon>logout</mat-icon>
       </button>

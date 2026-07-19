@@ -81,7 +81,9 @@
             @if (condition.value.condition === 'OnTime') {
               <mat-form-field appearance="outline">
                 <mat-label>Time</mat-label>
-                <input matInput formControlName="time" placeholder="HH:mm:ss" />
+                <input matInput [matTimepicker]="timePicker" formControlName="time" />
+                <mat-timepicker-toggle matSuffix [for]="timePicker" />
+                <mat-timepicker #timePicker interval="15min" />
               </mat-form-field>
             }
           </div>

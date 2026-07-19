@@ -1,0 +1,44 @@
+.dialog-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.drag-handle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: move;
+}
+
+.drag-icon { color: rgba(0, 0, 0, 0.4); }
+
+.dialog-form { padding-top: 4px; min-width: 420px; }
+
+.full-width { width: 100%; }
+
+.privileges-section { margin-top: 8px; }
+
+.section-label { font-size: 0.75rem; color: rgba(0, 0, 0, 0.6); font-weight: 500; }
+
+.privileges-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  background-color: #fdecea;
+  color: #c62828;
+  font-size: 0.875rem;
+
+  mat-icon { font-size: 20px; height: 20px; width: 20px; flex-shrink: 0; }
+}

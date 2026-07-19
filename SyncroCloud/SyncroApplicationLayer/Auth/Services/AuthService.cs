@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SyncroApplicationLayer.Auth.DTOs;
 using SyncroApplicationLayer.Auth.Interfaces;
+using SyncroApplicationLayer.DTOs;
+using SyncroApplicationLayer.Interfaces;
 using SyncroInfraLayer.Data;
 using SyncroInfraLayer.Identity;
 
@@ -9,29 +11,22 @@ namespace SyncroApplicationLayer.Auth.Services;
 
 public class AuthService(
     UserManager<AppUser> userManager,
+    RoleManager<AppRole> roleManager,
+    IUserService userService,
     SyncroDbContext db,
     TokenService tokenService) : IAuthService
 {
     public async Task<(bool Success, IEnumerable<string> Errors)> RegisterAsync(RegisterDto dto)
     {
-        var user = new AppUser
-        {
-            Id = Guid.NewGuid(),
-            UserName = dto.Email,
-            Email = dto.Email,
-            FirstName = dto.FirstName,
-            LastName = dto.LastName,
-            PhoneNumber = dto.PhoneNumber,
-            CreatedAt = DateTime.UtcNow,
-            IsActive = true
-        };
+        // Self-service registration is always pinned to the "User" role — the DTO carries
+        // no role field at all, so there is nothing here for a caller to escalate.
+        var userRole = await roleManager.FindByNameAsync(AppRoles.User);
+        if (userRole is null)
+            return (false, ["Default user role is not configured."]);
 
-        var result = await userManager.CreateAsync(user, dto.Password);
-        if (!result.Succeeded)
-            return (false, result.Errors.Select(e => e.Description));
-
-        await userManager.AddToRoleAsync(user, dto.Role);
-        return (true, []);
+        var request = new ProvisionUserRequest(dto.PhoneNumber, dto.Email, dto.Password, dto.FirstName, dto.LastName, dto.TenantId, userRole.Id);
+        var (success, _, errors) = await userService.ProvisionAsync(request);
+        return (success, errors);
     }
 
     public async Task<TokenResponseDto?> LoginAsync(LoginDto dto)

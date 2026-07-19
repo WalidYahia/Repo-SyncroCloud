@@ -449,6 +449,69 @@ namespace SyncroInfraLayer.Migrations
                     b.ToTable("DeviceReadings");
                 });
 
+            modelBuilder.Entity("SyncroInfraLayer.Entities.DeviceUser", b =>
+                {
+                    b.Property<string>("DeviceId")
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("LinkedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("SensorPermissions")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("jsonb")
+                        .HasDefaultValue("[]");
+
+                    b.HasKey("DeviceId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("DeviceUsers");
+                });
+
+            modelBuilder.Entity("SyncroInfraLayer.Entities.Privilege", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("Privileges");
+                });
+
+            modelBuilder.Entity("SyncroInfraLayer.Entities.RolePrivilege", b =>
+                {
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("PrivilegeId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("RoleId", "PrivilegeId");
+
+                    b.HasIndex("PrivilegeId");
+
+                    b.ToTable("RolePrivileges");
+                });
+
             modelBuilder.Entity("SyncroInfraLayer.Entities.Sensor", b =>
                 {
                     b.Property<Guid>("SensorId")
@@ -644,6 +707,7 @@ namespace SyncroInfraLayer.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("PhoneNumberConfirmed")
@@ -669,8 +733,7 @@ namespace SyncroInfraLayer.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.HasIndex("PhoneNumber")
-                        .IsUnique()
-                        .HasFilter("\"PhoneNumber\" IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -852,6 +915,42 @@ namespace SyncroInfraLayer.Migrations
                     b.Navigation("Device");
                 });
 
+            modelBuilder.Entity("SyncroInfraLayer.Entities.DeviceUser", b =>
+                {
+                    b.HasOne("SyncroInfraLayer.Entities.Device", "Device")
+                        .WithMany("DeviceUsers")
+                        .HasForeignKey("DeviceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SyncroInfraLayer.Identity.AppUser", "User")
+                        .WithMany("DeviceUsers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Device");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SyncroInfraLayer.Entities.RolePrivilege", b =>
+                {
+                    b.HasOne("SyncroInfraLayer.Entities.Privilege", "Privilege")
+                        .WithMany("RolePrivileges")
+                        .HasForeignKey("PrivilegeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SyncroInfraLayer.Identity.AppRole", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Privilege");
+                });
+
             modelBuilder.Entity("SyncroInfraLayer.Entities.TenantUser", b =>
                 {
                     b.HasOne("SyncroInfraLayer.Entities.Tenant", "Tenant")
@@ -906,6 +1005,13 @@ namespace SyncroInfraLayer.Migrations
             modelBuilder.Entity("SyncroInfraLayer.Entities.Device", b =>
                 {
                     b.Navigation("DeviceConfigs");
+
+                    b.Navigation("DeviceUsers");
+                });
+
+            modelBuilder.Entity("SyncroInfraLayer.Entities.Privilege", b =>
+                {
+                    b.Navigation("RolePrivileges");
                 });
 
             modelBuilder.Entity("SyncroInfraLayer.Entities.Tenant", b =>
@@ -917,6 +1023,8 @@ namespace SyncroInfraLayer.Migrations
 
             modelBuilder.Entity("SyncroInfraLayer.Identity.AppUser", b =>
                 {
+                    b.Navigation("DeviceUsers");
+
                     b.Navigation("Devices");
 
                     b.Navigation("RefreshTokens");
